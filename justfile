@@ -1,4 +1,4 @@
 set shell := ["zsh", "-lc"]
 
 run-dev:
-  cd apps/v4 && pnpm dev
+  cd apps/quantum-ui-v2 && pnpm dev

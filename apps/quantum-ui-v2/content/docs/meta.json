@@ -1,0 +1,8 @@
+{
+  "root": true,
+  "pages": [
+    "components",
+    "(root)",
+    "installation"
+  ]
+}
