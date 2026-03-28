@@ -5,10 +5,10 @@ setup:
   pnpm --filter=shadcn build
 
 run-dev:
-  cd apps/quantum-ui-v2 && pnpm dev
+  cd apps/quantum-ui && pnpm dev
 
 run:
-  cd apps/quantum-ui-v2 && pnpm registry:build && pnpm build && pnpm start
+  cd apps/quantum-ui && pnpm registry:build && pnpm build && pnpm start
 
 build-registry:
-  cd apps/quantum-ui-v2 && pnpm registry:build
+  cd apps/quantum-ui && pnpm registry:build
