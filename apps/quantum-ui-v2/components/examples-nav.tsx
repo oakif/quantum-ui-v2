@@ -8,33 +8,28 @@ import { ScrollArea, ScrollBar } from "@/registry/new-york-v4/ui/scroll-area"
 
 const examples = [
   {
-    name: "Dashboard",
+    name: "Dashboard Example",
     href: "/examples/dashboard",
-    code: "https://github.com/shadcn/ui/tree/main/apps/v4/app/(app)/examples/dashboard",
     hidden: false,
   },
   {
-    name: "Tasks",
+    name: "Tasks Example",
     href: "/examples/tasks",
-    code: "https://github.com/shadcn/ui/tree/main/apps/v4/app/(app)/examples/tasks",
     hidden: false,
   },
   {
-    name: "Playground",
+    name: "Playground Example",
     href: "/examples/playground",
-    code: "https://github.com/shadcn/ui/tree/main/apps/v4/app/(app)/examples/playground",
     hidden: false,
   },
   {
-    name: "Authentication",
+    name: "Authentication Example",
     href: "/examples/authentication",
-    code: "https://github.com/shadcn/ui/tree/main/apps/v4/app/(app)/examples/authentication",
     hidden: false,
   },
   {
-    name: "RTL",
+    name: "RTL Layout Example",
     href: "/examples/rtl",
-    code: "https://github.com/shadcn/ui/tree/main/apps/v4/app/(app)/examples/rtl",
     hidden: false,
   },
 ]
@@ -86,9 +81,6 @@ function ExampleLink({
       data-active={isActive}
     >
       {example.name}
-      {example.name === "RTL" && (
-        <span className="flex size-2 rounded-full bg-blue-500" title="New" />
-      )}
     </Link>
   )
 }
