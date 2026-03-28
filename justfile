@@ -7,5 +7,8 @@ setup:
 run-dev:
   cd apps/quantum-ui-v2 && pnpm dev
 
+run:
+  cd apps/quantum-ui-v2 && pnpm registry:build && pnpm build && pnpm start
+
 build-registry:
   cd apps/quantum-ui-v2 && pnpm registry:build
