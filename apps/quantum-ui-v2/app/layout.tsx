@@ -6,7 +6,6 @@ import { fontVariables } from "@/lib/fonts"
 import { cn } from "@/lib/utils"
 import { LayoutProvider } from "@/hooks/use-layout"
 import { ActiveThemeProvider } from "@/components/active-theme"
-import { Analytics } from "@/components/analytics"
 import { ThemeProvider } from "@/components/theme-provider"
 import { TooltipProvider as BaseTooltipProvider } from "@/registry/bases/base/ui/tooltip"
 import { Toaster } from "@/registry/bases/radix/ui/sonner"
@@ -105,7 +104,6 @@ export default function RootLayout({
                   </RadixTooltipProvider>
                 </BaseTooltipProvider>
               </NuqsAdapter>
-              <Analytics />
             </ActiveThemeProvider>
           </LayoutProvider>
         </ThemeProvider>
