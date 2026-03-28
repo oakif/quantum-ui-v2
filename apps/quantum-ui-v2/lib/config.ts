@@ -1,11 +1,10 @@
 export const siteConfig = {
-  name: "shadcn/ui",
+  name: "Quantum UI",
   url: "https://ui.shadcn.com",
   ogImage: "https://ui.shadcn.com/og.jpg",
   description:
-    "A set of beautifully designed components that you can customize, extend, and build on. Start here then make it your own. Open Source. Open Code.",
+    "Internal design system built on shadcn/ui. Browse components, experiment in the studio, and make them your own.",
   links: {
-    twitter: "https://twitter.com/shadcn",
     github: "https://github.com/shadcn-ui/ui",
   },
   navItems: [
@@ -18,8 +17,8 @@ export const siteConfig = {
       label: "Components",
     },
     {
-      href: "/docs/installation",
-      label: "Installation",
+      href: "/charts",
+      label: "Charts",
     },
   ],
 }
