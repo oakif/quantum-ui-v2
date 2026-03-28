@@ -21,6 +21,10 @@ const PRIMARY_SECTIONS = [
   { name: "Installation", href: "/docs/installation" },
 ] as const
 
+const COMPONENT_ITEMS = [
+  { name: "Button", href: "/docs/components/radix/button" },
+] as const
+
 export function DocsSidebar({
   tree: _tree,
   ...props
@@ -47,9 +51,7 @@ export function DocsSidebar({
                 <SidebarMenuItem key={name}>
                   <SidebarMenuButton
                     asChild
-                    isActive={
-                      href === "/docs" ? pathname === href : pathname.startsWith(href)
-                    }
+                    isActive={pathname === href}
                     className="relative h-[30px] w-fit overflow-visible border border-transparent text-[0.8rem] font-medium after:absolute after:inset-x-0 after:-inset-y-1 after:z-0 after:rounded-md data-[active=true]:border-accent data-[active=true]:bg-accent 3xl:fixed:w-full 3xl:fixed:max-w-48"
                   >
                     <Link href={href}>
@@ -62,6 +64,31 @@ export function DocsSidebar({
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+        {COMPONENT_ITEMS.length > 0 && (
+          <SidebarGroup>
+            <SidebarGroupLabel className="font-medium text-muted-foreground">
+              Components
+            </SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {COMPONENT_ITEMS.map(({ name, href }) => (
+                  <SidebarMenuItem key={name}>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={pathname === href}
+                      className="relative h-[30px] w-fit overflow-visible border border-transparent text-[0.8rem] font-medium after:absolute after:inset-x-0 after:-inset-y-1 after:z-0 after:rounded-md data-[active=true]:border-accent data-[active=true]:bg-accent 3xl:fixed:w-full 3xl:fixed:max-w-48"
+                    >
+                      <Link href={href}>
+                        <span className="absolute inset-0 flex w-(--sidebar-menu-width) bg-transparent" />
+                        {name}
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
         <div className="sticky -bottom-1 z-10 h-16 shrink-0 bg-linear-to-t from-background via-background/80 to-background/50 blur-xs" />
       </SidebarContent>
     </Sidebar>

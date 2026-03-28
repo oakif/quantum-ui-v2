@@ -1,8 +1,8 @@
 {
   "root": true,
   "pages": [
-    "components",
     "(root)",
-    "installation"
+    "installation",
+    "components"
   ]
 }

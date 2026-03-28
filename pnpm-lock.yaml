@@ -119,7 +119,7 @@ importers:
         specifier: ^5.5.3
         version: 5.9.2
 
-  apps/quantum-ui-v2:
+  apps/quantum-ui:
     dependencies:
       '@base-ui/react':
         specifier: 1.1.0
@@ -10792,7 +10792,7 @@ snapshots:
   '@typescript-eslint/project-service@8.39.0(typescript@5.9.2)':
     dependencies:
       '@typescript-eslint/tsconfig-utils': 8.39.0(typescript@5.9.2)
-      '@typescript-eslint/types': 8.49.0
+      '@typescript-eslint/types': 8.54.0
       debug: 4.4.3
       typescript: 5.9.2
     transitivePeerDependencies:

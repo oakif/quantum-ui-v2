@@ -1,4 +1,4 @@
 {
-  "title": "Radix UI",
-  "pages": []
+  "title": "Components",
+  "pages": ["button"]
 }
