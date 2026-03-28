@@ -1,54 +1,9 @@
 ---
 title: Button
-description: Displays a button or a component that looks like a button.
+description: Button component with multiple variants and sizes.
 featured: true
-base: radix
 component: true
 ---
-
-<ComponentPreview styleName="radix-nova" name="button-demo" />
-
-## Installation
-
-<CodeTabs>
-
-<TabsList>
-  <TabsTrigger value="cli">Command</TabsTrigger>
-  <TabsTrigger value="manual">Manual</TabsTrigger>
-</TabsList>
-<TabsContent value="cli">
-
-```bash
-npx shadcn@latest add button
-```
-
-</TabsContent>
-
-<TabsContent value="manual">
-
-<Steps className="mb-0 pt-2">
-
-<Step>Install the following dependencies:</Step>
-
-```bash
-npm install radix-ui
-```
-
-<Step>Copy and paste the following code into your project.</Step>
-
-<ComponentSource
-  name="button"
-  title="components/ui/button.tsx"
-  styleName="radix-nova"
-/>
-
-<Step>Update the import paths to match your project setup.</Step>
-
-</Steps>
-
-</TabsContent>
-
-</CodeTabs>
 
 ## Usage
 
@@ -57,104 +12,81 @@ import { Button } from "@/components/ui/button"
 ```
 
 ```tsx
-<Button variant="outline">Button</Button>
+<Button>Click me</Button>
+<Button variant="secondary">Secondary</Button>
+<Button variant="outline">Outline</Button>
 ```
 
-## Cursor
+## Variants
 
-Tailwind v4 [switched](https://tailwindcss.com/docs/upgrade-guide#buttons-use-the-default-cursor) from `cursor: pointer` to `cursor: default` for the button component.
+| Variant | Description |
+| --- | --- |
+| `default` | Primary action, solid background |
+| `secondary` | Secondary action, muted background |
+| `outline` | Bordered with transparent background |
+| `ghost` | No background, hover reveals fill |
+| `destructive` | Danger/delete actions |
+| `link` | Styled as a text link |
 
-If you want to keep the `cursor: pointer` behavior, add the following code to your CSS file:
+## Sizes
 
-```css showLineNumbers title="globals.css"
-@layer base {
-  button:not(:disabled),
-  [role="button"]:not(:disabled) {
-    cursor: pointer;
-  }
-}
+| Size | Description |
+| --- | --- |
+| `default` | Standard height (h-9) |
+| `xs` | Extra small (h-6) |
+| `sm` | Small (h-8) |
+| `lg` | Large (h-10) |
+| `icon` | Square icon button (size-9) |
+| `icon-xs` | Small icon button (size-6) |
+| `icon-sm` | Medium icon button (size-8) |
+| `icon-lg` | Large icon button (size-10) |
+
+## With Icons
+
+Icons are automatically sized to `size-4`. Use `has-[>svg]` padding adjustments for proper spacing.
+
+```tsx
+import { Mail } from "lucide-react"
+
+<Button>
+  <Mail />
+  Login with Email
+</Button>
 ```
 
-## Examples
+## Loading State
 
-### Size
+Use a spinner icon with `animate-spin` and optionally disable the button.
 
-Use the `size` prop to change the size of the button.
+```tsx
+import { Loader2 } from "lucide-react"
 
-<ComponentPreview styleName="radix-nova" name="button-size" />
+<Button disabled>
+  <Loader2 className="animate-spin" />
+  Please wait
+</Button>
+```
 
-### Default
+## As Child
 
-<ComponentPreview styleName="radix-nova" name="button-default" />
+Use `asChild` to render another element (like a link) with button styling.
 
-### Outline
+```tsx
+import Link from "next/link"
 
-<ComponentPreview styleName="radix-nova" name="button-outline" />
+<Button asChild>
+  <Link href="/dashboard">Go to Dashboard</Link>
+</Button>
+```
 
-### Secondary
+## Demo
 
-<ComponentPreview styleName="radix-nova" name="button-secondary" />
-
-### Ghost
-
-<ComponentPreview styleName="radix-nova" name="button-ghost" />
-
-### Destructive
-
-<ComponentPreview styleName="radix-nova" name="button-destructive" />
-
-### Link
-
-<ComponentPreview styleName="radix-nova" name="button-link" />
-
-### Icon
-
-<ComponentPreview styleName="radix-nova" name="button-icon" />
-
-### With Icon
-
-Remember to add the `data-icon="inline-start"` or `data-icon="inline-end"` attribute to the icon for the correct spacing.
-
-<ComponentPreview styleName="radix-nova" name="button-with-icon" />
-
-### Rounded
-
-Use the `rounded-full` class to make the button rounded.
-
-<ComponentPreview styleName="radix-nova" name="button-rounded" />
-
-### Spinner
-
-Render a `<Spinner />` component inside the button to show a loading state. Remember to add the `data-icon="inline-start"` or `data-icon="inline-end"` attribute to the spinner for the correct spacing.
-
-<ComponentPreview styleName="radix-nova" name="button-spinner" />
-
-### Button Group
-
-To create a button group, use the `ButtonGroup` component. See the [Button Group](/docs/components/radix/button-group) documentation for more details.
-
-<ComponentPreview styleName="radix-nova" name="button-group-demo" />
-
-### As Child
-
-You can use the `asChild` prop on `<Button />` to make another component look like a button. Here's an example of a link that looks like a button.
-
-<ComponentPreview styleName="radix-nova" name="button-aschild" />
-
-## RTL
-
-To enable RTL support in shadcn/ui, see the [RTL configuration guide](/docs/rtl).
-
-<ComponentPreview styleName="radix-nova" name="button-rtl" direction="rtl" />
+See the [interactive demo](/demos/button) for a full visual reference of all variants, sizes, icons, and states.
 
 ## API Reference
 
-### Button
-
-The `Button` component is a wrapper around the `button` element that adds a variety of styles and functionality.
-
-| Prop      | Type                                                                                 | Default     |
-| --------- | ------------------------------------------------------------------------------------ | ----------- |
-| `variant` | `"default" \| "outline" \| "ghost" \| "destructive" \| "secondary" \| "link"`        | `"default"` |
-| `size`    | `"default" \| "xs" \| "sm" \| "lg" \| "icon" \| "icon-xs" \| "icon-sm" \| "icon-lg"` | `"default"` |
-| `asChild` | `boolean`                                                                            | `false`     |
+| Prop | Type | Default |
+| --- | --- | --- |
+| `variant` | `"default" \| "outline" \| "ghost" \| "destructive" \| "secondary" \| "link"` | `"default"` |
+| `size` | `"default" \| "xs" \| "sm" \| "lg" \| "icon" \| "icon-xs" \| "icon-sm" \| "icon-lg"` | `"default"` |
+| `asChild` | `boolean` | `false` |
