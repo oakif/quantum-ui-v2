@@ -7,9 +7,7 @@ import { findNeighbour } from "fumadocs-core/page-tree"
 import { source } from "@/lib/source"
 import { absoluteUrl } from "@/lib/utils"
 import { DocsBaseSwitcher } from "@/components/docs-base-switcher"
-import { DocsCopyPage } from "@/components/docs-copy-page"
 import { DocsTableOfContents } from "@/components/docs-toc"
-import { OpenInV0Cta } from "@/components/open-in-v0-cta"
 import { Button } from "@/registry/new-york-v4/ui/button"
 
 export const revalidate = false
@@ -79,11 +77,8 @@ export default async function Page(props: {
 
   const doc = page.data
   const MDX = doc.body
-  const isChangelog = params.slug?.[0] === "changelog"
-  const neighbours = isChangelog
-    ? { previous: null, next: null }
-    : findNeighbour(source.pageTree, page.url)
-  const raw = await page.data.getText("raw")
+  const neighbours =
+    params.slug?.[0] === "changelog" ? { previous: null, next: null } : findNeighbour(source.pageTree, page.url)
 
   return (
     <div
@@ -95,44 +90,9 @@ export default async function Page(props: {
         <div className="mx-auto flex w-full max-w-[40rem] min-w-0 flex-1 flex-col gap-6 px-4 py-6 text-neutral-800 md:px-0 lg:py-8 dark:text-neutral-300">
           <div className="flex flex-col gap-2">
             <div className="flex flex-col gap-2">
-              <div className="flex items-center justify-between md:items-start">
-                <h1 className="scroll-m-24 text-3xl font-semibold tracking-tight sm:text-3xl">
-                  {doc.title}
-                </h1>
-                <div className="docs-nav flex items-center gap-2">
-                  <div className="hidden sm:block">
-                    <DocsCopyPage page={raw} url={absoluteUrl(page.url)} />
-                  </div>
-                  <div className="ml-auto flex gap-2">
-                    {neighbours.previous && (
-                      <Button
-                        variant="secondary"
-                        size="icon"
-                        className="extend-touch-target size-8 shadow-none md:size-7"
-                        asChild
-                      >
-                        <Link href={neighbours.previous.url}>
-                          <IconArrowLeft />
-                          <span className="sr-only">Previous</span>
-                        </Link>
-                      </Button>
-                    )}
-                    {neighbours.next && (
-                      <Button
-                        variant="secondary"
-                        size="icon"
-                        className="extend-touch-target size-8 shadow-none md:size-7"
-                        asChild
-                      >
-                        <Link href={neighbours.next.url}>
-                          <span className="sr-only">Next</span>
-                          <IconArrowRight />
-                        </Link>
-                      </Button>
-                    )}
-                  </div>
-                </div>
-              </div>
+              <h1 className="scroll-m-24 text-3xl font-semibold tracking-tight sm:text-3xl">
+                {doc.title}
+              </h1>
               {doc.description && (
                 <p className="text-[1.05rem] text-muted-foreground sm:text-base sm:text-balance md:max-w-[80%]">
                   {doc.description}
@@ -154,30 +114,7 @@ export default async function Page(props: {
             <MDX components={mdxComponents} />
           </div>
           <div className="hidden h-16 w-full items-center gap-2 px-4 sm:flex sm:px-0">
-            {neighbours.previous && (
-              <Button
-                variant="secondary"
-                size="sm"
-                asChild
-                className="shadow-none"
-              >
-                <Link href={neighbours.previous.url}>
-                  <IconArrowLeft /> {neighbours.previous.name}
-                </Link>
-              </Button>
-            )}
-            {neighbours.next && (
-              <Button
-                variant="secondary"
-                size="sm"
-                className="ml-auto shadow-none"
-                asChild
-              >
-                <Link href={neighbours.next.url}>
-                  {neighbours.next.name} <IconArrowRight />
-                </Link>
-              </Button>
-            )}
+            {neighbours.previous || neighbours.next ? null : null}
           </div>
         </div>
       </div>
@@ -188,9 +125,6 @@ export default async function Page(props: {
             <DocsTableOfContents toc={doc.toc} />
           </div>
         ) : null}
-        <div className="hidden flex-1 flex-col gap-6 px-6 xl:flex">
-          <OpenInV0Cta />
-        </div>
       </div>
     </div>
   )

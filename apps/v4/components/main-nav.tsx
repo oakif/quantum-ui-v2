@@ -28,7 +28,11 @@ export function MainNav({
         >
           <Link
             href={item.href}
-            data-active={pathname === item.href}
+            data-active={
+              item.href === "/"
+                ? pathname === item.href
+                : pathname === item.href || pathname.startsWith(`${item.href}/`)
+            }
             data-new={PAGES_NEW.includes(item.href)}
             className="relative items-center"
           >
