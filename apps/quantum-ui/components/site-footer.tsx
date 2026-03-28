@@ -6,7 +6,16 @@ export function SiteFooter() {
       <div className="container-wrapper px-4 xl:px-6">
         <div className="flex h-(--footer-height) items-center justify-between">
           <div className="w-full px-1 text-center text-xs leading-loose text-muted-foreground sm:text-sm">
-            Created by Oion Akif based on{" "}
+            Created by{" "}
+            <a
+              href="https://github.com/oakif"
+              target="_blank"
+              rel="noreferrer"
+              className="font-medium underline underline-offset-4"
+            >
+              oakif
+            </a>
+            {" "}based on{" "}
             <a
               href={siteConfig.links.github}
               target="_blank"

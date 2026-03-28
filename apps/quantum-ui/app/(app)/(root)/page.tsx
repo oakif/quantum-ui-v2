@@ -6,8 +6,6 @@ import {
   PageHeaderHeading,
 } from "@/components/page-header"
 
-import { RootComponents } from "./components"
-
 const title = "Quantum UI"
 const description =
   "Internal design system built on shadcn/ui. Browse components, experiment in the studio, and make them your own."
@@ -28,10 +26,11 @@ export default function IndexPage() {
         <PageHeaderDescription>{description}</PageHeaderDescription>
       </PageHeader>
       <div className="container-wrapper flex-1 section-soft pb-6">
-        <div className="container overflow-hidden">
-          <section className="theme-container">
-            <RootComponents />
-          </section>
+        <div className="container py-12 text-center">
+          <p className="text-sm text-muted-foreground">
+            No components promoted yet. Port your first component to see it
+            here.
+          </p>
         </div>
       </div>
     </div>
