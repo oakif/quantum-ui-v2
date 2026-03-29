@@ -31,8 +31,8 @@ export function ChartDisplay({
     >
       <div className="relative z-10 overflow-hidden bg-background">
         <ChartIframe
-          src={`/view/${style}/${chart.name}`}
-          height={400}
+          src={`/view/${style}/${chart.name}?minimal=true`}
+          height={300}
           title={chart.name}
         />
       </div>

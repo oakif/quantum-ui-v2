@@ -1,5 +1,6 @@
 /* eslint-disable react-hooks/static-components */
 import * as React from "react"
+import { Suspense } from "react"
 import { type Metadata } from "next"
 import { notFound } from "next/navigation"
 
@@ -181,8 +182,10 @@ export default async function BlockPage({
   }
 
   return (
-    <ComponentPreview>
-      <Component />
-    </ComponentPreview>
+    <Suspense>
+      <ComponentPreview>
+        <Component />
+      </ComponentPreview>
+    </Suspense>
   )
 }
