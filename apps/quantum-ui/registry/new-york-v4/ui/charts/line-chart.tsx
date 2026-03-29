@@ -1,5 +1,6 @@
 "use client"
 
+import * as React from "react"
 import {
   Area,
   CartesianGrid,
@@ -52,6 +53,7 @@ export function LineChart({
   showTooltip = true,
   className,
 }: LineChartProps) {
+  const chartId = React.useId().replace(/:/g, "")
   const curveTypeMap = {
     curved: "natural",
     linear: "linear",
@@ -94,7 +96,7 @@ export function LineChart({
             {categories.map((category) => (
               <linearGradient
                 key={`gradient-${category}`}
-                id={`fill-${category}`}
+                id={`fill-${chartId}-${category}`}
                 x1="0"
                 y1="0"
                 x2="0"
@@ -117,7 +119,7 @@ export function LineChart({
         {categories.map((category) =>
           fill === "none" ? (
             <Line
-              key={category}
+              key={`${fill}-${category}`}
               dataKey={category}
               type={curveType}
               stroke={`var(--color-${category})`}
@@ -126,12 +128,12 @@ export function LineChart({
             />
           ) : (
             <Area
-              key={category}
+              key={`${fill}-${category}`}
               dataKey={category}
               type={curveType}
               fill={
                 fill === "gradient"
-                  ? `url(#fill-${category})`
+                  ? `url(#fill-${chartId}-${category})`
                   : `var(--color-${category})`
               }
               fillOpacity={fill === "solid" ? 0.4 : 1}

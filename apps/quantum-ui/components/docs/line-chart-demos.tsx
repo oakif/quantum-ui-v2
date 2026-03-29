@@ -17,7 +17,7 @@ const sampleData = [
 export const chartColorSets = {
   limes: {
     label: "Limes",
-    colors: ["var(--color-lime-400)", "var(--color-lime-600)"],
+    colors: ["var(--color-lime-500)", "var(--color-lime-700)"],
   },
   blues: {
     label: "Blues",
@@ -30,13 +30,13 @@ export const chartColorSets = {
 } as const
 
 const defaultConfig = {
-  desktop: { label: "Desktop", color: "var(--color-lime-400)" },
+  desktop: { label: "Desktop", color: "var(--color-lime-500)" },
 } satisfies ChartConfig
 
 const colorConfigs: Record<string, ChartConfig> = {
   limes: {
-    desktop: { label: "Desktop", color: "var(--color-lime-400)" },
-    mobile: { label: "Mobile", color: "var(--color-lime-600)" },
+    desktop: { label: "Desktop", color: "var(--color-lime-500)" },
+    mobile: { label: "Mobile", color: "var(--color-lime-700)" },
   },
   blues: {
     desktop: { label: "Desktop", color: "var(--color-blue-400)" },
@@ -59,7 +59,7 @@ export function LineChartDefaultDemo() {
   config={config}
 />`}
     >
-      <div className="h-[200px] w-full p-4">
+      <div className="h-[300px] w-full p-4">
         <LineChart
           data={sampleData}
           categories={["desktop"]}
@@ -92,7 +92,7 @@ export function LineChartFillDemo() {
             {
               label: "Limes",
               value: "limes",
-              preview: ["#a3e635", "#65a30d"],
+              preview: ["#84cc16", "#4d7c0f"],
             },
             {
               label: "Blues",
@@ -108,7 +108,7 @@ export function LineChartFillDemo() {
         },
       ]}
       renderPreview={(values) => (
-        <div className="h-[200px] w-full p-4">
+        <div className="h-[300px] w-full p-4">
           <LineChart
             data={sampleData}
             categories={["desktop", "mobile"]}
@@ -148,7 +148,7 @@ export function LineChartInterpolationDemo() {
         },
       ]}
       renderPreview={(values) => (
-        <div className="h-[200px] w-full p-4">
+        <div className="h-[300px] w-full p-4">
           <LineChart
             data={sampleData}
             categories={["desktop"]}
@@ -193,7 +193,7 @@ export function LineChartStackedDemo() {
         },
       ]}
       renderPreview={(values) => (
-        <div className="h-[200px] w-full p-4">
+        <div className="h-[300px] w-full p-4">
           <LineChart
             data={sampleData}
             categories={["desktop", "mobile"]}
@@ -233,7 +233,7 @@ export function LineChartLegendDemo() {
         },
       ]}
       renderPreview={(values) => (
-        <div className="h-[200px] w-full p-4">
+        <div className="h-[300px] w-full p-4">
           <LineChart
             data={sampleData}
             categories={["desktop", "mobile"]}

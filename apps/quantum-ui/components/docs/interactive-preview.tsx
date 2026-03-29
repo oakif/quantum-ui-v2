@@ -56,12 +56,19 @@ function SettingControl({
             )}
           >
             {selectedOption?.preview && (
-              <span className="flex items-center gap-0.5">
-                {selectedOption.preview.map((color, i) => (
+              <span className="relative flex items-center" style={{ width: 16, height: 12 }}>
+                {selectedOption.preview.slice(0, 2).map((color, i) => (
                   <span
                     key={i}
-                    className="inline-block size-2.5 rounded-full"
-                    style={{ backgroundColor: color }}
+                    className="absolute rounded-full border border-black/20"
+                    style={{
+                      backgroundColor: color,
+                      width: i === 0 ? 12 : 10,
+                      height: i === 0 ? 12 : 10,
+                      left: i === 0 ? 0 : 6,
+                      top: i === 0 ? 0 : 1,
+                      zIndex: i === 0 ? 2 : 1,
+                    }}
                   />
                 ))}
               </span>
@@ -116,28 +123,27 @@ function SettingControl({
   }
 
   if (setting.type === "toggle") {
+    const isOn = value === "on"
     return (
       <div className="flex items-center gap-2">
         <span className="text-xs font-medium text-muted-foreground">
           {setting.name}
         </span>
-        <div className="flex items-center rounded-lg border p-0.5">
-          {setting.options.map((option) => (
-            <button
-              key={option.value}
-              type="button"
-              onClick={() => onChange(option.value)}
-              className={cn(
-                "rounded-md px-2.5 py-1 text-xs font-medium transition-colors",
-                value === option.value
-                  ? "bg-accent text-accent-foreground"
-                  : "text-muted-foreground hover:text-foreground"
-              )}
-            >
-              {option.label}
-            </button>
-          ))}
-        </div>
+        <button
+          type="button"
+          onClick={() => onChange(isOn ? "off" : "on")}
+          className={cn(
+            "relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors",
+            isOn ? "bg-primary" : "bg-input"
+          )}
+        >
+          <span
+            className={cn(
+              "pointer-events-none block size-4 rounded-full bg-background shadow-sm ring-0 transition-transform",
+              isOn ? "translate-x-4" : "translate-x-0"
+            )}
+          />
+        </button>
       </div>
     )
   }
