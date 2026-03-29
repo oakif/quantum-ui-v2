@@ -22,7 +22,7 @@ const PRIMARY_SECTIONS = [
 ] as const
 
 const COMPONENT_ITEMS = [
-  { name: "Button", href: "/docs/components/radix/button" },
+  { name: "Button", href: "/docs/components/button" },
 ] as const
 
 export function DocsSidebar({

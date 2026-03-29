@@ -95,7 +95,7 @@ Component items are hardcoded in `apps/quantum-ui/components/docs-sidebar.tsx` i
 
 ```tsx
 const COMPONENT_ITEMS = [
-  { name: "Button", href: "/docs/components/radix/button" },
+  { name: "Button", href: "/docs/components/button" },
 ] as const
 ```
 
