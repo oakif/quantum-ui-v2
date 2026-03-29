@@ -87,19 +87,33 @@ export function Preview({ blockGroups }: { blockGroups: BlockGroup[] }) {
   )
 
   // Send params to iframe on load and when params change
-  const paramsKey = JSON.stringify(params)
+  // Iframe src only depends on block ID — no reload on param changes
+  const iframeSrc = `/view/new-york-v4/${selectedBlockId}`
+
+  // Send initial params when iframe loads, then live-update via postMessage
+  const paramsRef = React.useRef(params)
+  paramsRef.current = params
+
   React.useEffect(() => {
     const iframe = iframeRef.current
     if (!iframe) return
 
-    const sendParams = () => {
-      sendToIframe(iframe, "design-system-params", params)
+    const onLoad = () => {
+      sendToIframe(iframe, "design-system-params", paramsRef.current)
     }
 
-    iframe.addEventListener("load", sendParams)
+    iframe.addEventListener("load", onLoad)
     return () => {
-      iframe.removeEventListener("load", sendParams)
+      iframe.removeEventListener("load", onLoad)
     }
+  }, [iframeSrc])
+
+  // Live-update params without iframe reload
+  const paramsKey = JSON.stringify(params)
+  React.useEffect(() => {
+    const iframe = iframeRef.current
+    if (!iframe?.contentWindow) return
+    sendToIframe(iframe, "design-system-params", params)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paramsKey])
 
@@ -109,13 +123,6 @@ export function Preview({ blockGroups }: { blockGroups: BlockGroup[] }) {
       window.removeEventListener("message", handleMessage)
     }
   }, [])
-
-  // Build iframe src with design system params baked in
-  const iframeSrc = React.useMemo(() => {
-    const base = `/view/new-york-v4/${selectedBlockId}`
-    return serializeDesignSystemSearchParams(base, params)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedBlockId, paramsKey])
 
   const handleResize = React.useCallback(
     (size: PreviewSize) => {
