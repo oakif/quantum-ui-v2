@@ -5,6 +5,8 @@ featured: true
 component: true
 ---
 
+<ComponentPreview styleName="radix-nova" name="button-demo" />
+
 ## Usage
 
 ```tsx
@@ -12,76 +14,62 @@ import { Button } from "@/components/ui/button"
 ```
 
 ```tsx
-<Button>Click me</Button>
-<Button variant="secondary">Secondary</Button>
-<Button variant="outline">Outline</Button>
+<Button variant="outline">Button</Button>
 ```
 
-## Variants
+## Examples
 
-| Variant | Description |
-| --- | --- |
-| `default` | Primary action, solid background |
-| `secondary` | Secondary action, muted background |
-| `outline` | Bordered with transparent background |
-| `ghost` | No background, hover reveals fill |
-| `destructive` | Danger/delete actions |
-| `link` | Styled as a text link |
+### Size
 
-## Sizes
+Use the `size` prop to change the size of the button.
 
-| Size | Description |
-| --- | --- |
-| `default` | Standard height (h-9) |
-| `xs` | Extra small (h-6) |
-| `sm` | Small (h-8) |
-| `lg` | Large (h-10) |
-| `icon` | Square icon button (size-9) |
-| `icon-xs` | Small icon button (size-6) |
-| `icon-sm` | Medium icon button (size-8) |
-| `icon-lg` | Large icon button (size-10) |
+<ComponentPreview styleName="radix-nova" name="button-size" />
 
-## With Icons
+### Default
 
-Icons are automatically sized to `size-4`. Use `has-[>svg]` padding adjustments for proper spacing.
+<ComponentPreview styleName="radix-nova" name="button-default" />
 
-```tsx
-import { Mail } from "lucide-react"
+### Outline
 
-<Button>
-  <Mail />
-  Login with Email
-</Button>
-```
+<ComponentPreview styleName="radix-nova" name="button-outline" />
 
-## Loading State
+### Secondary
 
-Use a spinner icon with `animate-spin` and optionally disable the button.
+<ComponentPreview styleName="radix-nova" name="button-secondary" />
 
-```tsx
-import { Loader2 } from "lucide-react"
+### Ghost
 
-<Button disabled>
-  <Loader2 className="animate-spin" />
-  Please wait
-</Button>
-```
+<ComponentPreview styleName="radix-nova" name="button-ghost" />
 
-## As Child
+### Destructive
 
-Use `asChild` to render another element (like a link) with button styling.
+<ComponentPreview styleName="radix-nova" name="button-destructive" />
 
-```tsx
-import Link from "next/link"
+### Link
 
-<Button asChild>
-  <Link href="/dashboard">Go to Dashboard</Link>
-</Button>
-```
+<ComponentPreview styleName="radix-nova" name="button-link" />
+
+### Icon
+
+<ComponentPreview styleName="radix-nova" name="button-icon" />
+
+### With Icon
+
+<ComponentPreview styleName="radix-nova" name="button-with-icon" />
+
+### Spinner
+
+<ComponentPreview styleName="radix-nova" name="button-spinner" />
+
+### As Child
+
+Use the `asChild` prop to render another element with button styling.
+
+<ComponentPreview styleName="radix-nova" name="button-aschild" />
 
 ## Demo
 
-See the [interactive demo](/demos/button) for a full visual reference of all variants, sizes, icons, and states.
+See the [interactive demo](/demos/button) for a full visual reference.
 
 ## API Reference
 

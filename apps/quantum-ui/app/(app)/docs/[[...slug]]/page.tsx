@@ -101,16 +101,6 @@ export default async function Page(props: {
             </div>
           </div>
           <div className="w-full flex-1 pb-16 *:data-[slot=alert]:first:mt-0 sm:pb-0">
-            {params.slug &&
-              params.slug[0] === "components" &&
-              params.slug[1] &&
-              params.slug[2] && (
-                <DocsBaseSwitcher
-                  base={params.slug[1]}
-                  component={params.slug[2]}
-                  className="mb-4"
-                />
-              )}
             <MDX components={mdxComponents} />
           </div>
           <div className="hidden h-16 w-full items-center gap-2 px-4 sm:flex sm:px-0">
