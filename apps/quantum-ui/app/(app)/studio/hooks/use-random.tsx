@@ -38,9 +38,8 @@ export function useRandom() {
   }, [params])
 
   const randomize = React.useCallback(() => {
-    const selectedStyle = locks.has("style")
-      ? paramsRef.current.style
-      : randomItem(STYLES).name
+    // Always keep the current style (removed from UI)
+    const selectedStyle = paramsRef.current.style
 
     const context: RandomizeContext = {
       style: selectedStyle,
@@ -101,28 +100,11 @@ export function useRandom() {
     const selectedRadius = locks.has("radius")
       ? paramsRef.current.radius
       : randomItem(availableRadii).name
-    const selectedIconLibrary = locks.has("iconLibrary")
-      ? paramsRef.current.iconLibrary
-      : randomItem(Object.values(iconLibraries)).name
-    const lockedMenuAccent = locks.has("menuAccent")
-      ? paramsRef.current.menuAccent
-      : undefined
-    const availableMenuColors =
-      !locks.has("menuColor") && lockedMenuAccent === "bold"
-        ? MENU_COLORS.filter((menuColor) => {
-            return !isTranslucentMenuColor(menuColor.value)
-          })
-        : MENU_COLORS
-    const selectedMenuColor = locks.has("menuColor")
-      ? paramsRef.current.menuColor
-      : randomItem(availableMenuColors).value
-    const selectedMenuAccent =
-      locks.has("menuAccent") || isTranslucentMenuColor(selectedMenuColor)
-        ? paramsRef.current.menuAccent === "bold" &&
-          isTranslucentMenuColor(selectedMenuColor)
-          ? "subtle"
-          : paramsRef.current.menuAccent
-        : randomItem(MENU_ACCENTS).value
+    // Always keep Lucide (removed from UI)
+    const selectedIconLibrary = paramsRef.current.iconLibrary
+    // Always keep menu settings (removed from UI)
+    const selectedMenuColor = paramsRef.current.menuColor
+    const selectedMenuAccent = paramsRef.current.menuAccent
 
     context.radius = selectedRadius
 

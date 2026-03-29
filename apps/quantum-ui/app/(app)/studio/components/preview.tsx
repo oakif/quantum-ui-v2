@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Monitor, Smartphone, Tablet } from "lucide-react"
+import { Monitor, Search, Smartphone, Tablet } from "lucide-react"
 import { useSearchParams, useRouter, usePathname } from "next/navigation"
 import { type PanelImperativeHandle } from "react-resizable-panels"
 
@@ -18,6 +18,7 @@ import {
 import { DARK_MODE_FORWARD_TYPE } from "@/app/(app)/studio/components/mode-switcher"
 import { RANDOMIZE_FORWARD_TYPE } from "@/app/(app)/studio/components/random-button"
 import { sendToIframe } from "@/app/(app)/studio/hooks/use-iframe-sync"
+import { useActionMenuTrigger } from "@/app/(app)/studio/hooks/use-action-menu"
 import { RESET_FORWARD_TYPE } from "@/app/(app)/studio/hooks/use-reset"
 import { usePreviewTheme } from "@/app/(app)/studio/hooks/use-preview-theme"
 import {
@@ -64,6 +65,7 @@ const PREVIEW_SIZE_PERCENTAGES: Record<PreviewSize, number> = {
 export function Preview({ blockGroups }: { blockGroups: BlockGroup[] }) {
   const [params] = useDesignSystemSearchParams()
   const { resolvedPreviewTheme } = usePreviewTheme()
+  const { openActionMenu } = useActionMenuTrigger()
   const searchParams = useSearchParams()
   const router = useRouter()
   const pathname = usePathname()
@@ -158,11 +160,21 @@ export function Preview({ blockGroups }: { blockGroups: BlockGroup[] }) {
   return (
     <div className="relative flex flex-1 flex-col gap-3 overflow-hidden">
       <div className="flex items-center justify-between gap-2">
-        <BlockSelector
-          groups={blockGroups}
-          initialBlockId={selectedBlockId}
-          onSelect={handleBlockSelect}
-        />
+        <div className="flex items-center gap-2">
+          <BlockSelector
+            groups={blockGroups}
+            initialBlockId={selectedBlockId}
+            onSelect={handleBlockSelect}
+          />
+          <button
+            onClick={openActionMenu}
+            className="flex h-8 items-center gap-1.5 rounded-lg border border-foreground/10 px-2.5 text-xs font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
+            title="Navigate (⌘P)"
+          >
+            <Search className="size-3.5" />
+            <span className="hidden md:inline">Navigate</span>
+          </button>
+        </div>
         <div className="flex items-center gap-2">
           <div className="hidden items-center gap-1 rounded-lg border border-foreground/10 p-1 md:flex">
             <button
