@@ -12,14 +12,26 @@ export type BlockGroup = {
 
 export function BlockSelector({
   groups,
+  initialBlockId,
   onSelect,
 }: {
   groups: BlockGroup[]
+  initialBlockId?: string
   onSelect: (blockId: string) => void
 }) {
-  const [selectedGroupIndex, setSelectedGroupIndex] = React.useState(0)
+  // Find initial group index from initialBlockId
+  const initialGroupIndex = React.useMemo(() => {
+    if (!initialBlockId) return 0
+    const index = groups.findIndex((g) =>
+      g.blocks.some((b) => b.id === initialBlockId)
+    )
+    return index >= 0 ? index : 0
+  }, [groups, initialBlockId])
+
+  const [selectedGroupIndex, setSelectedGroupIndex] =
+    React.useState(initialGroupIndex)
   const [selectedBlockId, setSelectedBlockId] = React.useState(
-    groups[0]?.blocks[0]?.id ?? ""
+    initialBlockId || groups[0]?.blocks[0]?.id || ""
   )
 
   const selectedGroup = groups[selectedGroupIndex]

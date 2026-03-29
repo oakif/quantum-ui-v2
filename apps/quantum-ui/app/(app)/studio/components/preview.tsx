@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import { Monitor, Smartphone, Tablet } from "lucide-react"
+import { useSearchParams, useRouter, usePathname } from "next/navigation"
 import { type PanelImperativeHandle } from "react-resizable-panels"
 
 import { CMD_K_FORWARD_TYPE } from "@/app/(app)/studio/components/action-menu"
@@ -33,71 +34,15 @@ import {
   TabsTrigger,
 } from "@/registry/new-york-v4/ui/tabs"
 
-// Hoisted — avoids recreating on every message event. (js-hoist-regexp)
-const MAC_REGEX = /Mac|iPhone|iPad|iPod/
-
-// Hoisted — only uses module-level constants, no component state. (rendering-hoist-jsx)
 function handleMessage(event: MessageEvent) {
   if (
-    typeof window === "undefined" ||
-    event.origin !== window.location.origin
+    event.data.type === CMD_K_FORWARD_TYPE ||
+    event.data.type === UNDO_FORWARD_TYPE ||
+    event.data.type === REDO_FORWARD_TYPE ||
+    event.data.type === RANDOMIZE_FORWARD_TYPE ||
+    event.data.type === RESET_FORWARD_TYPE ||
+    event.data.type === DARK_MODE_FORWARD_TYPE
   ) {
-    return
-  }
-
-  const type = event.data.type
-  if (type === CMD_K_FORWARD_TYPE) {
-    const isMac = MAC_REGEX.test(navigator.userAgent)
-    document.dispatchEvent(
-      new KeyboardEvent("keydown", {
-        key: event.data.key || "k",
-        metaKey: isMac,
-        ctrlKey: !isMac,
-        bubbles: true,
-        cancelable: true,
-      })
-    )
-  } else if (type === RANDOMIZE_FORWARD_TYPE) {
-    document.dispatchEvent(
-      new KeyboardEvent("keydown", {
-        key: event.data.key || "r",
-        bubbles: true,
-        cancelable: true,
-      })
-    )
-  } else if (type === UNDO_FORWARD_TYPE) {
-    const isMac = MAC_REGEX.test(navigator.userAgent)
-    document.dispatchEvent(
-      new KeyboardEvent("keydown", {
-        key: "z",
-        metaKey: isMac,
-        ctrlKey: !isMac,
-        bubbles: true,
-        cancelable: true,
-      })
-    )
-  } else if (type === REDO_FORWARD_TYPE) {
-    const isMac = MAC_REGEX.test(navigator.userAgent)
-    document.dispatchEvent(
-      new KeyboardEvent("keydown", {
-        key: "z",
-        shiftKey: true,
-        metaKey: isMac,
-        ctrlKey: !isMac,
-        bubbles: true,
-        cancelable: true,
-      })
-    )
-  } else if (type === RESET_FORWARD_TYPE) {
-    document.dispatchEvent(
-      new KeyboardEvent("keydown", {
-        key: "R",
-        shiftKey: true,
-        bubbles: true,
-        cancelable: true,
-      })
-    )
-  } else if (type === DARK_MODE_FORWARD_TYPE) {
     document.dispatchEvent(
       new KeyboardEvent("keydown", {
         key: event.data.key || "d",
@@ -118,40 +63,42 @@ const PREVIEW_SIZE_PERCENTAGES: Record<PreviewSize, number> = {
 
 export function Preview({ blockGroups }: { blockGroups: BlockGroup[] }) {
   const [params] = useDesignSystemSearchParams()
+  const searchParams = useSearchParams()
+  const router = useRouter()
+  const pathname = usePathname()
   const iframeRef = React.useRef<HTMLIFrameElement>(null)
   const resizablePanelRef = React.useRef<PanelImperativeHandle>(null)
-  const [selectedBlockId, setSelectedBlockId] = React.useState(
-    blockGroups[0]?.blocks[0]?.id ?? ""
-  )
   const [previewSize, setPreviewSize] = React.useState<PreviewSize>("desktop")
   const [view, setView] = React.useState<"preview" | "code">("preview")
 
+  // Read block from URL, fallback to first block
+  const initialBlockId = searchParams.get("block") || blockGroups[0]?.blocks[0]?.id || ""
+  const [selectedBlockId, setSelectedBlockId] = React.useState(initialBlockId)
+
+  // Persist block selection to URL
+  const handleBlockSelect = React.useCallback(
+    (blockId: string) => {
+      setSelectedBlockId(blockId)
+      const newParams = new URLSearchParams(searchParams.toString())
+      newParams.set("block", blockId)
+      router.replace(`${pathname}?${newParams.toString()}`, { scroll: false })
+    },
+    [searchParams, router, pathname]
+  )
+
+  // Send params to iframe on load and when params change
   const paramsKey = JSON.stringify(params)
   React.useEffect(() => {
     const iframe = iframeRef.current
-    if (!iframe) {
-      return
-    }
+    if (!iframe) return
 
     const sendParams = () => {
       sendToIframe(iframe, "design-system-params", params)
     }
 
-    // Send immediately if iframe is ready
-    if (iframe.contentWindow) {
-      sendParams()
-    }
-
-    // Also send on iframe load (handles initial load)
     iframe.addEventListener("load", sendParams)
-
-    // Retry after a short delay to handle race between
-    // preset decoding and iframe readiness
-    const retryTimeout = setTimeout(sendParams, 500)
-
     return () => {
       iframe.removeEventListener("load", sendParams)
-      clearTimeout(retryTimeout)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paramsKey])
@@ -163,17 +110,12 @@ export function Preview({ blockGroups }: { blockGroups: BlockGroup[] }) {
     }
   }, [])
 
+  // Build iframe src with design system params baked in
   const iframeSrc = React.useMemo(() => {
-    if (selectedBlockId) {
-      return `/view/new-york-v4/${selectedBlockId}`
-    }
-    // Fallback to the original preview route
-    return serializeDesignSystemSearchParams(
-      `/preview/${params.base}/${params.item}`,
-      params
-    )
+    const base = `/view/new-york-v4/${selectedBlockId}`
+    return serializeDesignSystemSearchParams(base, params)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedBlockId, params.base, params.item])
+  }, [selectedBlockId, paramsKey])
 
   const handleResize = React.useCallback(
     (size: PreviewSize) => {
@@ -189,7 +131,8 @@ export function Preview({ blockGroups }: { blockGroups: BlockGroup[] }) {
       <div className="flex items-center justify-between gap-2">
         <BlockSelector
           groups={blockGroups}
-          onSelect={setSelectedBlockId}
+          initialBlockId={selectedBlockId}
+          onSelect={handleBlockSelect}
         />
         <div className="flex items-center gap-2">
           <div className="hidden items-center gap-1 rounded-lg border border-foreground/10 p-1 md:flex">
@@ -245,7 +188,7 @@ export function Preview({ blockGroups }: { blockGroups: BlockGroup[] }) {
                 minSize={30}
               >
                 <iframe
-                  key={selectedBlockId || params.base + params.item}
+                  key={iframeSrc}
                   ref={iframeRef}
                   src={iframeSrc}
                   className="h-full w-full bg-background"
