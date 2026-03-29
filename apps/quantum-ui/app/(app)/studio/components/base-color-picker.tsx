@@ -18,9 +18,11 @@ import { useDesignSystemSearchParams } from "@/app/(app)/studio/lib/search-param
 export function BaseColorPicker({
   isMobile,
   anchorRef,
+  label = "Base Color",
 }: {
   isMobile: boolean
   anchorRef: React.RefObject<HTMLDivElement | null>
+  label?: string
 }) {
   const mounted = useMounted()
   const [params, setParams] = useDesignSystemSearchParams()
@@ -35,7 +37,7 @@ export function BaseColorPicker({
       <Picker>
         <PickerTrigger>
           <div className="flex flex-col justify-start text-left">
-            <div className="text-xs text-muted-foreground">Base Color</div>
+            <div className="text-xs text-muted-foreground">{label}</div>
             <div className="text-sm font-medium text-foreground">
               {currentBaseColor?.title}
             </div>

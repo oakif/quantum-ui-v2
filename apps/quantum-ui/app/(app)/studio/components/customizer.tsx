@@ -4,7 +4,7 @@ import * as React from "react"
 import { type RegistryItem } from "shadcn/schema"
 
 import { useIsMobile } from "@/hooks/use-mobile"
-import { getThemesForBaseColor, STYLES } from "@/registry/config"
+import { getThemesForBaseColor } from "@/registry/config"
 import {
   Card,
   CardContent,
@@ -12,24 +12,26 @@ import {
   CardHeader,
 } from "@/styles/base-nova/ui/card"
 import { FieldGroup, FieldSeparator } from "@/styles/base-nova/ui/field"
-import { MenuAccentPicker } from "@/app/(app)/studio/components/accent-picker"
 import { ActionMenu } from "@/app/(app)/studio/components/action-menu"
 import { BaseColorPicker } from "@/app/(app)/studio/components/base-color-picker"
-import { BasePicker } from "@/app/(app)/studio/components/base-picker"
 import { ChartColorPicker } from "@/app/(app)/studio/components/chart-color-picker"
 import { CopyPreset } from "@/app/(app)/studio/components/copy-preset"
 import { FontPicker } from "@/app/(app)/studio/components/font-picker"
-import { IconLibraryPicker } from "@/app/(app)/studio/components/icon-library-picker"
 import { MainMenu } from "@/app/(app)/studio/components/main-menu"
-import { MenuColorPicker } from "@/app/(app)/studio/components/menu-picker"
 import { RadiusPicker } from "@/app/(app)/studio/components/radius-picker"
 import { RandomButton } from "@/app/(app)/studio/components/random-button"
 import { ResetDialog } from "@/app/(app)/studio/components/reset-button"
-import { StylePicker } from "@/app/(app)/studio/components/style-picker"
 import { ThemePicker } from "@/app/(app)/studio/components/theme-picker"
-import { V0Button } from "@/app/(app)/studio/components/v0-button"
 import { FONT_HEADING_OPTIONS, FONTS } from "@/app/(app)/studio/lib/fonts"
 import { useDesignSystemSearchParams } from "@/app/(app)/studio/lib/search-params"
+
+function SectionLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="hidden px-1 pt-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60 md:block">
+      {children}
+    </div>
+  )
+}
 
 export function Customizer({
   itemsByBase,
@@ -56,14 +58,12 @@ export function Customizer({
       </CardHeader>
       <CardContent className="no-scrollbar min-h-0 flex-1 overflow-x-auto overflow-y-hidden md:overflow-y-auto">
         <FieldGroup className="flex-row gap-2.5 py-px **:data-[slot=field-separator]:-mx-4 **:data-[slot=field-separator]:w-auto md:flex-col md:gap-3.25">
-          {isMobile && <BasePicker isMobile={isMobile} anchorRef={anchorRef} />}
-          <StylePicker
-            styles={STYLES}
+          <SectionLabel>Color</SectionLabel>
+          <BaseColorPicker
             isMobile={isMobile}
             anchorRef={anchorRef}
+            label="Tint"
           />
-          <FieldSeparator className="hidden md:block" />
-          <BaseColorPicker isMobile={isMobile} anchorRef={anchorRef} />
           <ThemePicker
             themes={availableThemes}
             isMobile={isMobile}
@@ -71,6 +71,7 @@ export function Customizer({
           />
           <ChartColorPicker isMobile={isMobile} anchorRef={anchorRef} />
           <FieldSeparator className="hidden md:block" />
+          <SectionLabel>Font</SectionLabel>
           <FontPicker
             label="Heading"
             param="fontHeading"
@@ -79,18 +80,14 @@ export function Customizer({
             anchorRef={anchorRef}
           />
           <FontPicker
-            label="Font"
+            label="Body"
             param="font"
             fonts={FONTS}
             isMobile={isMobile}
             anchorRef={anchorRef}
           />
           <FieldSeparator className="hidden md:block" />
-          <IconLibraryPicker isMobile={isMobile} anchorRef={anchorRef} />
           <RadiusPicker isMobile={isMobile} anchorRef={anchorRef} />
-          <FieldSeparator className="hidden md:block" />
-          <MenuColorPicker isMobile={isMobile} anchorRef={anchorRef} />
-          <MenuAccentPicker isMobile={isMobile} anchorRef={anchorRef} />
         </FieldGroup>
       </CardContent>
       <CardFooter className="flex min-w-0 gap-2 md:flex-col md:**:[button,a]:w-full">
