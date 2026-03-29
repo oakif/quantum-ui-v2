@@ -16,6 +16,10 @@ export const siteConfig = {
       href: "/docs/components",
       label: "Components",
     },
+    {
+      href: "/studio",
+      label: "Studio",
+    },
   ],
 }
 
