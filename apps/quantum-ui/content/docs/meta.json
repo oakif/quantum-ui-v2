@@ -3,6 +3,7 @@
   "pages": [
     "(root)",
     "installation",
-    "components"
+    "components",
+    "charts"
   ]
 }

@@ -24,7 +24,7 @@ export default function ChartsLayout({
         }
       >
         <ChartsSidebar />
-        <div className="h-full w-full">{children}</div>
+        <div className="mx-auto h-full w-full max-w-[40rem] px-4 md:px-0">{children}</div>
       </SidebarProvider>
     </div>
   )

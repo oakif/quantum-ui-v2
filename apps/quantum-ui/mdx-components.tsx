@@ -14,6 +14,13 @@ import {
   ButtonVariantsPreview,
   ButtonWithIconsPreview,
 } from "@/components/docs/button-demos"
+import {
+  LineChartDefaultDemo,
+  LineChartFillDemo,
+  LineChartLinearDemo,
+  LineChartStackedDemo,
+  LineChartLegendDemo,
+} from "@/components/docs/line-chart-demos"
 import { Callout } from "@/components/callout"
 import { CodeBlockCommand } from "@/components/code-block-command"
 import { CodeCollapsibleWrapper } from "@/components/code-collapsible-wrapper"
@@ -371,6 +378,11 @@ export const mdxComponents = {
   ButtonLoadingPreview,
   ButtonAsChildPreview,
   Callout,
+  LineChartDefaultDemo,
+  LineChartFillDemo,
+  LineChartLinearDemo,
+  LineChartStackedDemo,
+  LineChartLegendDemo,
   Accordion,
   AccordionContent,
   AccordionItem,

@@ -6,20 +6,37 @@ import { codeToHtml } from "shiki"
 import { cn } from "@/lib/utils"
 import { Button } from "@/registry/new-york-v4/ui/button"
 
-export function InlinePreview({
-  children,
-  code,
+export interface PreviewSetting {
+  name: string
+  options: { label: string; value: string }[]
+}
+
+export function InteractivePreview({
+  settings,
+  renderPreview,
+  renderCode,
   flush = false,
   className,
 }: {
-  children: React.ReactNode
-  code: string
+  settings: PreviewSetting[]
+  renderPreview: (values: Record<string, string>) => React.ReactNode
+  renderCode: (values: Record<string, string>) => string
   flush?: boolean
   className?: string
 }) {
+  const [values, setValues] = React.useState<Record<string, string>>(() => {
+    const initial: Record<string, string> = {}
+    for (const setting of settings) {
+      initial[setting.name] = setting.options[0].value
+    }
+    return initial
+  })
+
   const [isCodeVisible, setIsCodeVisible] = React.useState(false)
   const [highlightedFull, setHighlightedFull] = React.useState("")
   const [highlightedPreview, setHighlightedPreview] = React.useState("")
+
+  const code = renderCode(values)
 
   React.useEffect(() => {
     const previewCode = code.split("\n").slice(0, 3).join("\n")
@@ -42,8 +59,44 @@ export function InlinePreview({
         className
       )}
     >
-      <div className={cn("preview relative flex min-h-40 w-full items-center justify-center", flush ? "p-0" : "p-10")}>
-        {children}
+      <div
+        className={cn(
+          "preview relative flex min-h-40 w-full items-center justify-center",
+          flush ? "p-0" : "p-10"
+        )}
+      >
+        {renderPreview(values)}
+      </div>
+      <div className="flex flex-wrap items-center gap-4 border-t px-4 py-3">
+        {settings.map((setting) => (
+          <div key={setting.name} className="flex items-center gap-2">
+            <span className="text-xs font-medium text-muted-foreground">
+              {setting.name}
+            </span>
+            <div className="flex items-center rounded-lg border p-0.5">
+              {setting.options.map((option) => (
+                <button
+                  key={option.value}
+                  type="button"
+                  onClick={() =>
+                    setValues((prev) => ({
+                      ...prev,
+                      [setting.name]: option.value,
+                    }))
+                  }
+                  className={cn(
+                    "rounded-md px-2.5 py-1 text-xs font-medium transition-colors",
+                    values[setting.name] === option.value
+                      ? "bg-accent text-accent-foreground"
+                      : "text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        ))}
       </div>
       <div className="relative overflow-hidden">
         {isCodeVisible ? (

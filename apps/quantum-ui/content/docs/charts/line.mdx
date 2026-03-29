@@ -1,0 +1,50 @@
+---
+title: Line Charts
+description: Line chart component with optional area fill. Supports curved and linear interpolation, stacking, and gradient fills.
+---
+
+<LineChartDefaultDemo />
+
+## Examples
+
+### Fill & Color
+
+Toggle between fill styles and colors. Gradient fill fades from the line color to transparent.
+
+<LineChartFillDemo />
+
+### Interpolation — Linear
+
+Straight line segments instead of smooth curves.
+
+<LineChartLinearDemo />
+
+### Stacked
+
+Multiple series stacked on top of each other.
+
+<LineChartStackedDemo />
+
+### Legend
+
+Show a legend identifying each data series.
+
+<LineChartLegendDemo />
+
+## API Reference
+
+| Prop | Type | Default |
+| --- | --- | --- |
+| `data` | `Record<string, unknown>[]` | — |
+| `categories` | `string[]` | — |
+| `index` | `string` | — |
+| `config` | `ChartConfig` | — |
+| `fill` | `"none" \| "solid" \| "gradient"` | `"gradient"` |
+| `interpolation` | `"curved" \| "linear"` | `"curved"` |
+| `stacked` | `boolean` | `false` |
+| `showBackground` | `boolean` | `true` |
+| `showGrid` | `boolean` | `true` |
+| `showXAxis` | `boolean` | `true` |
+| `showYAxis` | `boolean` | `false` |
+| `showLegend` | `boolean` | `false` |
+| `showTooltip` | `boolean` | `true` |
