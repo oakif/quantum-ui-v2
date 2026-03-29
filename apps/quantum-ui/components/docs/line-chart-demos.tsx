@@ -255,3 +255,96 @@ export function LineChartLegendDemo() {
     />
   )
 }
+
+export function LineChartAxesDemo() {
+  return (
+    <InteractivePreview
+      flush
+      settings={[
+        {
+          name: "X Axis",
+          type: "toggle",
+          options: [
+            { label: "On", value: "on" },
+            { label: "Off", value: "off" },
+          ],
+        },
+        {
+          name: "Y Axis",
+          type: "toggle",
+          options: [
+            { label: "Off", value: "off" },
+            { label: "On", value: "on" },
+          ],
+        },
+        {
+          name: "Grid",
+          type: "toggle",
+          options: [
+            { label: "On", value: "on" },
+            { label: "Off", value: "off" },
+          ],
+        },
+      ]}
+      renderPreview={(values) => (
+        <div className="h-[300px] w-full p-4">
+          <LineChart
+            data={sampleData}
+            categories={["desktop"]}
+            index="month"
+            config={defaultConfig}
+            showXAxis={values["X Axis"] === "on"}
+            showYAxis={values["Y Axis"] === "on"}
+            showGrid={values.Grid === "on"}
+            showBackground={false}
+          />
+        </div>
+      )}
+      renderCode={(values) =>
+        `<LineChart
+  data={data}
+  categories={["desktop"]}
+  index="month"
+  config={config}${values["X Axis"] === "off" ? "\n  showXAxis={false}" : ""}${values["Y Axis"] === "on" ? "\n  showYAxis" : ""}${values.Grid === "off" ? "\n  showGrid={false}" : ""}
+/>`
+      }
+    />
+  )
+}
+
+export function LineChartBackgroundDemo() {
+  return (
+    <InteractivePreview
+      flush
+      settings={[
+        {
+          name: "Background",
+          type: "toggle",
+          options: [
+            { label: "Off", value: "off" },
+            { label: "On", value: "on" },
+          ],
+        },
+      ]}
+      renderPreview={(values) => (
+        <div className="h-[300px] w-full p-4">
+          <LineChart
+            data={sampleData}
+            categories={["desktop", "mobile"]}
+            index="month"
+            config={colorConfigs.limes}
+            showBackground={values.Background === "on"}
+          />
+        </div>
+      )}
+      renderCode={(values) =>
+        `<LineChart
+  data={data}
+  categories={["desktop", "mobile"]}
+  index="month"
+  config={config}${values.Background === "on" ? "\n  showBackground" : ""}
+/>`
+      }
+    />
+  )
+}

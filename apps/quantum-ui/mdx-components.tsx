@@ -20,6 +20,8 @@ import {
   LineChartInterpolationDemo,
   LineChartStackedDemo,
   LineChartLegendDemo,
+  LineChartAxesDemo,
+  LineChartBackgroundDemo,
 } from "@/components/docs/line-chart-demos"
 import { Callout } from "@/components/callout"
 import { CodeBlockCommand } from "@/components/code-block-command"
@@ -383,6 +385,8 @@ export const mdxComponents = {
   LineChartInterpolationDemo,
   LineChartStackedDemo,
   LineChartLegendDemo,
+  LineChartAxesDemo,
+  LineChartBackgroundDemo,
   Accordion,
   AccordionContent,
   AccordionItem,

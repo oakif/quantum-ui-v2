@@ -54,6 +54,17 @@ export function LineChart({
   className,
 }: LineChartProps) {
   const chartId = React.useId().replace(/:/g, "")
+
+  const yAxisWidth = React.useMemo(() => {
+    if (!showYAxis) return 0
+    const allValues = data.flatMap((d) =>
+      categories.map((c) => Number(d[c]) || 0)
+    )
+    const maxValue = Math.max(...allValues)
+    const digits = Math.floor(maxValue).toString().length
+    return digits * 10 + 8
+  }, [data, categories, showYAxis])
+
   const curveTypeMap = {
     curved: "natural",
     linear: "linear",
@@ -71,7 +82,7 @@ export function LineChart({
         className
       )}
     >
-      <ComposedChart data={data} accessibilityLayer margin={{ left: 16, right: 16 }}>
+      <ComposedChart data={data} accessibilityLayer margin={{ left: showYAxis ? 0 : 16, right: 16 }}>
         {showGrid && <CartesianGrid vertical={false} />}
         {showXAxis && (
           <XAxis
@@ -82,7 +93,7 @@ export function LineChart({
           />
         )}
         {showYAxis && (
-          <YAxis tickLine={false} axisLine={false} tickMargin={8} />
+          <YAxis tickLine={false} axisLine={false} tickMargin={4} width={yAxisWidth} />
         )}
         {showTooltip && (
           <ChartTooltip
