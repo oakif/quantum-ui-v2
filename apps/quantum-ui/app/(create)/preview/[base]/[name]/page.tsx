@@ -6,17 +6,17 @@ import { siteConfig } from "@/lib/config"
 import { absoluteUrl } from "@/lib/utils"
 import { TailwindIndicator } from "@/components/tailwind-indicator"
 import { BASES, type Base, type BaseName } from "@/registry/config"
-import { ActionMenuScript } from "@/app/(app)/create/components/action-menu"
-import { DesignSystemProvider } from "@/app/(app)/create/components/design-system-provider"
-import { HistoryScript } from "@/app/(app)/create/components/history-buttons"
-import { DarkModeScript } from "@/app/(app)/create/components/mode-switcher"
-import { PreviewStyle } from "@/app/(app)/create/components/preview-style"
-import { RandomizeScript } from "@/app/(app)/create/components/random-button"
+import { ActionMenuScript } from "@/app/(app)/studio/components/action-menu"
+import { DesignSystemProvider } from "@/app/(app)/studio/components/design-system-provider"
+import { HistoryScript } from "@/app/(app)/studio/components/history-buttons"
+import { DarkModeScript } from "@/app/(app)/studio/components/mode-switcher"
+import { PreviewStyle } from "@/app/(app)/studio/components/preview-style"
+import { RandomizeScript } from "@/app/(app)/studio/components/random-button"
 import {
   getBaseComponent,
   getBaseItem,
   getItemsForBase,
-} from "@/app/(app)/create/lib/api"
+} from "@/app/(app)/studio/lib/api"
 
 export const revalidate = false
 export const dynamic = "force-static"

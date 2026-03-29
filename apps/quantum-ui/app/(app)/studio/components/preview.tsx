@@ -1,8 +1,13 @@
 "use client"
 
 import * as React from "react"
+import { Monitor, Smartphone, Tablet } from "lucide-react"
 
 import { CMD_K_FORWARD_TYPE } from "@/app/(app)/studio/components/action-menu"
+import {
+  BlockSelector,
+  type BlockGroup,
+} from "@/app/(app)/studio/components/block-selector"
 import {
   REDO_FORWARD_TYPE,
   UNDO_FORWARD_TYPE,
@@ -91,9 +96,21 @@ function handleMessage(event: MessageEvent) {
   }
 }
 
-export function Preview() {
+type PreviewSize = "desktop" | "tablet" | "mobile"
+
+const PREVIEW_SIZE_WIDTHS: Record<PreviewSize, string> = {
+  desktop: "100%",
+  tablet: "768px",
+  mobile: "375px",
+}
+
+export function Preview({ blockGroups }: { blockGroups: BlockGroup[] }) {
   const [params] = useDesignSystemSearchParams()
   const iframeRef = React.useRef<HTMLIFrameElement>(null)
+  const [selectedBlockId, setSelectedBlockId] = React.useState(
+    blockGroups[0]?.blocks[0]?.id ?? ""
+  )
+  const [previewSize, setPreviewSize] = React.useState<PreviewSize>("desktop")
 
   React.useEffect(() => {
     const iframe = iframeRef.current
@@ -123,29 +140,63 @@ export function Preview() {
   }, [])
 
   const iframeSrc = React.useMemo(() => {
-    // The iframe src needs to include the serialized design system params
-    // for the initial load, but not be reactive to them as it would cause
-    // full-iframe reloads on every param change (flashes & loss of state).
-    // Further updates of the search params will be sent to the iframe
-    // via a postMessage channel, for it to sync its own history onto the host's.
+    if (selectedBlockId) {
+      return `/view/new-york-v4/${selectedBlockId}`
+    }
+    // Fallback to the original preview route
     return serializeDesignSystemSearchParams(
       `/preview/${params.base}/${params.item}`,
       params
     )
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [params.base, params.item])
+  }, [selectedBlockId, params.base, params.item])
 
   return (
-    <div className="relative flex flex-1 flex-col justify-center overflow-hidden rounded-2xl ring ring-foreground/10 md:ring-muted dark:ring-foreground/10">
-      <div className="relative z-0 mx-auto flex w-full flex-1 flex-col overflow-hidden">
-        <div className="absolute inset-0 bg-muted dark:bg-muted/30" />
-        <iframe
-          key={params.base + params.item}
-          ref={iframeRef}
-          src={iframeSrc}
-          className="z-10 size-full flex-1"
-          title="Preview"
+    <div className="relative flex flex-1 flex-col gap-3 overflow-hidden">
+      <div className="flex items-center justify-between gap-2">
+        <BlockSelector
+          groups={blockGroups}
+          onSelect={setSelectedBlockId}
         />
+        <div className="hidden items-center gap-1 rounded-lg border border-foreground/10 p-1 md:flex">
+          <button
+            onClick={() => setPreviewSize("desktop")}
+            data-active={previewSize === "desktop"}
+            className="rounded-md p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground data-[active=true]:bg-muted data-[active=true]:text-foreground"
+            title="Desktop"
+          >
+            <Monitor className="size-3.5" />
+          </button>
+          <button
+            onClick={() => setPreviewSize("tablet")}
+            data-active={previewSize === "tablet"}
+            className="rounded-md p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground data-[active=true]:bg-muted data-[active=true]:text-foreground"
+            title="Tablet"
+          >
+            <Tablet className="size-3.5" />
+          </button>
+          <button
+            onClick={() => setPreviewSize("mobile")}
+            data-active={previewSize === "mobile"}
+            className="rounded-md p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground data-[active=true]:bg-muted data-[active=true]:text-foreground"
+            title="Mobile"
+          >
+            <Smartphone className="size-3.5" />
+          </button>
+        </div>
+      </div>
+      <div className="relative flex flex-1 flex-col justify-center overflow-hidden rounded-2xl ring ring-foreground/10 md:ring-muted dark:ring-foreground/10">
+        <div className="relative z-0 mx-auto flex w-full flex-1 flex-col items-center overflow-hidden">
+          <div className="absolute inset-0 bg-muted dark:bg-muted/30" />
+          <iframe
+            key={selectedBlockId || params.base + params.item}
+            ref={iframeRef}
+            src={iframeSrc}
+            className="z-10 h-full flex-1 transition-[width] duration-200"
+            style={{ width: PREVIEW_SIZE_WIDTHS[previewSize] }}
+            title="Preview"
+          />
+        </div>
       </div>
     </div>
   )

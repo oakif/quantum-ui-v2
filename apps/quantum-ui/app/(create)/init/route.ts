@@ -4,7 +4,7 @@ import { isPresetCode } from "shadcn/preset"
 import { registryItemSchema } from "shadcn/schema"
 
 import { buildRegistryBase } from "@/registry/config"
-import { getPresetCode } from "@/app/(app)/create/lib/preset-code"
+import { getPresetCode } from "@/app/(app)/studio/lib/preset-code"
 import { parseDesignSystemConfig } from "@/app/(create)/init/parse-config"
 
 export async function GET(request: NextRequest) {
