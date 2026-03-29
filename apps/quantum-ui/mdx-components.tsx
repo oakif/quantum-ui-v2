@@ -7,6 +7,7 @@ import { source } from "@/lib/source"
 import { cn } from "@/lib/utils"
 import {
   ButtonAsChildPreview,
+  ButtonDemoPreview,
   ButtonIconsPreview,
   ButtonLoadingPreview,
   ButtonSizesPreview,
@@ -362,6 +363,7 @@ export const mdxComponents = {
     <div className={cn(className)} {...props} />
   ),
   Button,
+  ButtonDemoPreview,
   ButtonVariantsPreview,
   ButtonSizesPreview,
   ButtonIconsPreview,

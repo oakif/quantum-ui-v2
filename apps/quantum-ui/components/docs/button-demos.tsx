@@ -1,8 +1,26 @@
-import { CircleFadingArrowUpIcon, Loader2 } from "lucide-react"
+import { ArrowUpIcon, CircleFadingArrowUpIcon, Loader2 } from "lucide-react"
 import { IconGitBranch } from "@tabler/icons-react"
 
 import { Button } from "@/registry/new-york-v4/ui/button"
 import { InlinePreview } from "@/components/docs/inline-preview"
+
+export function ButtonDemoPreview() {
+  return (
+    <InlinePreview
+      code={`<Button variant="outline">Button</Button>
+<Button variant="outline" size="icon">
+  <ArrowUpIcon />
+</Button>`}
+    >
+      <div className="flex flex-wrap items-center gap-3">
+        <Button variant="outline">Button</Button>
+        <Button variant="outline" size="icon" aria-label="Submit">
+          <ArrowUpIcon />
+        </Button>
+      </div>
+    </InlinePreview>
+  )
+}
 
 export function ButtonVariantsPreview() {
   return (
@@ -100,15 +118,15 @@ export function ButtonAsChildPreview() {
   return (
     <InlinePreview
       code={`<Button asChild>
-  <a href="/dashboard">Go to Dashboard</a>
+  <a>Go to Dashboard</a>
 </Button>
 <Button variant="outline" asChild>
-  <a href="/docs">View Docs</a>
+  <a>View Docs</a>
 </Button>`}
     >
       <div className="flex flex-wrap items-center gap-3">
-        <Button asChild><a href="#">Go to Dashboard</a></Button>
-        <Button variant="outline" asChild><a href="#">View Docs</a></Button>
+        <Button asChild><a>Go to Dashboard</a></Button>
+        <Button variant="outline" asChild><a>View Docs</a></Button>
       </div>
     </InlinePreview>
   )
