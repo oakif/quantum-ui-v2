@@ -9,6 +9,7 @@ import {
   BlockSelector,
   type BlockGroup,
 } from "@/app/(app)/studio/components/block-selector"
+import { CodeViewer } from "@/app/(app)/studio/components/code-viewer"
 import {
   REDO_FORWARD_TYPE,
   UNDO_FORWARD_TYPE,
@@ -246,8 +247,8 @@ export function Preview({ blockGroups }: { blockGroups: BlockGroup[] }) {
             </ResizablePanelGroup>
           </div>
         ) : (
-          <div className="flex flex-1 items-center justify-center bg-muted/50 p-8 text-sm text-muted-foreground">
-            Select a block to view its code
+          <div className="flex flex-1 overflow-hidden bg-zinc-950">
+            <CodeViewer blockId={selectedBlockId} />
           </div>
         )}
       </div>
