@@ -5,8 +5,9 @@ import { type z } from "zod"
 import { highlightCode } from "@/lib/highlight-code"
 import { getRegistryItem } from "@/lib/registry"
 import { cn } from "@/lib/utils"
+import { ChartCodeCollapsible } from "@/components/chart-code-collapsible"
 import { ChartIframe } from "@/components/chart-iframe"
-import { ChartToolbar } from "@/components/chart-toolbar"
+import { ChartCopyButton } from "@/components/chart-copy-button"
 import { type Style } from "@/registry/_legacy-styles"
 
 export type Chart = z.infer<typeof registryItemSchema> & {
@@ -24,21 +25,22 @@ export function ChartDisplay({
   return (
     <div
       className={cn(
-        "themes-wrapper group relative flex flex-col overflow-hidden rounded-xl transition-all duration-200 ease-in-out hover:z-30",
+        "group relative flex flex-col overflow-hidden rounded-xl border",
         className
       )}
     >
-      <ChartToolbar
-        chart={chart}
-        className="relative z-20 flex justify-end px-3 py-2.5"
-      />
-      <div className="relative z-10 overflow-hidden rounded-xl bg-background">
+      <div className="relative z-10 overflow-hidden bg-background">
         <ChartIframe
           src={`/view/${style}/${chart.name}`}
-          height={460}
+          height={400}
           title={chart.name}
         />
       </div>
+      <ChartCodeCollapsible
+        code={chart.files?.[0]?.content ?? ""}
+        highlightedCode={chart.highlightedCode}
+        chartName={chart.name}
+      />
     </div>
   )
 }
