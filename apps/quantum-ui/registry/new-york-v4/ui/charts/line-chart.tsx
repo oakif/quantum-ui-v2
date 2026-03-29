@@ -25,7 +25,7 @@ export interface LineChartProps {
   index: string
   config: ChartConfig
   fill?: "none" | "solid" | "gradient"
-  interpolation?: "curved" | "linear"
+  interpolation?: "curved" | "linear" | "step" | "monotone"
   stacked?: boolean
   showBackground?: boolean
   showGrid?: boolean
@@ -52,18 +52,24 @@ export function LineChart({
   showTooltip = true,
   className,
 }: LineChartProps) {
-  const curveType = interpolation === "curved" ? "natural" : "linear"
+  const curveTypeMap = {
+    curved: "natural",
+    linear: "linear",
+    step: "step",
+    monotone: "monotoneX",
+  } as const
+  const curveType = curveTypeMap[interpolation]
 
   return (
     <ChartContainer
       config={config}
       className={cn(
-        "h-full w-full",
+        "aspect-auto h-full w-full",
         showBackground && "rounded-lg border bg-card p-4",
         className
       )}
     >
-      <ComposedChart data={data} accessibilityLayer margin={{ left: 12, right: 12 }}>
+      <ComposedChart data={data} accessibilityLayer margin={{ left: 16, right: 16 }}>
         {showGrid && <CartesianGrid vertical={false} />}
         {showXAxis && (
           <XAxis

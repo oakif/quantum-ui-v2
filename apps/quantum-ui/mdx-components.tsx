@@ -17,7 +17,7 @@ import {
 import {
   LineChartDefaultDemo,
   LineChartFillDemo,
-  LineChartLinearDemo,
+  LineChartInterpolationDemo,
   LineChartStackedDemo,
   LineChartLegendDemo,
 } from "@/components/docs/line-chart-demos"
@@ -380,7 +380,7 @@ export const mdxComponents = {
   Callout,
   LineChartDefaultDemo,
   LineChartFillDemo,
-  LineChartLinearDemo,
+  LineChartInterpolationDemo,
   LineChartStackedDemo,
   LineChartLegendDemo,
   Accordion,

@@ -14,22 +14,37 @@ const sampleData = [
   { month: "Jun", desktop: 214, mobile: 140 },
 ]
 
-const greenConfig = {
-  desktop: { label: "Desktop", color: "hsl(142.1 76.2% 36.3%)" },
+export const chartColorSets = {
+  limes: {
+    label: "Limes",
+    colors: ["var(--color-lime-400)", "var(--color-lime-600)"],
+  },
+  blues: {
+    label: "Blues",
+    colors: ["var(--color-blue-400)", "var(--color-blue-600)"],
+  },
+  oranges: {
+    label: "Oranges",
+    colors: ["var(--color-orange-400)", "var(--color-orange-600)"],
+  },
+} as const
+
+const defaultConfig = {
+  desktop: { label: "Desktop", color: "var(--color-lime-400)" },
 } satisfies ChartConfig
 
 const colorConfigs: Record<string, ChartConfig> = {
-  green: {
-    desktop: { label: "Desktop", color: "hsl(142.1 76.2% 36.3%)" },
-    mobile: { label: "Mobile", color: "hsl(142.1 70.6% 45.3%)" },
+  limes: {
+    desktop: { label: "Desktop", color: "var(--color-lime-400)" },
+    mobile: { label: "Mobile", color: "var(--color-lime-600)" },
   },
-  blue: {
-    desktop: { label: "Desktop", color: "hsl(221.2 83.2% 53.3%)" },
-    mobile: { label: "Mobile", color: "hsl(212 95% 68%)" },
+  blues: {
+    desktop: { label: "Desktop", color: "var(--color-blue-400)" },
+    mobile: { label: "Mobile", color: "var(--color-blue-600)" },
   },
-  orange: {
-    desktop: { label: "Desktop", color: "hsl(24.6 95% 53.1%)" },
-    mobile: { label: "Mobile", color: "hsl(20.5 90.2% 48.2%)" },
+  oranges: {
+    desktop: { label: "Desktop", color: "var(--color-orange-400)" },
+    mobile: { label: "Mobile", color: "var(--color-orange-600)" },
   },
 }
 
@@ -44,12 +59,12 @@ export function LineChartDefaultDemo() {
   config={config}
 />`}
     >
-      <div className="h-[200px] w-full">
+      <div className="h-[200px] w-full p-4">
         <LineChart
           data={sampleData}
           categories={["desktop"]}
           index="month"
-          config={greenConfig}
+          config={defaultConfig}
           showBackground={false}
         />
       </div>
@@ -63,7 +78,7 @@ export function LineChartFillDemo() {
       flush
       settings={[
         {
-          name: "Fill",
+          name: "Fill Style",
           options: [
             { label: "Gradient", value: "gradient" },
             { label: "Solid", value: "solid" },
@@ -71,22 +86,35 @@ export function LineChartFillDemo() {
           ],
         },
         {
-          name: "Color",
+          name: "Colors",
+          type: "dropdown",
           options: [
-            { label: "Green", value: "green" },
-            { label: "Blue", value: "blue" },
-            { label: "Orange", value: "orange" },
+            {
+              label: "Limes",
+              value: "limes",
+              preview: ["#a3e635", "#65a30d"],
+            },
+            {
+              label: "Blues",
+              value: "blues",
+              preview: ["#60a5fa", "#2563eb"],
+            },
+            {
+              label: "Oranges",
+              value: "oranges",
+              preview: ["#fb923c", "#ea580c"],
+            },
           ],
         },
       ]}
       renderPreview={(values) => (
-        <div className="h-[200px] w-full">
+        <div className="h-[200px] w-full p-4">
           <LineChart
             data={sampleData}
             categories={["desktop", "mobile"]}
             index="month"
-            config={colorConfigs[values.Color]}
-            fill={values.Fill as "none" | "solid" | "gradient"}
+            config={colorConfigs[values.Colors]}
+            fill={values["Fill Style"] as "none" | "solid" | "gradient"}
             showBackground={false}
           />
         </div>
@@ -97,89 +125,133 @@ export function LineChartFillDemo() {
   categories={["desktop", "mobile"]}
   index="month"
   config={config}
-  fill="${values.Fill}"
+  fill="${values["Fill Style"]}"
 />`
       }
     />
   )
 }
 
-export function LineChartLinearDemo() {
+export function LineChartInterpolationDemo() {
   return (
-    <InlinePreview
+    <InteractivePreview
       flush
-      code={`<LineChart
+      settings={[
+        {
+          name: "Interpolation",
+          options: [
+            { label: "Natural", value: "curved" },
+            { label: "Linear", value: "linear" },
+            { label: "Step", value: "step" },
+            { label: "Monotone", value: "monotone" },
+          ],
+        },
+      ]}
+      renderPreview={(values) => (
+        <div className="h-[200px] w-full p-4">
+          <LineChart
+            data={sampleData}
+            categories={["desktop"]}
+            index="month"
+            config={defaultConfig}
+            interpolation={
+              values.Interpolation as
+                | "curved"
+                | "linear"
+                | "step"
+                | "monotone"
+            }
+            showBackground={false}
+          />
+        </div>
+      )}
+      renderCode={(values) =>
+        `<LineChart
   data={data}
   categories={["desktop"]}
   index="month"
   config={config}
-  interpolation="linear"
-/>`}
-    >
-      <div className="h-[200px] w-full">
-        <LineChart
-          data={sampleData}
-          categories={["desktop"]}
-          index="month"
-          config={greenConfig}
-          interpolation="linear"
-          showBackground={false}
-        />
-      </div>
-    </InlinePreview>
+  interpolation="${values.Interpolation}"
+/>`
+      }
+    />
   )
 }
 
 export function LineChartStackedDemo() {
   return (
-    <InlinePreview
+    <InteractivePreview
       flush
-      code={`<LineChart
+      settings={[
+        {
+          name: "Stacked",
+          type: "toggle",
+          options: [
+            { label: "On", value: "on" },
+            { label: "Off", value: "off" },
+          ],
+        },
+      ]}
+      renderPreview={(values) => (
+        <div className="h-[200px] w-full p-4">
+          <LineChart
+            data={sampleData}
+            categories={["desktop", "mobile"]}
+            index="month"
+            config={colorConfigs.limes}
+            fill="solid"
+            stacked={values.Stacked === "on"}
+            showBackground={false}
+          />
+        </div>
+      )}
+      renderCode={(values) =>
+        `<LineChart
   data={data}
   categories={["desktop", "mobile"]}
   index="month"
   config={config}
-  fill="solid"
-  stacked
-/>`}
-    >
-      <div className="h-[200px] w-full">
-        <LineChart
-          data={sampleData}
-          categories={["desktop", "mobile"]}
-          index="month"
-          config={colorConfigs.green}
-          fill="solid"
-          stacked
-          showBackground={false}
-        />
-      </div>
-    </InlinePreview>
+  fill="solid"${values.Stacked === "on" ? "\n  stacked" : ""}
+/>`
+      }
+    />
   )
 }
 
 export function LineChartLegendDemo() {
   return (
-    <InlinePreview
+    <InteractivePreview
       flush
-      code={`<LineChart
+      settings={[
+        {
+          name: "Legend",
+          type: "toggle",
+          options: [
+            { label: "On", value: "on" },
+            { label: "Off", value: "off" },
+          ],
+        },
+      ]}
+      renderPreview={(values) => (
+        <div className="h-[200px] w-full p-4">
+          <LineChart
+            data={sampleData}
+            categories={["desktop", "mobile"]}
+            index="month"
+            config={colorConfigs.limes}
+            showLegend={values.Legend === "on"}
+            showBackground={false}
+          />
+        </div>
+      )}
+      renderCode={(values) =>
+        `<LineChart
   data={data}
   categories={["desktop", "mobile"]}
   index="month"
-  config={config}
-  showLegend
-/>`}
-    >
-      <div className="h-[200px] w-full">
-        <LineChart
-          data={sampleData}
-          categories={["desktop", "mobile"]}
-          index="month"
-          config={colorConfigs.green}
-          showLegend
-          showBackground={false}
-        />
-      </div>
-    </InlinePreview>
+  config={config}${values.Legend === "on" ? "\n  showLegend" : ""}
+/>`
+      }
+    />
   )
 }

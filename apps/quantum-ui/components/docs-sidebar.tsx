@@ -29,7 +29,6 @@ const COMPONENT_ITEMS = [
 const CHART_ITEMS = [
   { name: "Line Charts", href: "/docs/charts/line" },
   { name: "Bar Charts", href: "/docs/charts/bar" },
-  { name: "Line Charts", href: "/docs/charts/line" },
   { name: "Pie Charts", href: "/docs/charts/pie" },
 ] as const
 

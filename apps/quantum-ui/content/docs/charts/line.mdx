@@ -7,27 +7,27 @@ description: Line chart component with optional area fill. Supports curved and l
 
 ## Examples
 
-### Fill & Color
+### Fill Style
 
-Toggle between fill styles and colors. Gradient fill fades from the line color to transparent.
+Toggle between fill styles and color sets. Gradient fill fades from the line color to transparent.
 
 <LineChartFillDemo />
 
-### Interpolation — Linear
+### Interpolation
 
-Straight line segments instead of smooth curves.
+Switch between curve types: natural (smooth), linear (straight), step, and monotone.
 
-<LineChartLinearDemo />
+<LineChartInterpolationDemo />
 
 ### Stacked
 
-Multiple series stacked on top of each other.
+Multiple series stacked on top of each other. Toggle stacking on and off.
 
 <LineChartStackedDemo />
 
 ### Legend
 
-Show a legend identifying each data series.
+Show or hide a legend identifying each data series.
 
 <LineChartLegendDemo />
 
@@ -40,7 +40,7 @@ Show a legend identifying each data series.
 | `index` | `string` | — |
 | `config` | `ChartConfig` | — |
 | `fill` | `"none" \| "solid" \| "gradient"` | `"gradient"` |
-| `interpolation` | `"curved" \| "linear"` | `"curved"` |
+| `interpolation` | `"curved" \| "linear" \| "step" \| "monotone"` | `"curved"` |
 | `stacked` | `boolean` | `false` |
 | `showBackground` | `boolean` | `true` |
 | `showGrid` | `boolean` | `true` |

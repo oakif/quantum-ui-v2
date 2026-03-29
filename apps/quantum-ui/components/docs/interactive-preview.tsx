@@ -8,7 +8,165 @@ import { Button } from "@/registry/new-york-v4/ui/button"
 
 export interface PreviewSetting {
   name: string
-  options: { label: string; value: string }[]
+  type?: "tabs" | "dropdown" | "toggle"
+  options: { label: string; value: string; preview?: string[] }[]
+}
+
+function SettingControl({
+  setting,
+  value,
+  onChange,
+}: {
+  setting: PreviewSetting
+  value: string
+  onChange: (value: string) => void
+}) {
+  const [dropdownOpen, setDropdownOpen] = React.useState(false)
+  const dropdownRef = React.useRef<HTMLDivElement>(null)
+
+  React.useEffect(() => {
+    if (!dropdownOpen) return
+    function handleClickOutside(e: MouseEvent) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(e.target as Node)
+      ) {
+        setDropdownOpen(false)
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => document.removeEventListener("mousedown", handleClickOutside)
+  }, [dropdownOpen])
+
+  const selectedOption = setting.options.find((o) => o.value === value)
+
+  if (setting.type === "dropdown") {
+    return (
+      <div className="flex items-center gap-2">
+        <span className="text-xs font-medium text-muted-foreground">
+          {setting.name}
+        </span>
+        <div className="relative" ref={dropdownRef}>
+          <button
+            type="button"
+            onClick={() => setDropdownOpen((prev) => !prev)}
+            className={cn(
+              "flex items-center gap-2 rounded-lg border px-2.5 py-1 text-xs font-medium transition-colors",
+              "text-foreground hover:bg-accent"
+            )}
+          >
+            {selectedOption?.preview && (
+              <span className="flex items-center gap-0.5">
+                {selectedOption.preview.map((color, i) => (
+                  <span
+                    key={i}
+                    className="inline-block size-2.5 rounded-full"
+                    style={{ backgroundColor: color }}
+                  />
+                ))}
+              </span>
+            )}
+            {selectedOption?.label}
+            <svg
+              className="size-3 text-muted-foreground"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path d="m6 9 6 6 6-6" />
+            </svg>
+          </button>
+          {dropdownOpen && (
+            <div className="absolute top-full left-0 z-50 mt-1 min-w-[120px] rounded-lg border bg-popover p-1 shadow-md">
+              {setting.options.map((option) => (
+                <button
+                  key={option.value}
+                  type="button"
+                  onClick={() => {
+                    onChange(option.value)
+                    setDropdownOpen(false)
+                  }}
+                  className={cn(
+                    "flex w-full items-center gap-2 rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors",
+                    value === option.value
+                      ? "bg-accent text-accent-foreground"
+                      : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                  )}
+                >
+                  {option.preview && (
+                    <span className="flex items-center gap-0.5">
+                      {option.preview.map((color, i) => (
+                        <span
+                          key={i}
+                          className="inline-block size-2.5 rounded-full"
+                          style={{ backgroundColor: color }}
+                        />
+                      ))}
+                    </span>
+                  )}
+                  {option.label}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    )
+  }
+
+  if (setting.type === "toggle") {
+    return (
+      <div className="flex items-center gap-2">
+        <span className="text-xs font-medium text-muted-foreground">
+          {setting.name}
+        </span>
+        <div className="flex items-center rounded-lg border p-0.5">
+          {setting.options.map((option) => (
+            <button
+              key={option.value}
+              type="button"
+              onClick={() => onChange(option.value)}
+              className={cn(
+                "rounded-md px-2.5 py-1 text-xs font-medium transition-colors",
+                value === option.value
+                  ? "bg-accent text-accent-foreground"
+                  : "text-muted-foreground hover:text-foreground"
+              )}
+            >
+              {option.label}
+            </button>
+          ))}
+        </div>
+      </div>
+    )
+  }
+
+  // Default: tabs
+  return (
+    <div className="flex items-center gap-2">
+      <span className="text-xs font-medium text-muted-foreground">
+        {setting.name}
+      </span>
+      <div className="flex items-center rounded-lg border p-0.5">
+        {setting.options.map((option) => (
+          <button
+            key={option.value}
+            type="button"
+            onClick={() => onChange(option.value)}
+            className={cn(
+              "rounded-md px-2.5 py-1 text-xs font-medium transition-colors",
+              value === option.value
+                ? "bg-accent text-accent-foreground"
+                : "text-muted-foreground hover:text-foreground"
+            )}
+          >
+            {option.label}
+          </button>
+        ))}
+      </div>
+    </div>
+  )
 }
 
 export function InteractivePreview({
@@ -69,33 +227,17 @@ export function InteractivePreview({
       </div>
       <div className="flex flex-wrap items-center gap-4 border-t px-4 py-3">
         {settings.map((setting) => (
-          <div key={setting.name} className="flex items-center gap-2">
-            <span className="text-xs font-medium text-muted-foreground">
-              {setting.name}
-            </span>
-            <div className="flex items-center rounded-lg border p-0.5">
-              {setting.options.map((option) => (
-                <button
-                  key={option.value}
-                  type="button"
-                  onClick={() =>
-                    setValues((prev) => ({
-                      ...prev,
-                      [setting.name]: option.value,
-                    }))
-                  }
-                  className={cn(
-                    "rounded-md px-2.5 py-1 text-xs font-medium transition-colors",
-                    values[setting.name] === option.value
-                      ? "bg-accent text-accent-foreground"
-                      : "text-muted-foreground hover:text-foreground"
-                  )}
-                >
-                  {option.label}
-                </button>
-              ))}
-            </div>
-          </div>
+          <SettingControl
+            key={setting.name}
+            setting={setting}
+            value={values[setting.name]}
+            onChange={(value) =>
+              setValues((prev) => ({
+                ...prev,
+                [setting.name]: value,
+              }))
+            }
+          />
         ))}
       </div>
       <div className="relative overflow-hidden">
