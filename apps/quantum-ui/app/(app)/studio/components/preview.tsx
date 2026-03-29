@@ -137,13 +137,21 @@ export function Preview({ blockGroups }: { blockGroups: BlockGroup[] }) {
       sendToIframe(iframe, "design-system-params", params)
     }
 
+    // Send immediately if iframe is ready
     if (iframe.contentWindow) {
       sendParams()
     }
 
+    // Also send on iframe load (handles initial load)
     iframe.addEventListener("load", sendParams)
+
+    // Retry after a short delay to handle race between
+    // preset decoding and iframe readiness
+    const retryTimeout = setTimeout(sendParams, 500)
+
     return () => {
       iframe.removeEventListener("load", sendParams)
+      clearTimeout(retryTimeout)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paramsKey])
