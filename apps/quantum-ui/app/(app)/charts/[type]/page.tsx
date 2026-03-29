@@ -77,12 +77,16 @@ export default async function ChartPage({ params }: ChartPageProps) {
         {Array.from({ length: 12 }).map((_, index) => {
           const chart = prefetchedCharts[index]
           return chart ? (
-            <ChartDisplay
+            <div
               key={chart.name}
-              chart={chart}
-              style={activeStyle.name}
+              id={chart.name}
               className={cn(chart.fullWidth && "md:col-span-2 lg:col-span-3")}
-            />
+            >
+              <ChartDisplay
+                chart={chart}
+                style={activeStyle.name}
+              />
+            </div>
           ) : (
             <div
               key={`empty-${index}`}
