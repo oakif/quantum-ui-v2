@@ -172,3 +172,40 @@ Example:
 - Wrap charts in `<div className="h-[300px] w-full p-4">` for consistent sizing
 - Pass `showBackground={false}` in demos (the InlinePreview card IS the background)
 - Toggle defaults: match what the demo is showing (e.g. Legend demo defaults to "on")
+
+## Studio
+
+The Studio (`/studio`) is a visual playground for browsing composed UI blocks and tuning design tokens in real time.
+
+### Architecture
+
+- **Left sidebar:** Design system customizer with Color (Tint, Theme, Chart), Font (Heading, Body), and Radius pickers
+- **Right area:** Block preview in an iframe with resize controls, preview/code toggle, and block selector
+- **URL state:** Block selection (`?block=dashboard-01`) and design system preset (`?preset=...`) persist in the URL
+- **Theme sync:** Design system params sent to iframe via `postMessage` — no iframe reload when changing settings
+
+### How blocks work in Studio
+
+- Blocks render at `/view/new-york-v4/{blockName}` in an iframe
+- `DesignSystemProvider` inside the iframe listens for `postMessage` with design system params
+- Blocks import from `@/registry/new-york-v4/ui/*` — ported components (e.g. rounded-full Button) automatically apply
+- Blocks with inlined component code (e.g. hardcoded chart colors) need manual fixes
+
+### Key files
+
+- `app/(app)/studio/page.tsx` — server component, fetches block groups
+- `app/(app)/studio/components/preview.tsx` — iframe preview with block selector, resize, code toggle
+- `app/(app)/studio/components/customizer.tsx` — design system pickers
+- `app/(app)/studio/components/block-selector.tsx` — two-tiered block dropdown
+- `app/(app)/studio/components/code-viewer.tsx` — syntax-highlighted code from registry JSON
+- `app/(app)/studio/components/main-menu.tsx` — hamburger menu (Navigate, Dark/Light, Undo/Redo, Reset)
+- `app/(app)/studio/hooks/use-preview-theme.tsx` — scoped dark/light toggle (Inherit/Light/Dark)
+
+### Dark/Light in Studio
+
+Dark/Light toggle only affects the preview iframe, not the main page. Three modes:
+- **Inherit** — follows the global site theme (default)
+- **Light** — force light in preview
+- **Dark** — force dark in preview
+
+`D` key toggles between Light and Dark (once toggled, stays in manual mode).
