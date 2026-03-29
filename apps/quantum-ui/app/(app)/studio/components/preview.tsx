@@ -126,6 +126,7 @@ export function Preview({ blockGroups }: { blockGroups: BlockGroup[] }) {
   const [previewSize, setPreviewSize] = React.useState<PreviewSize>("desktop")
   const [view, setView] = React.useState<"preview" | "code">("preview")
 
+  const paramsKey = JSON.stringify(params)
   React.useEffect(() => {
     const iframe = iframeRef.current
     if (!iframe) {
@@ -144,7 +145,8 @@ export function Preview({ blockGroups }: { blockGroups: BlockGroup[] }) {
     return () => {
       iframe.removeEventListener("load", sendParams)
     }
-  }, [params])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [paramsKey])
 
   React.useEffect(() => {
     window.addEventListener("message", handleMessage)
