@@ -3,7 +3,6 @@
 import * as React from "react"
 import { Monitor, Search, Smartphone, Tablet } from "lucide-react"
 import { useSearchParams, useRouter, usePathname } from "next/navigation"
-import { type PanelImperativeHandle } from "react-resizable-panels"
 
 import { CMD_K_FORWARD_TYPE } from "@/app/(app)/studio/components/action-menu"
 import {
@@ -24,11 +23,6 @@ import { usePreviewTheme } from "@/app/(app)/studio/hooks/use-preview-theme"
 import {
   useDesignSystemSearchParams,
 } from "@/app/(app)/studio/lib/search-params"
-import {
-  ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
-} from "@/registry/new-york-v4/ui/resizable"
 import {
   Tabs,
   TabsList,
@@ -56,10 +50,10 @@ function handleMessage(event: MessageEvent) {
 
 type PreviewSize = "desktop" | "tablet" | "mobile"
 
-const PREVIEW_SIZE_PERCENTAGES: Record<PreviewSize, number> = {
-  desktop: 100,
-  tablet: 60,
-  mobile: 30,
+const PREVIEW_SIZE_WIDTHS: Record<PreviewSize, string> = {
+  desktop: "100%",
+  tablet: "768px",
+  mobile: "375px",
 }
 
 export function Preview({ blockGroups }: { blockGroups: BlockGroup[] }) {
@@ -70,7 +64,6 @@ export function Preview({ blockGroups }: { blockGroups: BlockGroup[] }) {
   const router = useRouter()
   const pathname = usePathname()
   const iframeRef = React.useRef<HTMLIFrameElement>(null)
-  const resizablePanelRef = React.useRef<PanelImperativeHandle>(null)
   const [previewSize, setPreviewSize] = React.useState<PreviewSize>("desktop")
   const [view, setView] = React.useState<"preview" | "code">("preview")
 
@@ -152,7 +145,6 @@ export function Preview({ blockGroups }: { blockGroups: BlockGroup[] }) {
     (size: PreviewSize) => {
       setPreviewSize(size)
       setView("preview")
-      resizablePanelRef.current?.resize(PREVIEW_SIZE_PERCENTAGES[size])
     },
     []
   )
@@ -216,29 +208,20 @@ export function Preview({ blockGroups }: { blockGroups: BlockGroup[] }) {
       </div>
       <div className="relative flex flex-1 flex-col overflow-hidden rounded-2xl ring ring-foreground/10 md:ring-muted dark:ring-foreground/10">
         {view === "preview" ? (
-          <div className="relative flex w-full flex-1 overflow-hidden bg-zinc-950/50">
+          <div className="relative flex w-full flex-1 items-start justify-center overflow-hidden bg-zinc-950/50">
             <div className="absolute inset-0 [background-image:radial-gradient(var(--color-muted-foreground)_0.5px,transparent_0.5px)] [background-size:20px_20px] opacity-30" />
-            <ResizablePanelGroup
-              orientation="horizontal"
-              className="relative z-10 h-full"
+            <div
+              className="relative z-10 h-full overflow-hidden rounded-lg border shadow-xl transition-[max-width] duration-300 ease-in-out"
+              style={{ maxWidth: PREVIEW_SIZE_WIDTHS[previewSize], width: "100%" }}
             >
-              <ResizablePanel
-                panelRef={resizablePanelRef}
-                className="relative overflow-hidden rounded-lg border shadow-xl"
-                defaultSize={100}
-                minSize={30}
-              >
-                <iframe
-                  key={iframeSrc}
-                  ref={iframeRef}
-                  src={iframeSrc}
-                  className="h-full w-full bg-background"
-                  title="Preview"
-                />
-              </ResizablePanel>
-              <ResizableHandle className="relative hidden w-3 bg-transparent p-0 after:absolute after:top-1/2 after:right-0 after:h-8 after:w-[6px] after:translate-x-[-1px] after:-translate-y-1/2 after:rounded-full after:bg-muted-foreground/50 after:transition-all after:hover:h-10 after:hover:bg-muted-foreground md:block" />
-              <ResizablePanel defaultSize={0} minSize={0} />
-            </ResizablePanelGroup>
+              <iframe
+                key={iframeSrc}
+                ref={iframeRef}
+                src={iframeSrc}
+                className="h-full w-full bg-background"
+                title="Preview"
+              />
+            </div>
           </div>
         ) : (
           <div className="flex flex-1 overflow-hidden bg-zinc-950">
