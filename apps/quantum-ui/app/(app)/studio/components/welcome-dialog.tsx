@@ -14,7 +14,7 @@ import {
   DialogTitle,
 } from "@/styles/base-nova/ui/dialog"
 
-const STORAGE_KEY = "shadcn-create-welcome-dialog"
+const STORAGE_KEY = "quantum-studio-welcome"
 
 export function WelcomeDialog() {
   const [isOpen, setIsOpen] = React.useState(false)
@@ -47,19 +47,17 @@ export function WelcomeDialog() {
         </div>
         <DialogHeader className="gap-1 p-4">
           <DialogTitle className="text-left text-base">
-            Build your own shadcn/ui
+            Welcome to Quantum UI Studio
           </DialogTitle>
           <DialogDescription className="text-left leading-relaxed text-foreground">
-            Customize everything from the ground up. Pick your component
-            library, font, color scheme, and more.
-          </DialogDescription>
-          <DialogDescription className="mt-2 text-left leading-relaxed font-medium text-foreground">
-            Available for all major React frameworks.
+            Browse composed UI blocks, tune your design tokens, and see
+            changes in real time. Pick a block from the dropdown above to
+            get started.
           </DialogDescription>
         </DialogHeader>
         <DialogFooter className="m-0">
           <DialogClose render={<Button className="w-full" />}>
-            Get Started
+            Start Exploring
           </DialogClose>
         </DialogFooter>
       </DialogContent>

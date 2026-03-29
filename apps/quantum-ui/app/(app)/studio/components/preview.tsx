@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import { Monitor, Smartphone, Tablet } from "lucide-react"
+import { type PanelImperativeHandle } from "react-resizable-panels"
 
 import { CMD_K_FORWARD_TYPE } from "@/app/(app)/studio/components/action-menu"
 import {
@@ -20,6 +21,16 @@ import {
   serializeDesignSystemSearchParams,
   useDesignSystemSearchParams,
 } from "@/app/(app)/studio/lib/search-params"
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/registry/new-york-v4/ui/resizable"
+import {
+  Tabs,
+  TabsList,
+  TabsTrigger,
+} from "@/registry/new-york-v4/ui/tabs"
 
 // Hoisted — avoids recreating on every message event. (js-hoist-regexp)
 const MAC_REGEX = /Mac|iPhone|iPad|iPod/
@@ -98,19 +109,21 @@ function handleMessage(event: MessageEvent) {
 
 type PreviewSize = "desktop" | "tablet" | "mobile"
 
-const PREVIEW_SIZE_WIDTHS: Record<PreviewSize, string> = {
-  desktop: "100%",
-  tablet: "768px",
-  mobile: "375px",
+const PREVIEW_SIZE_PERCENTAGES: Record<PreviewSize, number> = {
+  desktop: 100,
+  tablet: 60,
+  mobile: 30,
 }
 
 export function Preview({ blockGroups }: { blockGroups: BlockGroup[] }) {
   const [params] = useDesignSystemSearchParams()
   const iframeRef = React.useRef<HTMLIFrameElement>(null)
+  const resizablePanelRef = React.useRef<PanelImperativeHandle>(null)
   const [selectedBlockId, setSelectedBlockId] = React.useState(
     blockGroups[0]?.blocks[0]?.id ?? ""
   )
   const [previewSize, setPreviewSize] = React.useState<PreviewSize>("desktop")
+  const [view, setView] = React.useState<"preview" | "code">("preview")
 
   React.useEffect(() => {
     const iframe = iframeRef.current
@@ -151,6 +164,15 @@ export function Preview({ blockGroups }: { blockGroups: BlockGroup[] }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedBlockId, params.base, params.item])
 
+  const handleResize = React.useCallback(
+    (size: PreviewSize) => {
+      setPreviewSize(size)
+      setView("preview")
+      resizablePanelRef.current?.resize(PREVIEW_SIZE_PERCENTAGES[size])
+    },
+    []
+  )
+
   return (
     <div className="relative flex flex-1 flex-col gap-3 overflow-hidden">
       <div className="flex items-center justify-between gap-2">
@@ -158,45 +180,76 @@ export function Preview({ blockGroups }: { blockGroups: BlockGroup[] }) {
           groups={blockGroups}
           onSelect={setSelectedBlockId}
         />
-        <div className="hidden items-center gap-1 rounded-lg border border-foreground/10 p-1 md:flex">
-          <button
-            onClick={() => setPreviewSize("desktop")}
-            data-active={previewSize === "desktop"}
-            className="rounded-md p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground data-[active=true]:bg-muted data-[active=true]:text-foreground"
-            title="Desktop"
+        <div className="flex items-center gap-2">
+          <div className="hidden items-center gap-1 rounded-lg border border-foreground/10 p-1 md:flex">
+            <button
+              onClick={() => handleResize("desktop")}
+              data-active={previewSize === "desktop"}
+              className="rounded-md p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground data-[active=true]:bg-muted data-[active=true]:text-foreground"
+              title="Desktop"
+            >
+              <Monitor className="size-3.5" />
+            </button>
+            <button
+              onClick={() => handleResize("tablet")}
+              data-active={previewSize === "tablet"}
+              className="rounded-md p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground data-[active=true]:bg-muted data-[active=true]:text-foreground"
+              title="Tablet"
+            >
+              <Tablet className="size-3.5" />
+            </button>
+            <button
+              onClick={() => handleResize("mobile")}
+              data-active={previewSize === "mobile"}
+              className="rounded-md p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground data-[active=true]:bg-muted data-[active=true]:text-foreground"
+              title="Mobile"
+            >
+              <Smartphone className="size-3.5" />
+            </button>
+          </div>
+          <Tabs
+            value={view}
+            onValueChange={(v) => setView(v as "preview" | "code")}
+            className="hidden md:flex"
           >
-            <Monitor className="size-3.5" />
-          </button>
-          <button
-            onClick={() => setPreviewSize("tablet")}
-            data-active={previewSize === "tablet"}
-            className="rounded-md p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground data-[active=true]:bg-muted data-[active=true]:text-foreground"
-            title="Tablet"
-          >
-            <Tablet className="size-3.5" />
-          </button>
-          <button
-            onClick={() => setPreviewSize("mobile")}
-            data-active={previewSize === "mobile"}
-            className="rounded-md p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground data-[active=true]:bg-muted data-[active=true]:text-foreground"
-            title="Mobile"
-          >
-            <Smartphone className="size-3.5" />
-          </button>
+            <TabsList className="h-8! grid-cols-2 rounded-lg border border-foreground/10 bg-transparent p-1 *:data-[slot=tabs-trigger]:h-6 *:data-[slot=tabs-trigger]:rounded-md *:data-[slot=tabs-trigger]:px-2.5 *:data-[slot=tabs-trigger]:text-xs">
+              <TabsTrigger value="preview">Preview</TabsTrigger>
+              <TabsTrigger value="code">Code</TabsTrigger>
+            </TabsList>
+          </Tabs>
         </div>
       </div>
-      <div className="relative flex flex-1 flex-col justify-center overflow-hidden rounded-2xl ring ring-foreground/10 md:ring-muted dark:ring-foreground/10">
-        <div className="relative z-0 mx-auto flex w-full flex-1 flex-col items-center overflow-hidden">
-          <div className="absolute inset-0 bg-muted dark:bg-muted/30" />
-          <iframe
-            key={selectedBlockId || params.base + params.item}
-            ref={iframeRef}
-            src={iframeSrc}
-            className="z-10 h-full flex-1 transition-[width] duration-200"
-            style={{ width: PREVIEW_SIZE_WIDTHS[previewSize] }}
-            title="Preview"
-          />
-        </div>
+      <div className="relative flex flex-1 flex-col overflow-hidden rounded-2xl ring ring-foreground/10 md:ring-muted dark:ring-foreground/10">
+        {view === "preview" ? (
+          <div className="relative flex w-full flex-1 overflow-hidden bg-zinc-950/50">
+            <div className="absolute inset-0 [background-image:radial-gradient(var(--color-muted-foreground)_0.5px,transparent_0.5px)] [background-size:20px_20px] opacity-30" />
+            <ResizablePanelGroup
+              orientation="horizontal"
+              className="relative z-10 h-full"
+            >
+              <ResizablePanel
+                panelRef={resizablePanelRef}
+                className="relative overflow-hidden rounded-lg border shadow-xl"
+                defaultSize={100}
+                minSize={30}
+              >
+                <iframe
+                  key={selectedBlockId || params.base + params.item}
+                  ref={iframeRef}
+                  src={iframeSrc}
+                  className="h-full w-full bg-background"
+                  title="Preview"
+                />
+              </ResizablePanel>
+              <ResizableHandle className="relative hidden w-3 bg-transparent p-0 after:absolute after:top-1/2 after:right-0 after:h-8 after:w-[6px] after:translate-x-[-1px] after:-translate-y-1/2 after:rounded-full after:bg-muted-foreground/50 after:transition-all after:hover:h-10 after:hover:bg-muted-foreground md:block" />
+              <ResizablePanel defaultSize={0} minSize={0} />
+            </ResizablePanelGroup>
+          </div>
+        ) : (
+          <div className="flex flex-1 items-center justify-center bg-muted/50 p-8 text-sm text-muted-foreground">
+            Select a block to view its code
+          </div>
+        )}
       </div>
     </div>
   )
