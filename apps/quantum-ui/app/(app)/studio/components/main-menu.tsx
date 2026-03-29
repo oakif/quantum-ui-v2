@@ -17,9 +17,8 @@ import {
 } from "@/app/(app)/studio/components/picker"
 import { useActionMenuTrigger } from "@/app/(app)/studio/hooks/use-action-menu"
 import { useHistory } from "@/app/(app)/studio/hooks/use-history"
-import { useRandom } from "@/app/(app)/studio/hooks/use-random"
 import { useReset } from "@/app/(app)/studio/hooks/use-reset"
-import { useThemeToggle } from "@/app/(app)/studio/hooks/use-theme-toggle"
+import { usePreviewTheme } from "@/app/(app)/studio/hooks/use-preview-theme"
 
 const APPLE_PLATFORM_REGEX = /Mac|iPhone|iPad|iPod/
 
@@ -27,9 +26,8 @@ export function MainMenu({ className }: React.ComponentProps<typeof Button>) {
   const [isMac, setIsMac] = React.useState(false)
   const { canGoBack, canGoForward, goBack, goForward } = useHistory()
   const { openActionMenu } = useActionMenuTrigger()
-  const { randomize } = useRandom()
-  const { toggleTheme } = useThemeToggle()
   const { setShowResetDialog } = useReset()
+  const { previewTheme, setPreviewTheme } = usePreviewTheme()
 
   React.useEffect(() => {
     const platform = navigator.platform
@@ -55,11 +53,26 @@ export function MainMenu({ className }: React.ComponentProps<typeof Button>) {
               Navigate...
               <PickerShortcut>{isMac ? "⌘P" : "Ctrl+P"}</PickerShortcut>
             </PickerItem>
-            <PickerItem onClick={randomize}>
-              Shuffle <PickerShortcut>R</PickerShortcut>
+          </PickerGroup>
+          <PickerSeparator />
+          <PickerGroup>
+            <PickerItem
+              onClick={() => setPreviewTheme("inherit")}
+              data-checked={previewTheme === "inherit"}
+            >
+              Inherit Theme
             </PickerItem>
-            <PickerItem onClick={toggleTheme}>
-              Light/Dark <PickerShortcut>D</PickerShortcut>
+            <PickerItem
+              onClick={() => setPreviewTheme("light")}
+              data-checked={previewTheme === "light"}
+            >
+              Light Preview
+            </PickerItem>
+            <PickerItem
+              onClick={() => setPreviewTheme("dark")}
+              data-checked={previewTheme === "dark"}
+            >
+              Dark Preview
             </PickerItem>
           </PickerGroup>
           <PickerSeparator />

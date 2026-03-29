@@ -2,6 +2,7 @@ import { Suspense } from "react"
 
 import { HistoryProvider } from "@/app/(app)/studio/hooks/use-history"
 import { LocksProvider } from "@/app/(app)/studio/hooks/use-locks"
+import { PreviewThemeProvider } from "@/app/(app)/studio/hooks/use-preview-theme"
 
 export default function CreateLayout({
   children,
@@ -11,7 +12,9 @@ export default function CreateLayout({
   return (
     <LocksProvider>
       <Suspense>
-        <HistoryProvider>{children}</HistoryProvider>
+        <HistoryProvider>
+          <PreviewThemeProvider>{children}</PreviewThemeProvider>
+        </HistoryProvider>
       </Suspense>
     </LocksProvider>
   )

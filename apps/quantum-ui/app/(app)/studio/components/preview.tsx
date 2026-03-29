@@ -19,8 +19,8 @@ import { DARK_MODE_FORWARD_TYPE } from "@/app/(app)/studio/components/mode-switc
 import { RANDOMIZE_FORWARD_TYPE } from "@/app/(app)/studio/components/random-button"
 import { sendToIframe } from "@/app/(app)/studio/hooks/use-iframe-sync"
 import { RESET_FORWARD_TYPE } from "@/app/(app)/studio/hooks/use-reset"
+import { usePreviewTheme } from "@/app/(app)/studio/hooks/use-preview-theme"
 import {
-  serializeDesignSystemSearchParams,
   useDesignSystemSearchParams,
 } from "@/app/(app)/studio/lib/search-params"
 import {
@@ -63,6 +63,7 @@ const PREVIEW_SIZE_PERCENTAGES: Record<PreviewSize, number> = {
 
 export function Preview({ blockGroups }: { blockGroups: BlockGroup[] }) {
   const [params] = useDesignSystemSearchParams()
+  const { resolvedPreviewTheme } = usePreviewTheme()
   const searchParams = useSearchParams()
   const router = useRouter()
   const pathname = usePathname()
@@ -123,6 +124,20 @@ export function Preview({ blockGroups }: { blockGroups: BlockGroup[] }) {
       window.removeEventListener("message", handleMessage)
     }
   }, [])
+
+  // Apply dark/light theme to iframe only (not the main page)
+  React.useEffect(() => {
+    const iframe = iframeRef.current
+    if (!iframe?.contentDocument) return
+    const html = iframe.contentDocument.documentElement
+    if (resolvedPreviewTheme === "dark") {
+      html.classList.add("dark")
+      html.style.colorScheme = "dark"
+    } else {
+      html.classList.remove("dark")
+      html.style.colorScheme = "light"
+    }
+  }, [resolvedPreviewTheme])
 
   const handleResize = React.useCallback(
     (size: PreviewSize) => {
