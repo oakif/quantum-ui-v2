@@ -5,6 +5,14 @@ import Link from "next/link"
 import { type PageTreeFolder } from "@/lib/page-tree"
 import { source } from "@/lib/source"
 import { cn } from "@/lib/utils"
+import {
+  ButtonAsChildPreview,
+  ButtonIconsPreview,
+  ButtonLoadingPreview,
+  ButtonSizesPreview,
+  ButtonVariantsPreview,
+  ButtonWithIconsPreview,
+} from "@/components/docs/button-demos"
 import { Callout } from "@/components/callout"
 import { CodeBlockCommand } from "@/components/code-block-command"
 import { CodeCollapsibleWrapper } from "@/components/code-collapsible-wrapper"
@@ -354,6 +362,12 @@ export const mdxComponents = {
     <div className={cn(className)} {...props} />
   ),
   Button,
+  ButtonVariantsPreview,
+  ButtonSizesPreview,
+  ButtonIconsPreview,
+  ButtonWithIconsPreview,
+  ButtonLoadingPreview,
+  ButtonAsChildPreview,
   Callout,
   Accordion,
   AccordionContent,

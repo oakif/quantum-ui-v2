@@ -21,29 +21,62 @@ import { Button } from "@/components/ui/button"
 
 ### Variants
 
-<ComponentPreview styleName="radix-nova" name="button-variants" />
+Use the `variant` prop to change the visual style of the button.
+
+<ButtonVariantsPreview />
+
+| Variant | Description |
+| --- | --- |
+| `default` | Primary action, solid background |
+| `secondary` | Secondary action, muted background |
+| `outline` | Bordered with transparent background |
+| `ghost` | No background, hover reveals fill |
+| `destructive` | Danger/delete actions |
+| `link` | Styled as a text link |
 
 ### Sizes
 
-<ComponentPreview styleName="radix-nova" name="button-sizes" />
+Use the `size` prop to change the size of the button.
+
+<ButtonSizesPreview />
+
+| Size | Description |
+| --- | --- |
+| `default` | Standard height (h-9) |
+| `xs` | Extra small (h-6) |
+| `sm` | Small (h-8) |
+| `lg` | Large (h-10) |
 
 ### Icon Buttons
 
-<ComponentPreview styleName="radix-nova" name="button-icons" />
+Use icon sizes for circular buttons containing only an icon.
+
+<ButtonIconsPreview />
+
+| Size | Description |
+| --- | --- |
+| `icon` | Standard icon button (size-9) |
+| `icon-xs` | Extra small (size-6) |
+| `icon-sm` | Small (size-8) |
+| `icon-lg` | Large (size-10) |
 
 ### With Icon
 
-<ComponentPreview styleName="radix-nova" name="button-with-icon" />
+Icons are automatically sized to `size-4`.
 
-### Spinner
+<ButtonWithIconsPreview />
 
-<ComponentPreview styleName="radix-nova" name="button-spinner" />
+### Loading
+
+Use a spinner icon with `animate-spin` and disable the button.
+
+<ButtonLoadingPreview />
 
 ### As Child
 
 Use the `asChild` prop to render another element with button styling.
 
-<ComponentPreview styleName="radix-nova" name="button-aschild" />
+<ButtonAsChildPreview />
 
 ## Demo
 
