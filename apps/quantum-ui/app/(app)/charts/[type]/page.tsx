@@ -1,7 +1,6 @@
 import * as React from "react"
 import { notFound } from "next/navigation"
 
-import { cn } from "@/lib/utils"
 import {
   ChartDisplay,
   getCachedRegistryItem,
@@ -69,32 +68,18 @@ export default async function ChartPage({ params }: ChartPageProps) {
   const prefetchedCharts = await Promise.all(chartDataPromises)
 
   return (
-    <div className="grid flex-1 gap-12 lg:gap-24">
+    <div className="flex flex-1 flex-col gap-8 py-6">
       <h2 className="sr-only">
         {type.charAt(0).toUpperCase() + type.slice(1)} Charts
       </h2>
-      <div className="grid flex-1 scroll-mt-20 items-stretch gap-10 md:grid-cols-2 md:gap-6 lg:grid-cols-3 xl:gap-10">
-        {Array.from({ length: 12 }).map((_, index) => {
-          const chart = prefetchedCharts[index]
-          return chart ? (
-            <div
-              key={chart.name}
-              id={chart.name}
-              className={cn(chart.fullWidth && "md:col-span-2 lg:col-span-3")}
-            >
-              <ChartDisplay
-                chart={chart}
-                style={activeStyle.name}
-              />
+      {prefetchedCharts.map(
+        (chart) =>
+          chart && (
+            <div key={chart.name} id={chart.name}>
+              <ChartDisplay chart={chart} style={activeStyle.name} />
             </div>
-          ) : (
-            <div
-              key={`empty-${index}`}
-              className="hidden aspect-square w-full rounded-lg border border-dashed xl:block"
-            />
           )
-        })}
-      </div>
+      )}
     </div>
   )
 }
