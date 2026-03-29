@@ -18,8 +18,10 @@ export const CMD_K_FORWARD_TYPE = "cmd-k-forward"
 
 export function ActionMenu({
   itemsByBase,
+  onNavigate,
 }: {
   itemsByBase: Record<string, Pick<RegistryItem, "name" | "title" | "type">[]>
+  onNavigate?: (registryName: string) => void
 }) {
   const {
     activeRegistryName,
@@ -28,7 +30,7 @@ export function ActionMenu({
     handleSelect,
     open,
     setOpen,
-  } = useActionMenu(itemsByBase)
+  } = useActionMenu(itemsByBase, onNavigate)
 
   return (
     <CommandDialog open={open} onOpenChange={setOpen} className="animate-none!">

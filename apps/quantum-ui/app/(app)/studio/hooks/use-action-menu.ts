@@ -4,6 +4,8 @@ import * as React from "react"
 import { type RegistryItem } from "shadcn/schema"
 import useSWR from "swr"
 
+import { useRouter, usePathname, useSearchParams } from "next/navigation"
+
 import { useDesignSystemSearchParams } from "@/app/(app)/studio/lib/search-params"
 import { groupItemsByType } from "@/app/(app)/studio/lib/utils"
 
@@ -45,9 +47,13 @@ function sortRegistryGroups(groups: ReturnType<typeof groupItemsByType>) {
 }
 
 export function useActionMenu(
-  itemsByBase: Record<string, ActionMenuSourceItem[]>
+  itemsByBase: Record<string, ActionMenuSourceItem[]>,
+  onNavigate?: (registryName: string) => void
 ) {
   const [params, setParams] = useDesignSystemSearchParams()
+  const router = useRouter()
+  const pathname = usePathname()
+  const urlSearchParams = useSearchParams()
   const { data: open = false, mutate: setOpenData } = useSWR<boolean>(
     ACTION_MENU_OPEN_KEY,
     {
@@ -81,9 +87,14 @@ export function useActionMenu(
   const handleSelect = React.useCallback(
     (registryName: string) => {
       setParams({ item: registryName })
+      // Update the block URL param so the preview switches
+      const newParams = new URLSearchParams(urlSearchParams.toString())
+      newParams.set("block", registryName)
+      router.replace(`${pathname}?${newParams.toString()}`, { scroll: false })
+      onNavigate?.(registryName)
       void setOpenData(false, { revalidate: false })
     },
-    [setOpenData, setParams]
+    [setOpenData, setParams, onNavigate, router, pathname, urlSearchParams]
   )
 
   const handleOpenChange = React.useCallback(

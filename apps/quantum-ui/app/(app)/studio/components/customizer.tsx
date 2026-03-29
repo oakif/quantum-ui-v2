@@ -35,8 +35,10 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
 
 export function Customizer({
   itemsByBase,
+  onNavigate,
 }: {
   itemsByBase: Record<string, Pick<RegistryItem, "name" | "title" | "type">[]>
+  onNavigate?: (registryName: string) => void
 }) {
   const [params] = useDesignSystemSearchParams()
   const isMobile = useIsMobile()
@@ -93,7 +95,7 @@ export function Customizer({
       <CardFooter className="flex min-w-0 gap-2 md:flex-col md:**:[button,a]:w-full">
         <CopyPreset className="flex-1 md:flex-none" />
         <RandomButton className="flex-1 md:flex-none" />
-        <ActionMenu itemsByBase={itemsByBase} />
+        <ActionMenu itemsByBase={itemsByBase} onNavigate={onNavigate} />
         <ResetDialog />
       </CardFooter>
     </Card>

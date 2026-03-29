@@ -73,8 +73,15 @@ export function Preview({ blockGroups }: { blockGroups: BlockGroup[] }) {
   const [view, setView] = React.useState<"preview" | "code">("preview")
 
   // Read block from URL, fallback to first block
-  const initialBlockId = searchParams.get("block") || blockGroups[0]?.blocks[0]?.id || ""
-  const [selectedBlockId, setSelectedBlockId] = React.useState(initialBlockId)
+  const blockFromUrl = searchParams.get("block") || blockGroups[0]?.blocks[0]?.id || ""
+  const [selectedBlockId, setSelectedBlockId] = React.useState(blockFromUrl)
+
+  // Sync with URL changes (e.g. from Navigate popup)
+  React.useEffect(() => {
+    if (blockFromUrl && blockFromUrl !== selectedBlockId) {
+      setSelectedBlockId(blockFromUrl)
+    }
+  }, [blockFromUrl, selectedBlockId])
 
   // Persist block selection to URL
   const handleBlockSelect = React.useCallback(
