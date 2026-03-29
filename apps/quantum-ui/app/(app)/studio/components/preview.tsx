@@ -17,6 +17,7 @@ import {
 import { DARK_MODE_FORWARD_TYPE } from "@/app/(app)/studio/components/mode-switcher"
 import { RANDOMIZE_FORWARD_TYPE } from "@/app/(app)/studio/components/random-button"
 import { sendToIframe } from "@/app/(app)/studio/hooks/use-iframe-sync"
+import * as ResizablePrimitive from "react-resizable-panels"
 import {
   ResizableHandle,
   ResizablePanel,
@@ -55,10 +56,10 @@ function handleMessage(event: MessageEvent) {
 
 type PreviewSize = "desktop" | "tablet" | "mobile"
 
-const PREVIEW_SIZE_WIDTHS: Record<PreviewSize, string> = {
-  desktop: "100%",
-  tablet: "768px",
-  mobile: "375px",
+const PREVIEW_SIZE_PX: Record<PreviewSize, number | null> = {
+  desktop: null, // full width
+  tablet: 768,
+  mobile: 375,
 }
 
 export function Preview({ blockGroups }: { blockGroups: BlockGroup[] }) {
@@ -69,6 +70,8 @@ export function Preview({ blockGroups }: { blockGroups: BlockGroup[] }) {
   const router = useRouter()
   const pathname = usePathname()
   const iframeRef = React.useRef<HTMLIFrameElement>(null)
+  const containerRef = React.useRef<HTMLDivElement>(null)
+  const panelRef = React.useRef<ResizablePrimitive.ImperativePanelHandle>(null)
   const [previewSize, setPreviewSize] = React.useState<PreviewSize>("desktop")
   const [view, setView] = React.useState<"preview" | "code">("preview")
 
@@ -150,6 +153,17 @@ export function Preview({ blockGroups }: { blockGroups: BlockGroup[] }) {
     (size: PreviewSize) => {
       setPreviewSize(size)
       setView("preview")
+      const container = containerRef.current
+      const panel = panelRef.current
+      if (!container || !panel) return
+      const targetPx = PREVIEW_SIZE_PX[size]
+      if (!targetPx) {
+        panel.resize(100)
+      } else {
+        const containerWidth = container.offsetWidth
+        const pct = Math.min(100, Math.round((targetPx / containerWidth) * 100))
+        panel.resize(pct)
+      }
     },
     []
   )
@@ -213,33 +227,29 @@ export function Preview({ blockGroups }: { blockGroups: BlockGroup[] }) {
       </div>
       <div className="relative flex flex-1 flex-col overflow-hidden rounded-2xl ring ring-foreground/10 md:ring-muted dark:ring-foreground/10">
         {view === "preview" ? (
-          <div className="relative flex w-full flex-1 overflow-hidden bg-zinc-950/50">
+          <div ref={containerRef} className="relative flex w-full flex-1 overflow-hidden bg-zinc-950/50">
             <div className="absolute inset-0 [background-image:radial-gradient(var(--color-muted-foreground)_0.5px,transparent_0.5px)] [background-size:20px_20px] opacity-30" />
-            <div
-              className="relative z-10 flex h-full w-full justify-center"
-              style={{ maxWidth: PREVIEW_SIZE_WIDTHS[previewSize], transition: "max-width 0.3s ease-in-out" }}
+            <ResizablePanelGroup
+              orientation="horizontal"
+              className="relative z-10 h-full"
             >
-              <ResizablePanelGroup
-                orientation="horizontal"
-                className="h-full"
+              <ResizablePanel
+                ref={panelRef}
+                className="relative overflow-hidden rounded-lg border shadow-xl"
+                defaultSize={100}
+                minSize={20}
               >
-                <ResizablePanel
-                  className="relative overflow-hidden rounded-lg border shadow-xl"
-                  defaultSize={100}
-                  minSize={30}
-                >
-                  <iframe
-                    key={iframeSrc}
-                    ref={iframeRef}
-                    src={iframeSrc}
-                    className="h-full w-full bg-background"
-                    title="Preview"
-                  />
-                </ResizablePanel>
-                <ResizableHandle className="relative hidden w-3 bg-transparent p-0 after:absolute after:top-1/2 after:right-0 after:h-8 after:w-[6px] after:translate-x-[-1px] after:-translate-y-1/2 after:rounded-full after:bg-muted-foreground/50 after:transition-all after:hover:h-10 after:hover:bg-muted-foreground md:block" />
-                <ResizablePanel defaultSize={0} minSize={0} />
-              </ResizablePanelGroup>
-            </div>
+                <iframe
+                  key={iframeSrc}
+                  ref={iframeRef}
+                  src={iframeSrc}
+                  className="h-full w-full bg-background"
+                  title="Preview"
+                />
+              </ResizablePanel>
+              <ResizableHandle className="relative hidden w-3 bg-transparent p-0 after:absolute after:top-1/2 after:right-0 after:h-8 after:w-[6px] after:translate-x-[-1px] after:-translate-y-1/2 after:rounded-full after:bg-muted-foreground/50 after:transition-all after:hover:h-10 after:hover:bg-muted-foreground md:block" />
+              <ResizablePanel defaultSize={0} minSize={0} />
+            </ResizablePanelGroup>
           </div>
         ) : (
           <div className="flex flex-1 overflow-hidden bg-zinc-950">
