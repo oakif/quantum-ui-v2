@@ -15,6 +15,7 @@ import { getStyle, legacyStyles, type Style } from "@/registry/_legacy-styles"
 
 import "@/app/legacy-themes.css"
 
+import { DesignSystemProvider } from "@/app/(app)/studio/components/design-system-provider"
 import { ComponentPreview } from "./component-preview"
 
 export const revalidate = false
@@ -183,9 +184,11 @@ export default async function BlockPage({
 
   return (
     <Suspense>
-      <ComponentPreview>
-        <Component />
-      </ComponentPreview>
+      <DesignSystemProvider>
+        <ComponentPreview>
+          <Component />
+        </ComponentPreview>
+      </DesignSystemProvider>
     </Suspense>
   )
 }
