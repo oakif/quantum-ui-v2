@@ -108,3 +108,67 @@ Add new entries as components are ported.
 - Example files live in `registry/new-york-v4/examples/`
 - The native `ComponentPreview` MDX component works for examples that exist in the upstream registry (e.g. `button-demo`, `button-with-icon`)
 - For custom examples, use `InlinePreview` instead
+
+## Chart Components
+
+### Architecture
+
+Charts are organized in two layers:
+1. **Base chart components** — pure charts, no Card wrapper, importable anywhere. Just axes, data lines, colors.
+2. **Composed chart components** (future) — Card + base chart + title + description. Built from base components.
+
+Base chart components live in `registry/new-york-v4/ui/charts/`:
+- `line-chart.tsx` — lines with optional fill (none/solid/gradient), replaces "area chart" concept
+- `bar-chart.tsx` — vertical/horizontal bars
+- `pie-chart.tsx` — pie and donut charts
+
+All charts use shadcn's `ChartContainer` and `ChartConfig` from `registry/new-york-v4/ui/chart.tsx` for responsive sizing and color theming.
+
+### Key Design Decisions
+
+- **"Area chart" is just a line chart with fill.** The `LineChart` component has a `fill` prop (`"none" | "solid" | "gradient"`) — no separate AreaChart component.
+- **`showBackground` prop** controls whether the chart renders inside a card (rounded border, padding). Off by default in demos, on by default in the component.
+- **Gradient IDs are unique per instance** via `React.useId()` — prevents SVG gradient collisions when multiple charts are on the same page.
+- **Y axis width is dynamic** — calculated from the max data value's digit count.
+
+### Chart Color Sets
+
+Colors use Tailwind CSS variables. Defined in `components/docs/line-chart-demos.tsx` as `chartColorSets`:
+- Limes: `var(--color-lime-500)`, `var(--color-lime-700)`
+- Blues: `var(--color-blue-400)`, `var(--color-blue-600)`
+- Oranges: `var(--color-orange-400)`, `var(--color-orange-600)`
+
+### Adding Chart Demos
+
+Chart demos use `InteractivePreview` (from `components/docs/interactive-preview.tsx`) instead of `InlinePreview`. This adds a settings panel between the preview and code with live-updating controls.
+
+Setting types:
+- `"tabs"` — inline tab buttons (default)
+- `"dropdown"` — dropdown with color dot previews
+- `"toggle"` — on/off toggle switch
+
+Example:
+```tsx
+<InteractivePreview
+  flush
+  settings={[
+    { name: "Fill Style", options: [...] },
+    { name: "Colors", type: "dropdown", options: [...] },
+    { name: "Stacked", type: "toggle", options: [
+      { label: "Off", value: "off" },
+      { label: "On", value: "on" },
+    ]},
+  ]}
+  renderPreview={(values) => <LineChart ... />}
+  renderCode={(values) => `<LineChart ... />`}
+/>
+```
+
+### Demo Convention for Charts
+
+- Default demo: simplest possible chart (one series, gradient fill, grid, axes)
+- Each example changes ONE independent variable
+- Use `flush` prop on previews so charts fill edge-to-edge
+- Wrap charts in `<div className="h-[300px] w-full p-4">` for consistent sizing
+- Pass `showBackground={false}` in demos (the InlinePreview card IS the background)
+- Toggle defaults: match what the demo is showing (e.g. Legend demo defaults to "on")
