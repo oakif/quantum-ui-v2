@@ -50,11 +50,24 @@ function handleMessage(event: MessageEvent) {
 }
 
 type PreviewSize = "desktop" | "tablet" | "mobile" | "custom"
+type Orientation = "portrait" | "landscape"
 
-const PREVIEW_SIZE_PX: Record<Exclude<PreviewSize, "custom">, number> = {
-  desktop: 99999,
-  tablet: 768,
-  mobile: 375,
+const PREVIEW_PRESETS: Record<Exclude<PreviewSize, "custom">, {
+  portrait: { width: number; height: number | null }
+  landscape: { width: number; height: number | null }
+}> = {
+  desktop: {
+    portrait: { width: 99999, height: null },
+    landscape: { width: 99999, height: null },
+  },
+  tablet: {
+    portrait: { width: 768, height: 1024 },
+    landscape: { width: 1024, height: 768 },
+  },
+  mobile: {
+    portrait: { width: 375, height: 812 },
+    landscape: { width: 812, height: 375 },
+  },
 }
 
 function DragHandle({
@@ -156,6 +169,7 @@ export function Preview({ blockGroups }: { blockGroups: BlockGroup[] }) {
   const containerRef = React.useRef<HTMLDivElement>(null)
   const [containerRect, setContainerRect] = React.useState<DOMRect | null>(null)
   const [previewSize, setPreviewSize] = React.useState<PreviewSize>("desktop")
+  const [orientation, setOrientation] = React.useState<Orientation>("portrait")
   const [customWidth, setCustomWidth] = React.useState<number | null>(null)
   const [customHeight, setCustomHeight] = React.useState<number | null>(null)
   const [view, setView] = React.useState<"preview" | "code">("preview")
@@ -229,18 +243,18 @@ export function Preview({ blockGroups }: { blockGroups: BlockGroup[] }) {
   }, [resolvedPreviewTheme])
 
   // Compute the actual preview dimensions
-  const previewWidth = React.useMemo(() => {
-    if (previewSize === "custom" && customWidth !== null) {
-      return customWidth
-    }
-    return PREVIEW_SIZE_PX[previewSize as Exclude<PreviewSize, "custom">] ?? 99999
-  }, [previewSize, customWidth])
+  const presetDims = previewSize !== "custom"
+    ? PREVIEW_PRESETS[previewSize][orientation]
+    : null
+
+  const previewWidth = presetDims ? presetDims.width : (customWidth ?? 99999)
+  const previewHeight = presetDims ? presetDims.height : customHeight
 
   const maxWidth = containerRef.current?.offsetWidth ?? 1200
   const maxHeight = containerRef.current?.offsetHeight ?? 800
   const clampedWidth = Math.min(previewWidth, maxWidth)
-  const clampedHeight = customHeight !== null
-    ? Math.min(customHeight, maxHeight)
+  const clampedHeight = previewHeight !== null
+    ? Math.min(previewHeight, maxHeight)
     : undefined
 
   const handlePresetClick = React.useCallback((size: Exclude<PreviewSize, "custom">) => {
@@ -271,15 +285,22 @@ export function Preview({ blockGroups }: { blockGroups: BlockGroup[] }) {
   // Height drag handler — captures starting height, updates on drag
   const startHeightRef = React.useRef(0)
   const maxHeightRef = React.useRef(0)
+  const customWidthRef = React.useRef(customWidth)
+  customWidthRef.current = customWidth
   const handleHeightDrag = React.useCallback((deltaY: number) => {
     if (!containerRef.current) return
     if (startHeightRef.current === 0) {
       const el = containerRef.current.querySelector("[data-preview-frame]") as HTMLElement
       startHeightRef.current = el?.offsetHeight ?? containerRef.current.offsetHeight
       maxHeightRef.current = containerRef.current.offsetHeight
+      // Capture current width when entering custom mode via height drag
+      if (customWidthRef.current === null) {
+        setCustomWidth(el?.offsetWidth ?? containerRef.current.offsetWidth)
+      }
     }
     const newHeight = Math.max(0, Math.min(maxHeightRef.current, startHeightRef.current + deltaY * 2))
     setCustomHeight(newHeight)
+    setPreviewSize("custom")
   }, [])
 
   const handleDragStart = React.useCallback(() => {
