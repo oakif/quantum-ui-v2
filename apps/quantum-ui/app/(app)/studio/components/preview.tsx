@@ -1,7 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { Monitor, Search, Smartphone, Tablet } from "lucide-react"
+import { createPortal } from "react-dom"
+import { GripHorizontal, GripVertical, Monitor, Search, Smartphone, Tablet } from "lucide-react"
 import { useSearchParams, useRouter, usePathname } from "next/navigation"
 
 import { CMD_K_FORWARD_TYPE } from "@/app/(app)/studio/components/action-menu"
@@ -17,12 +18,6 @@ import {
 import { DARK_MODE_FORWARD_TYPE } from "@/app/(app)/studio/components/mode-switcher"
 import { RANDOMIZE_FORWARD_TYPE } from "@/app/(app)/studio/components/random-button"
 import { sendToIframe } from "@/app/(app)/studio/hooks/use-iframe-sync"
-import * as ResizablePrimitive from "react-resizable-panels"
-import {
-  ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
-} from "@/registry/new-york-v4/ui/resizable"
 import { useActionMenuTrigger } from "@/app/(app)/studio/hooks/use-action-menu"
 import { RESET_FORWARD_TYPE } from "@/app/(app)/studio/hooks/use-reset"
 import { usePreviewTheme } from "@/app/(app)/studio/hooks/use-preview-theme"
@@ -54,12 +49,100 @@ function handleMessage(event: MessageEvent) {
   }
 }
 
-type PreviewSize = "desktop" | "tablet" | "mobile"
+type PreviewSize = "desktop" | "tablet" | "mobile" | "custom"
 
-const PREVIEW_SIZE_PX: Record<PreviewSize, number | null> = {
-  desktop: null, // full width
+const PREVIEW_SIZE_PX: Record<Exclude<PreviewSize, "custom">, number> = {
+  desktop: 99999,
   tablet: 768,
   mobile: 375,
+}
+
+function DragHandle({
+  onDrag,
+  onDragStart,
+  onDragEnd,
+}: {
+  onDrag: (deltaX: number) => void
+  onDragStart?: () => void
+  onDragEnd?: () => void
+}) {
+  const handleMouseDown = React.useCallback(
+    (e: React.MouseEvent) => {
+      e.preventDefault()
+      onDragStart?.()
+      const startX = e.clientX
+      const onMouseMove = (moveEvent: MouseEvent) => {
+        onDrag(moveEvent.clientX - startX)
+      }
+      const onMouseUp = () => {
+        document.removeEventListener("mousemove", onMouseMove)
+        document.removeEventListener("mouseup", onMouseUp)
+        document.body.style.cursor = ""
+        document.body.style.userSelect = ""
+        onDragEnd?.()
+      }
+      document.body.style.cursor = "col-resize"
+      document.body.style.userSelect = "none"
+      document.addEventListener("mousemove", onMouseMove)
+      document.addEventListener("mouseup", onMouseUp)
+    },
+    [onDrag, onDragStart, onDragEnd]
+  )
+
+  return (
+    <div
+      onMouseDown={handleMouseDown}
+      className="z-20 flex h-full w-4 cursor-col-resize items-center justify-center opacity-60 transition-opacity hover:opacity-100"
+    >
+      <div className="flex h-8 w-[6px] items-center justify-center rounded-full bg-muted-foreground/50">
+        <GripVertical className="size-3 text-background" />
+      </div>
+    </div>
+  )
+}
+
+function BottomDragHandle({
+  onDrag,
+  onDragStart,
+  onDragEnd,
+}: {
+  onDrag: (deltaY: number) => void
+  onDragStart?: () => void
+  onDragEnd?: () => void
+}) {
+  const handleMouseDown = React.useCallback(
+    (e: React.MouseEvent) => {
+      e.preventDefault()
+      onDragStart?.()
+      const startY = e.clientY
+      const onMouseMove = (moveEvent: MouseEvent) => {
+        onDrag(moveEvent.clientY - startY)
+      }
+      const onMouseUp = () => {
+        document.removeEventListener("mousemove", onMouseMove)
+        document.removeEventListener("mouseup", onMouseUp)
+        document.body.style.cursor = ""
+        document.body.style.userSelect = ""
+        onDragEnd?.()
+      }
+      document.body.style.cursor = "row-resize"
+      document.body.style.userSelect = "none"
+      document.addEventListener("mousemove", onMouseMove)
+      document.addEventListener("mouseup", onMouseUp)
+    },
+    [onDrag, onDragStart, onDragEnd]
+  )
+
+  return (
+    <div
+      onMouseDown={handleMouseDown}
+      className="z-20 flex h-4 w-full cursor-row-resize items-center justify-center opacity-60 transition-opacity hover:opacity-100"
+    >
+      <div className="flex h-[6px] w-8 items-center justify-center rounded-full bg-muted-foreground/50">
+        <GripHorizontal className="size-3 text-background" />
+      </div>
+    </div>
+  )
 }
 
 export function Preview({ blockGroups }: { blockGroups: BlockGroup[] }) {
@@ -71,9 +154,12 @@ export function Preview({ blockGroups }: { blockGroups: BlockGroup[] }) {
   const pathname = usePathname()
   const iframeRef = React.useRef<HTMLIFrameElement>(null)
   const containerRef = React.useRef<HTMLDivElement>(null)
-  const panelRef = React.useRef<ResizablePrimitive.ImperativePanelHandle>(null)
+  const [containerRect, setContainerRect] = React.useState<DOMRect | null>(null)
   const [previewSize, setPreviewSize] = React.useState<PreviewSize>("desktop")
+  const [customWidth, setCustomWidth] = React.useState<number | null>(null)
+  const [customHeight, setCustomHeight] = React.useState<number | null>(null)
   const [view, setView] = React.useState<"preview" | "code">("preview")
+  const [isDragging, setIsDragging] = React.useState(false)
 
   // Read block from URL, fallback to first block
   const blockFromUrl = searchParams.get("block") || blockGroups[0]?.blocks[0]?.id || ""
@@ -97,26 +183,21 @@ export function Preview({ blockGroups }: { blockGroups: BlockGroup[] }) {
     [searchParams, router, pathname]
   )
 
-  // Send params to iframe on load and when params change
-  // Iframe src only depends on block ID — no reload on param changes
+  // Iframe src only depends on block ID
   const iframeSrc = `/view/new-york-v4/${selectedBlockId}`
 
-  // Send initial params when iframe loads, then live-update via postMessage
+  // Send initial params when iframe loads
   const paramsRef = React.useRef(params)
   paramsRef.current = params
 
   React.useEffect(() => {
     const iframe = iframeRef.current
     if (!iframe) return
-
     const onLoad = () => {
       sendToIframe(iframe, "design-system-params", paramsRef.current)
     }
-
     iframe.addEventListener("load", onLoad)
-    return () => {
-      iframe.removeEventListener("load", onLoad)
-    }
+    return () => { iframe.removeEventListener("load", onLoad) }
   }, [iframeSrc])
 
   // Live-update params without iframe reload
@@ -130,12 +211,10 @@ export function Preview({ blockGroups }: { blockGroups: BlockGroup[] }) {
 
   React.useEffect(() => {
     window.addEventListener("message", handleMessage)
-    return () => {
-      window.removeEventListener("message", handleMessage)
-    }
+    return () => { window.removeEventListener("message", handleMessage) }
   }, [])
 
-  // Apply dark/light theme to iframe only (not the main page)
+  // Apply dark/light theme to iframe only
   React.useEffect(() => {
     const iframe = iframeRef.current
     if (!iframe?.contentDocument) return
@@ -149,27 +228,106 @@ export function Preview({ blockGroups }: { blockGroups: BlockGroup[] }) {
     }
   }, [resolvedPreviewTheme])
 
-  const handleResize = React.useCallback(
-    (size: PreviewSize) => {
-      setPreviewSize(size)
-      setView("preview")
-      const container = containerRef.current
-      const panel = panelRef.current
-      if (!container || !panel) return
-      const targetPx = PREVIEW_SIZE_PX[size]
-      if (!targetPx) {
-        panel.resize(100)
-      } else {
-        const containerWidth = container.offsetWidth
-        const pct = Math.min(100, Math.round((targetPx / containerWidth) * 100))
-        panel.resize(pct)
-      }
-    },
-    []
-  )
+  // Compute the actual preview dimensions
+  const previewWidth = React.useMemo(() => {
+    if (previewSize === "custom" && customWidth !== null) {
+      return customWidth
+    }
+    return PREVIEW_SIZE_PX[previewSize as Exclude<PreviewSize, "custom">] ?? 99999
+  }, [previewSize, customWidth])
+
+  const maxWidth = containerRef.current?.offsetWidth ?? 1200
+  const maxHeight = containerRef.current?.offsetHeight ?? 800
+  const clampedWidth = Math.min(previewWidth, maxWidth)
+  const clampedHeight = customHeight !== null
+    ? Math.min(customHeight, maxHeight)
+    : undefined
+
+  const handlePresetClick = React.useCallback((size: Exclude<PreviewSize, "custom">) => {
+    setPreviewSize(size)
+    setView("preview")
+  }, [])
+
+  const handleCustomClick = React.useCallback(() => {
+    setPreviewSize("custom")
+    setView("preview")
+  }, [])
+
+  // Width drag handler — captures starting width, updates on drag
+  const startWidthRef = React.useRef(0)
+  const maxWidthRef = React.useRef(0)
+  const handleWidthDrag = React.useCallback((deltaX: number) => {
+    if (!containerRef.current) return
+    if (startWidthRef.current === 0) {
+      const el = containerRef.current.querySelector("[data-preview-frame]") as HTMLElement
+      startWidthRef.current = el?.offsetWidth ?? containerRef.current.offsetWidth
+      maxWidthRef.current = containerRef.current.offsetWidth
+    }
+    const newWidth = Math.max(0, Math.min(maxWidthRef.current, startWidthRef.current + deltaX * 2))
+    setCustomWidth(newWidth)
+    setPreviewSize("custom")
+  }, [])
+
+  // Height drag handler — captures starting height, updates on drag
+  const startHeightRef = React.useRef(0)
+  const maxHeightRef = React.useRef(0)
+  const handleHeightDrag = React.useCallback((deltaY: number) => {
+    if (!containerRef.current) return
+    if (startHeightRef.current === 0) {
+      const el = containerRef.current.querySelector("[data-preview-frame]") as HTMLElement
+      startHeightRef.current = el?.offsetHeight ?? containerRef.current.offsetHeight
+      maxHeightRef.current = containerRef.current.offsetHeight
+    }
+    const newHeight = Math.max(0, Math.min(maxHeightRef.current, startHeightRef.current + deltaY * 2))
+    setCustomHeight(newHeight)
+  }, [])
+
+  const handleDragStart = React.useCallback(() => {
+    setIsDragging(true)
+  }, [])
+
+  const handleDragEnd = React.useCallback(() => {
+    setIsDragging(false)
+  }, [])
+
+  // Track container's viewport position (stable — only changes on resize, not drag)
+  React.useEffect(() => {
+    const el = containerRef.current
+    if (!el) return
+    const update = () => setContainerRect(el.getBoundingClientRect())
+    const ro = new ResizeObserver(update)
+    ro.observe(el)
+    update()
+    return () => ro.disconnect()
+  }, [])
+
+  // Compute handle positions from container rect + clamped dimensions (same render cycle)
+  const handlePositions = React.useMemo(() => {
+    if (!containerRect) return null
+    const w = clampedWidth
+    const h = clampedHeight ?? containerRect.height
+    const previewLeft = containerRect.left + (containerRect.width - w) / 2
+    const previewTop = containerRect.top + (containerRect.height - h) / 2
+    return {
+      right: { top: previewTop, left: previewLeft + w + 2, height: h },
+      bottom: { top: previewTop + h + 2, left: previewLeft, width: w },
+    }
+  }, [containerRect, clampedWidth, clampedHeight])
+
+  // Reset start dimensions on mouseup
+  React.useEffect(() => {
+    const reset = () => {
+      startWidthRef.current = 0
+      startHeightRef.current = 0
+      maxWidthRef.current = 0
+      maxHeightRef.current = 0
+    }
+    document.addEventListener("mouseup", reset)
+    return () => document.removeEventListener("mouseup", reset)
+  }, [])
 
   return (
-    <div className="relative flex flex-1 flex-col gap-3 overflow-hidden">
+    <div className="relative flex min-h-0 flex-1 flex-col gap-3 overflow-hidden">
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           <BlockSelector
@@ -189,7 +347,7 @@ export function Preview({ blockGroups }: { blockGroups: BlockGroup[] }) {
         <div className="flex items-center gap-2">
           <div className="hidden items-center gap-1 rounded-lg border border-foreground/10 p-1 md:flex">
             <button
-              onClick={() => handleResize("desktop")}
+              onClick={() => handlePresetClick("desktop")}
               data-active={previewSize === "desktop"}
               className="rounded-md p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground data-[active=true]:bg-muted data-[active=true]:text-foreground"
               title="Desktop"
@@ -197,7 +355,7 @@ export function Preview({ blockGroups }: { blockGroups: BlockGroup[] }) {
               <Monitor className="size-3.5" />
             </button>
             <button
-              onClick={() => handleResize("tablet")}
+              onClick={() => handlePresetClick("tablet")}
               data-active={previewSize === "tablet"}
               className="rounded-md p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground data-[active=true]:bg-muted data-[active=true]:text-foreground"
               title="Tablet"
@@ -205,13 +363,23 @@ export function Preview({ blockGroups }: { blockGroups: BlockGroup[] }) {
               <Tablet className="size-3.5" />
             </button>
             <button
-              onClick={() => handleResize("mobile")}
+              onClick={() => handlePresetClick("mobile")}
               data-active={previewSize === "mobile"}
               className="rounded-md p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground data-[active=true]:bg-muted data-[active=true]:text-foreground"
               title="Mobile"
             >
               <Smartphone className="size-3.5" />
             </button>
+            {customWidth !== null && (
+              <button
+                onClick={handleCustomClick}
+                data-active={previewSize === "custom"}
+                className="rounded-md px-1.5 py-1 text-[10px] font-medium text-muted-foreground hover:bg-muted hover:text-foreground data-[active=true]:bg-muted data-[active=true]:text-foreground"
+                title={`Custom (${Math.round(customWidth)}${customHeight !== null ? ` × ${Math.round(customHeight)}` : 'px'})`}
+              >
+                {Math.round(customWidth)}{customHeight !== null ? ` × ${Math.round(customHeight)}` : 'px'}
+              </button>
+            )}
           </div>
           <Tabs
             value={view}
@@ -225,31 +393,34 @@ export function Preview({ blockGroups }: { blockGroups: BlockGroup[] }) {
           </Tabs>
         </div>
       </div>
-      <div className="relative flex flex-1 flex-col overflow-hidden rounded-2xl ring ring-foreground/10 md:ring-muted dark:ring-foreground/10">
+      <div
+        ref={containerRef}
+        className="relative flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl ring ring-foreground/10 md:ring-muted dark:ring-foreground/10"
+      >
         {view === "preview" ? (
-          <div ref={containerRef} className="relative flex w-full flex-1 overflow-hidden bg-zinc-950/50">
+          <div className="relative flex w-full min-h-0 flex-1 items-center justify-center bg-zinc-950/50">
             <div className="absolute inset-0 [background-image:radial-gradient(var(--color-muted-foreground)_0.5px,transparent_0.5px)] [background-size:20px_20px] opacity-30" />
-            <ResizablePanelGroup
-              orientation="horizontal"
-              className="relative z-10 h-full"
+            <div
+              className={`relative z-10 transition-[width,height] duration-300 ease-in-out ${customHeight === null ? 'h-full' : ''}`}
+              style={{
+                width: clampedWidth,
+                ...(clampedHeight !== undefined ? { height: clampedHeight } : {}),
+              }}
             >
-              <ResizablePanel
-                ref={panelRef}
-                className="relative overflow-hidden rounded-lg border shadow-xl"
-                defaultSize={100}
-                minSize={20}
+              <div
+                data-preview-frame=""
+                className="h-full w-full overflow-hidden rounded-lg border shadow-xl"
               >
                 <iframe
                   key={iframeSrc}
                   ref={iframeRef}
                   src={iframeSrc}
                   className="h-full w-full bg-background"
+                  style={isDragging ? { pointerEvents: "none" } : undefined}
                   title="Preview"
                 />
-              </ResizablePanel>
-              <ResizableHandle className="relative hidden w-3 bg-transparent p-0 after:absolute after:top-1/2 after:right-0 after:h-8 after:w-[6px] after:translate-x-[-1px] after:-translate-y-1/2 after:rounded-full after:bg-muted-foreground/50 after:transition-all after:hover:h-10 after:hover:bg-muted-foreground md:block" />
-              <ResizablePanel defaultSize={0} minSize={0} />
-            </ResizablePanelGroup>
+              </div>
+            </div>
           </div>
         ) : (
           <div className="flex flex-1 overflow-hidden bg-zinc-950">
@@ -257,6 +428,23 @@ export function Preview({ blockGroups }: { blockGroups: BlockGroup[] }) {
           </div>
         )}
       </div>
+      {handlePositions && view === "preview" && createPortal(
+        <>
+          <div
+            className="fixed z-50"
+            style={handlePositions.right}
+          >
+            <DragHandle onDrag={handleWidthDrag} onDragStart={handleDragStart} onDragEnd={handleDragEnd} />
+          </div>
+          <div
+            className="fixed z-50"
+            style={handlePositions.bottom}
+          >
+            <BottomDragHandle onDrag={handleHeightDrag} onDragStart={handleDragStart} onDragEnd={handleDragEnd} />
+          </div>
+        </>,
+        document.body
+      )}
     </div>
   )
 }
