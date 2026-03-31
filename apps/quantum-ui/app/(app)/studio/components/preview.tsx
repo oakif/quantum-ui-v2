@@ -267,49 +267,39 @@ export function Preview({ blockGroups }: { blockGroups: BlockGroup[] }) {
     setView("preview")
   }, [])
 
-  // Width drag handler — captures starting width, updates on drag
+  // Drag dimension refs — populated on drag start, reset on mouseup
   const startWidthRef = React.useRef(0)
-  const maxWidthRef = React.useRef(0)
-  const handleWidthDrag = React.useCallback((deltaX: number) => {
-    if (!containerRef.current) return
-    if (startWidthRef.current === 0) {
-      const el = containerRef.current.querySelector("[data-preview-frame]") as HTMLElement
-      startWidthRef.current = el?.offsetWidth ?? containerRef.current.offsetWidth
-      maxWidthRef.current = containerRef.current.offsetWidth
-    }
-    const newWidth = Math.max(0, Math.min(maxWidthRef.current, startWidthRef.current + deltaX * 2))
-    setCustomWidth(newWidth)
-    setPreviewSize("custom")
-  }, [])
-
-  // Height drag handler — captures starting height, updates on drag
   const startHeightRef = React.useRef(0)
+  const maxWidthRef = React.useRef(0)
   const maxHeightRef = React.useRef(0)
   const customWidthRef = React.useRef(customWidth)
   customWidthRef.current = customWidth
-  const handleHeightDrag = React.useCallback((deltaY: number) => {
+
+  const handleDragStart = React.useCallback(() => {
     if (!containerRef.current) return
-    if (startHeightRef.current === 0) {
-      const el = containerRef.current.querySelector("[data-preview-frame]") as HTMLElement
-      startHeightRef.current = el?.offsetHeight ?? containerRef.current.offsetHeight
-      maxHeightRef.current = containerRef.current.offsetHeight
-      // Capture current width when entering custom mode via height drag
-      if (customWidthRef.current === null) {
-        setCustomWidth(el?.offsetWidth ?? containerRef.current.offsetWidth)
-      }
+    const el = containerRef.current.querySelector("[data-preview-frame]") as HTMLElement
+    startWidthRef.current = el?.offsetWidth ?? containerRef.current.offsetWidth
+    startHeightRef.current = el?.offsetHeight ?? containerRef.current.offsetHeight
+    maxWidthRef.current = containerRef.current.offsetWidth
+    maxHeightRef.current = containerRef.current.offsetHeight
+    // Capture current width when entering custom mode via height drag
+    if (customWidthRef.current === null) {
+      setCustomWidth(startWidthRef.current)
     }
-    const newHeight = Math.max(0, Math.min(maxHeightRef.current, startHeightRef.current + deltaY * 2))
-    setCustomHeight(newHeight)
+    setIsDragging(true)
+  }, [])
+
+  const handleWidthDrag = React.useCallback((deltaX: number) => {
+    const newWidth = Math.max(0, Math.min(maxWidthRef.current, startWidthRef.current + deltaX * 2))
+    setCustomWidth(newWidth)
+    setCustomHeight(startHeightRef.current)
     setPreviewSize("custom")
   }, [])
 
-  const dragStartDimsRef = React.useRef({ width: 0, height: 0 })
-  const handleDragStart = React.useCallback(() => {
-    const el = containerRef.current?.querySelector("[data-preview-frame]") as HTMLElement
-    if (el) {
-      dragStartDimsRef.current = { width: el.offsetWidth, height: el.offsetHeight }
-    }
-    setIsDragging(true)
+  const handleHeightDrag = React.useCallback((deltaY: number) => {
+    const newHeight = Math.max(0, Math.min(maxHeightRef.current, startHeightRef.current + deltaY * 2))
+    setCustomHeight(newHeight)
+    setPreviewSize("custom")
   }, [])
 
   const handleDragEnd = React.useCallback(() => {
@@ -449,10 +439,10 @@ export function Preview({ blockGroups }: { blockGroups: BlockGroup[] }) {
           <div className="relative flex w-full min-h-0 flex-1 items-center justify-center bg-zinc-950/50">
             <div className="absolute inset-0 [background-image:radial-gradient(var(--color-muted-foreground)_0.5px,transparent_0.5px)] [background-size:20px_20px] opacity-30" />
             <div
-              className={`relative z-10 ${isDragging ? '' : 'transition-[width,height] duration-300 ease-in-out'} ${customHeight === null && !isDragging ? 'h-full' : ''}`}
+              className={`relative z-10 ${isDragging ? '' : 'transition-[width,height] duration-300 ease-in-out'} ${clampedHeight === undefined && !isDragging ? 'h-full' : ''}`}
               style={{
                 width: clampedWidth,
-                ...(clampedHeight !== undefined || isDragging ? { height: clampedHeight ?? dragStartDimsRef.current.height } : {}),
+                ...(clampedHeight !== undefined || isDragging ? { height: clampedHeight ?? startHeightRef.current } : {}),
               }}
             >
               <div
