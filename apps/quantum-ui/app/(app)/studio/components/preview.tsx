@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { createPortal } from "react-dom"
-import { GripHorizontal, GripVertical, Monitor, Search, Smartphone, Tablet } from "lucide-react"
+import { GripHorizontal, GripVertical, Monitor, RectangleHorizontal, RectangleVertical, Search, Smartphone, Tablet } from "lucide-react"
 import { useSearchParams, useRouter, usePathname } from "next/navigation"
 
 import { CMD_K_FORWARD_TYPE } from "@/app/(app)/studio/components/action-menu"
@@ -303,7 +303,12 @@ export function Preview({ blockGroups }: { blockGroups: BlockGroup[] }) {
     setPreviewSize("custom")
   }, [])
 
+  const dragStartDimsRef = React.useRef({ width: 0, height: 0 })
   const handleDragStart = React.useCallback(() => {
+    const el = containerRef.current?.querySelector("[data-preview-frame]") as HTMLElement
+    if (el) {
+      dragStartDimsRef.current = { width: el.offsetWidth, height: el.offsetHeight }
+    }
     setIsDragging(true)
   }, [])
 
@@ -366,6 +371,28 @@ export function Preview({ blockGroups }: { blockGroups: BlockGroup[] }) {
           </button>
         </div>
         <div className="flex items-center gap-2">
+          <div
+            className="hidden items-center gap-1 rounded-lg border border-foreground/10 p-1 md:flex"
+            data-disabled={previewSize === "desktop" || previewSize === "custom"}
+            style={{ opacity: previewSize === "desktop" || previewSize === "custom" ? 0.4 : 1, pointerEvents: previewSize === "desktop" || previewSize === "custom" ? "none" : undefined }}
+          >
+            <button
+              onClick={() => setOrientation("portrait")}
+              data-active={orientation === "portrait"}
+              className="rounded-md p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground data-[active=true]:bg-muted data-[active=true]:text-foreground"
+              title="Portrait"
+            >
+              <RectangleVertical className="size-3.5" />
+            </button>
+            <button
+              onClick={() => setOrientation("landscape")}
+              data-active={orientation === "landscape"}
+              className="rounded-md p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground data-[active=true]:bg-muted data-[active=true]:text-foreground"
+              title="Landscape"
+            >
+              <RectangleHorizontal className="size-3.5" />
+            </button>
+          </div>
           <div className="hidden items-center gap-1 rounded-lg border border-foreground/10 p-1 md:flex">
             <button
               onClick={() => handlePresetClick("desktop")}
@@ -422,10 +449,10 @@ export function Preview({ blockGroups }: { blockGroups: BlockGroup[] }) {
           <div className="relative flex w-full min-h-0 flex-1 items-center justify-center bg-zinc-950/50">
             <div className="absolute inset-0 [background-image:radial-gradient(var(--color-muted-foreground)_0.5px,transparent_0.5px)] [background-size:20px_20px] opacity-30" />
             <div
-              className={`relative z-10 transition-[width,height] duration-300 ease-in-out ${customHeight === null ? 'h-full' : ''}`}
+              className={`relative z-10 ${isDragging ? '' : 'transition-[width,height] duration-300 ease-in-out'} ${customHeight === null && !isDragging ? 'h-full' : ''}`}
               style={{
                 width: clampedWidth,
-                ...(clampedHeight !== undefined ? { height: clampedHeight } : {}),
+                ...(clampedHeight !== undefined || isDragging ? { height: clampedHeight ?? dragStartDimsRef.current.height } : {}),
               }}
             >
               <div
