@@ -179,8 +179,12 @@ export function Preview({ blockGroups }: { blockGroups: BlockGroup[] }) {
   const blockFromUrl = searchParams.get("block") || blockGroups[0]?.blocks[0]?.id || ""
   const [selectedBlockId, setSelectedBlockId] = React.useState(blockFromUrl)
 
-  // Sync with URL changes (e.g. from Navigate popup)
+  // Track whether a navigate event overrode the URL-based block
+  const navigateOverrideRef = React.useRef(false)
+
+  // Sync with URL changes (e.g. from block selector dropdown)
   React.useEffect(() => {
+    if (navigateOverrideRef.current) return
     if (blockFromUrl && blockFromUrl !== selectedBlockId) {
       setSelectedBlockId(blockFromUrl)
     }
@@ -189,6 +193,7 @@ export function Preview({ blockGroups }: { blockGroups: BlockGroup[] }) {
   // Persist block selection to URL
   const handleBlockSelect = React.useCallback(
     (blockId: string) => {
+      navigateOverrideRef.current = false
       setSelectedBlockId(blockId)
       const newParams = new URLSearchParams(searchParams.toString())
       newParams.set("block", blockId)
@@ -196,6 +201,19 @@ export function Preview({ blockGroups }: { blockGroups: BlockGroup[] }) {
     },
     [searchParams, router, pathname]
   )
+
+  // Listen for direct navigation events from the action menu
+  React.useEffect(() => {
+    const handleNavigate = (e: Event) => {
+      const itemId = (e as CustomEvent).detail as string
+      if (itemId) {
+        navigateOverrideRef.current = true
+        setSelectedBlockId(itemId)
+      }
+    }
+    window.addEventListener("studio:navigate", handleNavigate)
+    return () => window.removeEventListener("studio:navigate", handleNavigate)
+  }, [])
 
   // Iframe src only depends on block ID
   const iframeSrc = `/view/new-york-v4/${selectedBlockId}`

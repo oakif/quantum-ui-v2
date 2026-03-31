@@ -87,14 +87,12 @@ export function useActionMenu(
   const handleSelect = React.useCallback(
     (registryName: string) => {
       setParams({ item: registryName })
-      // Update the block URL param so the preview switches
-      const newParams = new URLSearchParams(urlSearchParams.toString())
-      newParams.set("block", registryName)
-      router.replace(`${pathname}?${newParams.toString()}`, { scroll: false })
+      // Notify preview directly — avoids URL race between nuqs and router.replace
+      window.dispatchEvent(new CustomEvent("studio:navigate", { detail: registryName }))
       onNavigate?.(registryName)
       void setOpenData(false, { revalidate: false })
     },
-    [setOpenData, setParams, onNavigate, router, pathname, urlSearchParams]
+    [setOpenData, setParams, onNavigate]
   )
 
   const handleOpenChange = React.useCallback(

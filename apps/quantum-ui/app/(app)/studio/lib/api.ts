@@ -54,7 +54,7 @@ export async function getAllItems() {
         "name" | "title" | "type"
       >[] = []
       for (const item of items) {
-        if (item !== null && !/\d+$/.test(item.name)) {
+        if (item !== null) {
           filtered.push({
             name: item.name,
             title: item.title,
