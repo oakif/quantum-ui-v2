@@ -15,6 +15,15 @@ import {
   ButtonWithIconsPreview,
 } from "@/components/docs/button-demos"
 import {
+  CheckboxCardPreview,
+  CheckboxDemoPreview,
+  CheckboxDescriptionPreview,
+  CheckboxDisabledPreview,
+  CheckboxInvalidPreview,
+  CheckboxStandalonePreview,
+  CheckboxWithLabelPreview,
+} from "@/components/docs/checkbox-demos"
+import {
   LineChartDefaultDemo,
   LineChartFillDemo,
   LineChartInterpolationDemo,
@@ -379,6 +388,13 @@ export const mdxComponents = {
   ButtonWithIconsPreview,
   ButtonLoadingPreview,
   ButtonAsChildPreview,
+  CheckboxDemoPreview,
+  CheckboxWithLabelPreview,
+  CheckboxDescriptionPreview,
+  CheckboxCardPreview,
+  CheckboxInvalidPreview,
+  CheckboxDisabledPreview,
+  CheckboxStandalonePreview,
   Callout,
   LineChartDefaultDemo,
   LineChartFillDemo,

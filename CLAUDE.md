@@ -43,7 +43,7 @@ import { Button } from "@/registry/new-york-v4/ui/button"
 
 ### Creating Docs Pages with Inline Previews
 
-Component docs use MDX at `apps/quantum-ui/content/docs/components/radix/{component}.mdx`.
+Component docs use MDX at `apps/quantum-ui/content/docs/components/radix/{component}.mdx`. The sidebar links to `/docs/components/radix/{component}` — add entries in `apps/quantum-ui/components/docs-sidebar.tsx` (`COMPONENT_ITEMS` array) with the `/docs/components/radix/` prefix.
 
 For inline previews with collapsible code, use the `InlinePreview` component pattern:
 
@@ -51,8 +51,9 @@ For inline previews with collapsible code, use the `InlinePreview` component pat
 2. Each preview wraps `InlinePreview` from `@/components/docs/inline-preview`
 3. `InlinePreview` takes `children` (the live demo) and `code` (string to display)
 4. Code gets Shiki syntax highlighting and shows with a gradient overlay + "View Code" button
-5. Register the preview components in `apps/quantum-ui/mdx-components.tsx` (both import and export)
+5. Register the preview components in `apps/quantum-ui/mdx-components.tsx` (both import AND the component map export near line 380+)
 6. Use them in the MDX file as `<ButtonVariantsPreview />` etc.
+7. Also create a standalone demo page at `apps/quantum-ui/app/(app)/demos/{component}/page.tsx` — these are simpler pages (no `"use client"` needed, no state, just static examples) following the button demo pattern
 
 **Important:** The `code` prop must manually match the rendered JSX — there is no auto-sync. Keep them in sync when making changes.
 

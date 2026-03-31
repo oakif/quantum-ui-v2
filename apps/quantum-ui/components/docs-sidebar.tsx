@@ -23,7 +23,8 @@ const PRIMARY_SECTIONS = [
 ] as const
 
 const COMPONENT_ITEMS = [
-  { name: "Button", href: "/docs/components/button" },
+  { name: "Button", href: "/docs/components/radix/button" },
+  { name: "Checkbox", href: "/docs/components/radix/checkbox" },
 ] as const
 
 const CHART_ITEMS = [
