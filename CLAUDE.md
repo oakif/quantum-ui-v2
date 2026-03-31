@@ -201,6 +201,16 @@ The Studio (`/studio`) is a visual playground for browsing composed UI blocks an
 - `app/(app)/studio/components/main-menu.tsx` — hamburger menu (Navigate, Dark/Light, Undo/Redo, Reset)
 - `app/(app)/studio/hooks/use-preview-theme.tsx` — scoped dark/light toggle (Inherit/Light/Dark)
 
+### Preview Resize
+
+The preview has custom drag handles for resizing width (right handle) and height (bottom handle). Handles are rendered via `createPortal` to `document.body` to escape `overflow-hidden` ancestors. Handle positions are computed from the container's `DOMRect` (tracked via `ResizeObserver`) + clamped dimensions in the same render cycle for lag-free tracking.
+
+**Device presets:** Desktop (full size), Tablet (768×1024), Mobile (375×812) with portrait/landscape toggle. The orientation button group is disabled on Desktop and Custom modes.
+
+**Custom mode:** Dragging either handle switches to custom mode. A clickable pixel button (e.g. `420 × 600`) appears in the toolbar — clicking it restores the custom dimensions after selecting a preset. Presets don't clear custom dimensions.
+
+**Centering:** Preview centers both horizontally and vertically. Width delta uses `* 2` to compensate for centering (drag 10px → width changes 20px → edge moves 10px, tracking the cursor 1:1).
+
 ### Dark/Light in Studio
 
 Dark/Light toggle only affects the preview iframe, not the main page. Three modes:
