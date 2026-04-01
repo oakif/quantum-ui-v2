@@ -21,7 +21,6 @@ import {
 import { DataTable } from "@/registry/new-york-v4/ui/data-table/data-table"
 import { DataTableColumnHeader } from "@/registry/new-york-v4/ui/data-table/data-table-column-header"
 import { DataTableToolbar } from "@/registry/new-york-v4/ui/data-table/data-table-toolbar"
-import { DataTablePagination } from "@/registry/new-york-v4/ui/data-table/data-table-pagination"
 import { Badge } from "@/registry/new-york-v4/ui/badge"
 import { Checkbox } from "@/registry/new-york-v4/ui/checkbox"
 
@@ -133,6 +132,11 @@ const columns: ColumnDef<Task>[] = [
       )
     },
     filterFn: (row, id, value) => value.includes(row.getValue(id)),
+    meta: {
+      label: "Status",
+      variant: "multiSelect" as const,
+      options: statuses.map((s) => ({ label: s.label, value: s.value })),
+    },
     size: 120,
   },
   {
@@ -150,6 +154,11 @@ const columns: ColumnDef<Task>[] = [
       )
     },
     filterFn: (row, id, value) => value.includes(row.getValue(id)),
+    meta: {
+      label: "Priority",
+      variant: "multiSelect" as const,
+      options: priorities.map((p) => ({ label: p.label, value: p.value })),
+    },
     size: 100,
   },
 ]
@@ -164,7 +173,6 @@ export default function DataTableDemoPage() {
     data,
     columns,
     enableColumnResizing: true,
-    columnResizeMode: "onChange",
     state: {
       sorting,
       columnFilters,
@@ -196,7 +204,9 @@ export default function DataTableDemoPage() {
       </PageHeader>
       <div className="container-wrapper flex-1 pb-12">
         <div className="container space-y-4">
-          <DataTable table={table} resizable />
+          <DataTable table={table} resizable stickyHeader height="h-[500px]">
+            <DataTableToolbar table={table} />
+          </DataTable>
         </div>
       </div>
     </div>
