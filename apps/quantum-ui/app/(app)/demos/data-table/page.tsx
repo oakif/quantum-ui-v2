@@ -114,6 +114,10 @@ const columns: ColumnDef<Task>[] = [
         </span>
       </div>
     ),
+    meta: {
+      label: "Search titles...",
+      variant: "text" as const,
+    },
     size: 400,
   },
   {
@@ -204,7 +208,7 @@ export default function DataTableDemoPage() {
       </PageHeader>
       <div className="container-wrapper flex-1 pb-12">
         <div className="container space-y-4">
-          <DataTable table={table} resizable stickyHeader height="h-[500px]">
+          <DataTable table={table} resizable stickyHeader height="h-[600px]">
             <DataTableToolbar table={table} />
           </DataTable>
         </div>
