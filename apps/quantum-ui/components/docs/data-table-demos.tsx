@@ -143,7 +143,6 @@ function DataTableDemo({ resizable = false }: { resizable?: boolean }) {
     data: sampleData,
     columns,
     enableColumnResizing: resizable,
-    columnResizeMode: "onChange",
     state: { sorting, columnFilters, columnVisibility, rowSelection },
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,

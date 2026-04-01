@@ -1,6 +1,6 @@
 "use client"
 
-import { createContext, ReactNode, useContext, useMemo } from "react"
+import { createContext, ReactNode, useContext, useEffect, useMemo } from "react"
 import {
   Column,
   ColumnFiltersState,
@@ -129,11 +129,13 @@ function DataGridProvider<TData extends object>({
   const resolvedColumnsResizeMode =
     props.tableLayout?.columnsResizeMode ?? "onEnd"
 
-  // Keep resize mode aligned with the DataGrid contract every render so
-  // consumer-level useReactTable options cannot flip it back between drags.
-  if (props.tableLayout?.columnsResizable) {
-    table.options.columnResizeMode = resolvedColumnsResizeMode
-  }
+  // Keep resize mode aligned with the DataGrid contract — runs after mount
+  // so it doesn't trigger a state update during render.
+  useEffect(() => {
+    if (props.tableLayout?.columnsResizable) {
+      table.options.columnResizeMode = resolvedColumnsResizeMode
+    }
+  }, [props.tableLayout?.columnsResizable, resolvedColumnsResizeMode, table])
 
   // Memoize context value so consumers don't re-render during column resize.
   // Column sizing state is intentionally excluded from deps -- CSS variables
