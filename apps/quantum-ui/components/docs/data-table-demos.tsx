@@ -82,6 +82,7 @@ const columns: ColumnDef<Task>[] = [
     ),
     enableSorting: false,
     enableHiding: false,
+    enableResizing: false,
     size: 40,
   },
   {
@@ -132,7 +133,7 @@ const columns: ColumnDef<Task>[] = [
   },
 ]
 
-function DataTableDemo() {
+function DataTableDemo({ resizable = false }: { resizable?: boolean }) {
   const [sorting, setSorting] = React.useState([])
   const [columnFilters, setColumnFilters] = React.useState([])
   const [columnVisibility, setColumnVisibility] = React.useState({})
@@ -141,6 +142,8 @@ function DataTableDemo() {
   const table = useReactTable({
     data: sampleData,
     columns,
+    enableColumnResizing: resizable,
+    columnResizeMode: "onChange",
     state: { sorting, columnFilters, columnVisibility, rowSelection },
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -155,7 +158,7 @@ function DataTableDemo() {
     initialState: { pagination: { pageSize: 5 } },
   })
 
-  return <DataTable table={table} />
+  return <DataTable table={table} resizable={resizable} />
 }
 
 export function DataTableDemoPreview() {
@@ -164,6 +167,16 @@ export function DataTableDemoPreview() {
       code={`<DataTable table={table} />`}
     >
       <DataTableDemo />
+    </InlinePreview>
+  )
+}
+
+export function DataTableResizablePreview() {
+  return (
+    <InlinePreview
+      code={`<DataTable table={table} resizable />`}
+    >
+      <DataTableDemo resizable />
     </InlinePreview>
   )
 }

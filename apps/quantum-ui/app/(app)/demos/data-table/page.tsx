@@ -89,6 +89,7 @@ const columns: ColumnDef<Task>[] = [
     ),
     enableSorting: false,
     enableHiding: false,
+    enableResizing: false,
     size: 40,
   },
   {
@@ -162,6 +163,8 @@ export default function DataTableDemoPage() {
   const table = useReactTable({
     data,
     columns,
+    enableColumnResizing: true,
+    columnResizeMode: "onChange",
     state: {
       sorting,
       columnFilters,
@@ -193,7 +196,7 @@ export default function DataTableDemoPage() {
       </PageHeader>
       <div className="container-wrapper flex-1 pb-12">
         <div className="container space-y-4">
-          <DataTable table={table} />
+          <DataTable table={table} resizable />
         </div>
       </div>
     </div>

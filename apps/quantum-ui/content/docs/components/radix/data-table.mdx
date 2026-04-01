@@ -20,14 +20,13 @@ const table = useReactTable({ data, columns, ... })
 <DataTable table={table} />
 ```
 
-## Features
+## Examples
 
-- Sorting (click column headers)
-- Pagination with configurable page sizes
-- Row selection with checkboxes
-- Column visibility toggling
-- Faceted filters (Notion-style)
-- Smooth hover transitions
+### Resizable Columns
+
+Use the `resizable` prop to enable column resizing. Drag between column headers to adjust widths.
+
+<DataTableResizablePreview />
 
 ## Demo
 
@@ -38,6 +37,7 @@ See the [interactive demo](/demos/data-table) for a full visual reference.
 | Prop | Type | Default |
 | --- | --- | --- |
 | `table` | `Table<TData>` | Required |
+| `resizable` | `boolean` | `false` |
 | `actionBar` | `ReactNode` | - |
 | `children` | `ReactNode` | - |
 
