@@ -631,12 +631,9 @@ function DataGridTableHeadRowCell<TData>({
         isLastLeftPinned ? "left" : isFirstRightPinned ? "right" : undefined
       }
       className={cn(
-        "text-secondary-foreground/80 h-10 relative text-left align-middle font-normal rtl:text-right [&:has([role=checkbox])]:pe-0",
+        "text-secondary-foreground/80 h-10 relative overflow-visible text-left align-middle font-normal rtl:text-right [&:has([role=checkbox])]:pe-0",
         headerCellSpacing,
         props.tableLayout?.cellBorder && "border-e",
-        props.tableLayout?.columnsResizable &&
-          column.getCanResize() &&
-          "overflow-visible",
         props.tableLayout?.columnsResizable &&
           column.getCanResize() &&
           isLastVisibleColumn &&
@@ -896,12 +893,9 @@ function DataGridTableBodyRowSkeletonCell<TData>({
           : undefined
       }
       className={cn(
-        "align-middle",
+        "truncate align-middle",
         bodyCellSpacing,
         props.tableLayout?.cellBorder && "border-e",
-        props.tableLayout?.columnsResizable &&
-          column.getCanResize() &&
-          "truncate",
         column.columnDef.meta?.cellClassName,
         props.tableLayout?.columnsPinnable &&
           column.getCanPin() &&
@@ -1040,12 +1034,9 @@ function DataGridTableBodyRowCell<TData>({
         isLastLeftPinned ? "left" : isFirstRightPinned ? "right" : undefined
       }
       className={cn(
-        "align-middle",
+        "truncate align-middle",
         bodyCellSpacing,
         props.tableLayout?.cellBorder && "border-e",
-        props.tableLayout?.columnsResizable &&
-          column.getCanResize() &&
-          "truncate",
         cell.column.columnDef.meta?.cellClassName,
         props.tableLayout?.columnsPinnable &&
           column.getCanPin() &&
@@ -1174,7 +1165,7 @@ function DataGridTableRowSelect<TData>({ row }: { row: Row<TData> }) {
     <>
       <div
         className={cn(
-          "bg-primary absolute inset-s-0 top-0 bottom-0 hidden w-[2px]",
+          "bg-primary absolute left-0 top-0 bottom-0 hidden w-[2px]",
           row.getIsSelected() && "block"
         )}
       ></div>

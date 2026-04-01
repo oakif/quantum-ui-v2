@@ -60,14 +60,14 @@ export function DataTablePagination<TData>({
             </SelectContent>
           </Select>
         </div>
-        <div className="flex items-center justify-center font-medium tabular-nums text-sm">
+        <div className="flex items-center justify-center whitespace-nowrap font-medium tabular-nums text-sm">
           Page {table.getState().pagination.pageIndex + 1} of{" "}
           {table.getPageCount()}
         </div>
         <div className="flex items-center space-x-2">
           <Button
             aria-label="Go to first page"
-            variant="outline"
+            variant="ghost"
             size="icon"
             className="hidden size-8 lg:flex"
             onClick={() => table.setPageIndex(0)}
@@ -77,7 +77,7 @@ export function DataTablePagination<TData>({
           </Button>
           <Button
             aria-label="Go to previous page"
-            variant="outline"
+            variant="ghost"
             size="icon"
             className="size-8"
             onClick={() => table.previousPage()}
@@ -87,7 +87,7 @@ export function DataTablePagination<TData>({
           </Button>
           <Button
             aria-label="Go to next page"
-            variant="outline"
+            variant="ghost"
             size="icon"
             className="size-8"
             onClick={() => table.nextPage()}
@@ -97,7 +97,7 @@ export function DataTablePagination<TData>({
           </Button>
           <Button
             aria-label="Go to last page"
-            variant="outline"
+            variant="ghost"
             size="icon"
             className="hidden size-8 lg:flex"
             onClick={() => table.setPageIndex(table.getPageCount() - 1)}

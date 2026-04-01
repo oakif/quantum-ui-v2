@@ -394,7 +394,7 @@ function DataGridScrollArea({
       {usesCustomVerticalScrollbar && hasCustomVerticalOverflow && (
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-e-0 top-(--data-grid-scrollbar-header-height) z-20 h-(--data-grid-scrollbar-track-height)"
+          className="pointer-events-none absolute right-0 top-(--data-grid-scrollbar-header-height) z-20 h-(--data-grid-scrollbar-track-height)"
         >
           <div
             className="pointer-events-auto relative h-full w-3 touch-none p-px"
@@ -402,7 +402,7 @@ function DataGridScrollArea({
           >
             <div
               className={cn(
-                "bg-border absolute end-px w-2",
+                "bg-border absolute right-px w-2",
                 "top-(--data-grid-scrollbar-thumb-top) h-(--data-grid-scrollbar-thumb-height)",
                 "rounded-full"
               )}
