@@ -12,6 +12,7 @@ component: true
 ```tsx
 import { DataTable } from "@/components/ui/data-table/data-table"
 import { DataTableColumnHeader } from "@/components/ui/data-table/data-table-column-header"
+import { DataTableToolbar } from "@/components/ui/data-table/data-table-toolbar"
 ```
 
 ```tsx
@@ -24,9 +25,21 @@ const table = useReactTable({ data, columns, ... })
 
 ### Resizable Columns
 
-Use the `resizable` prop to enable column resizing. Drag between column headers to adjust widths.
+Use the `resizable` prop to enable column resizing. Drag between column headers to adjust widths — a ghost indicator line appears during drag and snaps on release.
 
 <DataTableResizablePreview />
+
+### Sticky Header
+
+Use `stickyHeader` with a fixed `height` to pin the header while scrolling the body. The header gets a translucent backdrop blur effect.
+
+<DataTableStickyHeaderPreview />
+
+### With Toolbar & Filters
+
+Pass `DataTableToolbar` as children to add search, faceted filters, and view options. Columns with `meta.variant` and `meta.options` are auto-discovered as filterable.
+
+<DataTableToolbarPreview />
 
 ## Demo
 
@@ -38,6 +51,10 @@ See the [interactive demo](/demos/data-table) for a full visual reference.
 | --- | --- | --- |
 | `table` | `Table<TData>` | Required |
 | `resizable` | `boolean` | `false` |
+| `stickyHeader` | `boolean` | `false` |
+| `height` | `string` | - |
+| `recordCount` | `number` | auto |
+| `footerContent` | `ReactNode` | - |
 | `actionBar` | `ReactNode` | - |
 | `children` | `ReactNode` | - |
 

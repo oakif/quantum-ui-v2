@@ -17,6 +17,8 @@ import {
 import {
   DataTableDemoPreview,
   DataTableResizablePreview,
+  DataTableStickyHeaderPreview,
+  DataTableToolbarPreview,
 } from "@/components/docs/data-table-demos"
 import {
   CheckboxCardPreview,
@@ -401,6 +403,8 @@ export const mdxComponents = {
   CheckboxStandalonePreview,
   DataTableDemoPreview,
   DataTableResizablePreview,
+  DataTableStickyHeaderPreview,
+  DataTableToolbarPreview,
   Callout,
   LineChartDefaultDemo,
   LineChartFillDemo,

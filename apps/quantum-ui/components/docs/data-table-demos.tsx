@@ -16,6 +16,7 @@ import { CircleCheck, CircleDashed, CircleDot, CircleX, Timer } from "lucide-rea
 import { InlinePreview } from "@/components/docs/inline-preview"
 import { DataTable } from "@/registry/new-york-v4/ui/data-table/data-table"
 import { DataTableColumnHeader } from "@/registry/new-york-v4/ui/data-table/data-table-column-header"
+import { DataTableToolbar } from "@/registry/new-york-v4/ui/data-table/data-table-toolbar"
 import { Badge } from "@/registry/new-york-v4/ui/badge"
 import { Checkbox } from "@/registry/new-york-v4/ui/checkbox"
 
@@ -60,7 +61,7 @@ const sampleData: Task[] = Array.from({ length: 25 }, (_, i) => ({
   label: (["bug", "feature", "docs"] as const)[i % 3]!,
 }))
 
-const columns: ColumnDef<Task>[] = [
+const baseColumns: ColumnDef<Task>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -118,6 +119,11 @@ const columns: ColumnDef<Task>[] = [
       )
     },
     filterFn: (row, id, value) => value.includes(row.getValue(id)),
+    meta: {
+      label: "Status",
+      variant: "multiSelect" as const,
+      options: statuses.map((s) => ({ label: s.label, value: s.value })),
+    },
     size: 120,
   },
   {
@@ -129,11 +135,26 @@ const columns: ColumnDef<Task>[] = [
       return <span>{priority.label}</span>
     },
     filterFn: (row, id, value) => value.includes(row.getValue(id)),
+    meta: {
+      label: "Priority",
+      variant: "multiSelect" as const,
+      options: priorities.map((p) => ({ label: p.label, value: p.value })),
+    },
     size: 100,
   },
 ]
 
-function DataTableDemo({ resizable = false }: { resizable?: boolean }) {
+function DataTableDemo({
+  resizable = false,
+  stickyHeader = false,
+  height,
+  showToolbar = false,
+}: {
+  resizable?: boolean
+  stickyHeader?: boolean
+  height?: string
+  showToolbar?: boolean
+}) {
   const [sorting, setSorting] = React.useState([])
   const [columnFilters, setColumnFilters] = React.useState([])
   const [columnVisibility, setColumnVisibility] = React.useState({})
@@ -141,7 +162,7 @@ function DataTableDemo({ resizable = false }: { resizable?: boolean }) {
 
   const table = useReactTable({
     data: sampleData,
-    columns,
+    columns: baseColumns,
     enableColumnResizing: resizable,
     state: { sorting, columnFilters, columnVisibility, rowSelection },
     onSortingChange: setSorting,
@@ -157,14 +178,21 @@ function DataTableDemo({ resizable = false }: { resizable?: boolean }) {
     initialState: { pagination: { pageSize: 5 } },
   })
 
-  return <DataTable table={table} resizable={resizable} />
+  return (
+    <DataTable
+      table={table}
+      resizable={resizable}
+      stickyHeader={stickyHeader}
+      height={height}
+    >
+      {showToolbar && <DataTableToolbar table={table} />}
+    </DataTable>
+  )
 }
 
 export function DataTableDemoPreview() {
   return (
-    <InlinePreview
-      code={`<DataTable table={table} />`}
-    >
+    <InlinePreview code={`<DataTable table={table} />`}>
       <DataTableDemo />
     </InlinePreview>
   )
@@ -172,10 +200,30 @@ export function DataTableDemoPreview() {
 
 export function DataTableResizablePreview() {
   return (
-    <InlinePreview
-      code={`<DataTable table={table} resizable />`}
-    >
+    <InlinePreview code={`<DataTable table={table} resizable />`}>
       <DataTableDemo resizable />
+    </InlinePreview>
+  )
+}
+
+export function DataTableStickyHeaderPreview() {
+  return (
+    <InlinePreview
+      code={`<DataTable table={table} stickyHeader height="h-[300px]" />`}
+    >
+      <DataTableDemo stickyHeader height="h-[300px]" />
+    </InlinePreview>
+  )
+}
+
+export function DataTableToolbarPreview() {
+  return (
+    <InlinePreview
+      code={`<DataTable table={table} resizable stickyHeader height="h-[400px]">
+  <DataTableToolbar table={table} />
+</DataTable>`}
+    >
+      <DataTableDemo resizable stickyHeader height="h-[400px]" showToolbar />
     </InlinePreview>
   )
 }
