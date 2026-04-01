@@ -1,99 +1,354 @@
-"use client";
+"use client"
 
-import type { Column } from "@tanstack/react-table";
+import { HTMLAttributes, memo, ReactNode, useMemo } from "react"
 import {
-  ChevronDown,
+  getColumnHeaderLabel,
+  useDataGrid,
+} from "@/registry/new-york-v4/ui/data-table/data-grid"
+import { Column } from "@tanstack/react-table"
+import {
+  ArrowDown,
+  ArrowLeft,
+  ArrowLeftToLine,
+  ArrowRight,
+  ArrowRightToLine,
+  ArrowUp,
+  Check,
   ChevronsUpDown,
-  ChevronUp,
-  EyeOff,
-  X,
-} from "lucide-react";
+  PinOff,
+  Settings2,
+} from "lucide-react"
 
+import { cn } from "@/lib/utils"
+import { Button } from "@/registry/new-york-v4/ui/button"
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
-} from "@/registry/new-york-v4/ui/dropdown-menu";
-import { cn } from "@/lib/utils";
+} from "@/registry/new-york-v4/ui/dropdown-menu"
 
-interface DataTableColumnHeaderProps<TData, TValue>
-  extends React.ComponentProps<typeof DropdownMenuTrigger> {
-  column: Column<TData, TValue>;
-  label: string;
+interface DataTableColumnHeaderProps<
+  TData,
+  TValue,
+> extends HTMLAttributes<HTMLDivElement> {
+  column: Column<TData, TValue>
+  /** Displayed label. Falls back to meta.headerTitle, then string header, then column.id. */
+  label?: string
+  icon?: ReactNode
+  pinnable?: boolean
+  filter?: ReactNode
+  visibility?: boolean
 }
 
-export function DataTableColumnHeader<TData, TValue>({
+function DataTableColumnHeaderInner<TData, TValue>({
   column,
   label,
+  icon,
   className,
-  ...props
+  filter,
+  visibility = false,
 }: DataTableColumnHeaderProps<TData, TValue>) {
-  if (!column.getCanSort() && !column.getCanHide()) {
-    return <div className={cn(className)}>{label}</div>;
+  const { isLoading, table, props, recordCount } = useDataGrid()
+  const resolvedTitle = label ?? getColumnHeaderLabel(column)
+
+  const columnOrder = table.getState().columnOrder
+  const columnVisibilityKey = JSON.stringify(table.getState().columnVisibility)
+  const isSorted = column.getIsSorted()
+  const isPinned = column.getIsPinned()
+  const canSort = column.getCanSort()
+  const canPin = column.getCanPin()
+  const canResize = column.getCanResize()
+
+  const columnIndex = columnOrder.indexOf(column.id)
+  const canMoveLeft = columnIndex > 0
+  const canMoveRight = columnIndex < columnOrder.length - 1
+
+  const handleSort = () => {
+    if (isSorted === "asc") {
+      column.toggleSorting(true)
+    } else if (isSorted === "desc") {
+      column.clearSorting()
+    } else {
+      column.toggleSorting(false)
+    }
+  }
+
+  const headerLabelClassName = cn(
+    "text-secondary-foreground/80 inline-flex h-full items-center gap-1.5 font-normal [&_svg]:opacity-60 text-[0.8125rem] leading-[calc(1.125/0.8125)] [&_svg]:size-3.5",
+    className,
+  )
+
+  const headerButtonClassName = cn(
+    "text-secondary-foreground/80 hover:bg-secondary data-[state=open]:bg-secondary hover:text-foreground data-[state=open]:text-foreground -ms-2 px-2 font-normal h-7 rounded-md",
+    className,
+  )
+
+  const sortIcon =
+    canSort &&
+    (isSorted === "desc" ? (
+      <ArrowDown className="size-3.5" />
+    ) : isSorted === "asc" ? (
+      <ArrowUp className="size-3.5" />
+    ) : (
+      <ChevronsUpDown className="mt-px size-3.5" />
+    ))
+
+  const hasControls =
+    props.tableLayout?.columnsMovable ||
+    (props.tableLayout?.columnsVisibility && visibility) ||
+    (props.tableLayout?.columnsPinnable && canPin) ||
+    filter
+
+  const menuItems = useMemo(() => {
+    const items: ReactNode[] = []
+    let hasPreviousSection = false
+
+    // Filter section
+    if (filter) {
+      items.push(
+        <DropdownMenuGroup key="group-filter">
+          <DropdownMenuLabel key="filter">{filter}</DropdownMenuLabel>
+        </DropdownMenuGroup>,
+      )
+      hasPreviousSection = true
+    }
+
+    // Sort section
+    if (canSort) {
+      if (hasPreviousSection) {
+        items.push(<DropdownMenuSeparator key="sep-sort" />)
+      }
+      items.push(
+        <DropdownMenuItem
+          key="sort-asc"
+          onClick={() => {
+            if (isSorted === "asc") {
+              column.clearSorting()
+            } else {
+              column.toggleSorting(false)
+            }
+          }}
+          disabled={!canSort}
+        >
+          <ArrowUp className="size-3.5!" />
+          <span className="grow">Asc</span>
+          {isSorted === "asc" && (
+            <Check className="text-primary size-4 opacity-100!" />
+          )}
+        </DropdownMenuItem>,
+        <DropdownMenuItem
+          key="sort-desc"
+          onClick={() => {
+            if (isSorted === "desc") {
+              column.clearSorting()
+            } else {
+              column.toggleSorting(true)
+            }
+          }}
+          disabled={!canSort}
+        >
+          <ArrowDown className="size-3.5!" />
+          <span className="grow">Desc</span>
+          {isSorted === "desc" && (
+            <Check className="text-primary size-4 opacity-100!" />
+          )}
+        </DropdownMenuItem>,
+      )
+      hasPreviousSection = true
+    }
+
+    // Pin section
+    if (props.tableLayout?.columnsPinnable && canPin) {
+      if (hasPreviousSection) {
+        items.push(<DropdownMenuSeparator key="sep-pin" />)
+      }
+      items.push(
+        <DropdownMenuItem
+          key="pin-left"
+          onClick={() => column.pin(isPinned === "left" ? false : "left")}
+        >
+          <ArrowLeftToLine className="size-3.5!" aria-hidden="true" />
+          <span className="grow">Pin to left</span>
+          {isPinned === "left" && (
+            <Check className="text-primary size-4 opacity-100!" />
+          )}
+        </DropdownMenuItem>,
+        <DropdownMenuItem
+          key="pin-right"
+          onClick={() => column.pin(isPinned === "right" ? false : "right")}
+        >
+          <ArrowRightToLine className="size-3.5!" aria-hidden="true" />
+          <span className="grow">Pin to right</span>
+          {isPinned === "right" && (
+            <Check className="text-primary size-4 opacity-100!" />
+          )}
+        </DropdownMenuItem>,
+      )
+      hasPreviousSection = true
+    }
+
+    // Move section
+    if (props.tableLayout?.columnsMovable) {
+      if (hasPreviousSection) {
+        items.push(<DropdownMenuSeparator key="sep-move" />)
+      }
+      items.push(
+        <DropdownMenuItem
+          key="move-left"
+          onClick={() => {
+            if (columnIndex > 0) {
+              const newOrder = [...columnOrder]
+              const [movedColumn] = newOrder.splice(columnIndex, 1)
+              newOrder.splice(columnIndex - 1, 0, movedColumn)
+              table.setColumnOrder(newOrder)
+            }
+          }}
+          disabled={!canMoveLeft || isPinned !== false}
+        >
+          <ArrowLeft className="size-3.5!" aria-hidden="true" />
+          <span>Move to Left</span>
+        </DropdownMenuItem>,
+        <DropdownMenuItem
+          key="move-right"
+          onClick={() => {
+            if (columnIndex < columnOrder.length - 1) {
+              const newOrder = [...columnOrder]
+              const [movedColumn] = newOrder.splice(columnIndex, 1)
+              newOrder.splice(columnIndex + 1, 0, movedColumn)
+              table.setColumnOrder(newOrder)
+            }
+          }}
+          disabled={!canMoveRight || isPinned !== false}
+        >
+          <ArrowRight className="size-3.5!" aria-hidden="true" />
+          <span>Move to Right</span>
+        </DropdownMenuItem>,
+      )
+      hasPreviousSection = true
+    }
+
+    // Visibility section
+    if (props.tableLayout?.columnsVisibility && visibility) {
+      if (hasPreviousSection) {
+        items.push(<DropdownMenuSeparator key="sep-visibility" />)
+      }
+      items.push(
+        <DropdownMenuSub key="visibility">
+          <DropdownMenuSubTrigger>
+            <Settings2 className="size-3.5!" />
+            <span>Columns</span>
+          </DropdownMenuSubTrigger>
+          <DropdownMenuSubContent>
+            {table
+              .getAllColumns()
+              .filter((col) => col.getCanHide())
+              .map((col) => (
+                <DropdownMenuCheckboxItem
+                  key={col.id}
+                  checked={col.getIsVisible()}
+                  onSelect={(event) => event.preventDefault()}
+                  onCheckedChange={(value) => col.toggleVisibility(!!value)}
+                  className="capitalize"
+                >
+                  {getColumnHeaderLabel(col)}
+                </DropdownMenuCheckboxItem>
+              ))}
+          </DropdownMenuSubContent>
+        </DropdownMenuSub>,
+      )
+    }
+
+    return items
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    filter,
+    canSort,
+    isSorted,
+    column,
+    props.tableLayout?.columnsPinnable,
+    props.tableLayout?.columnsMovable,
+    props.tableLayout?.columnsVisibility,
+    canPin,
+    isPinned,
+    canMoveLeft,
+    canMoveRight,
+    visibility,
+    table,
+    columnIndex,
+    columnOrder,
+    columnVisibilityKey,
+  ])
+
+  if (hasControls) {
+    return (
+      <div className="flex h-full items-center justify-between gap-1.5">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              className={headerButtonClassName}
+              disabled={isLoading || recordCount === 0}
+            >
+              {icon && icon}
+              {resolvedTitle}
+              {sortIcon}
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="w-40" align="start">
+            {menuItems}
+          </DropdownMenuContent>
+        </DropdownMenu>
+        {props.tableLayout?.columnsPinnable && canPin && isPinned && (
+          <Button
+            size="icon"
+            variant="ghost"
+            className="-me-1 size-7 rounded-md"
+            onClick={() => column.pin(false)}
+            aria-label={`Unpin ${resolvedTitle} column`}
+            title={`Unpin ${resolvedTitle} column`}
+          >
+            <PinOff className="size-3.5! opacity-50!" aria-hidden="true" />
+          </Button>
+        )}
+      </div>
+    )
+  }
+
+  if (canSort || (props.tableLayout?.columnsResizable && canResize)) {
+    return (
+      <div className="flex h-full items-center">
+        <Button
+          variant="ghost"
+          className={headerButtonClassName}
+          disabled={isLoading || recordCount === 0}
+          onClick={handleSort}
+        >
+          {icon && icon}
+          {resolvedTitle}
+          {sortIcon}
+        </Button>
+      </div>
+    )
   }
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger
-        className={cn(
-          "-ml-1.5 flex h-8 items-center gap-1.5 rounded-md px-2 py-1.5 transition-colors duration-200 hover:bg-accent focus:outline-none focus:ring-1 focus:ring-ring data-[state=open]:bg-accent [&_svg]:size-4 [&_svg]:shrink-0 [&_svg]:text-muted-foreground",
-          className,
-        )}
-        {...props}
-      >
-        {label}
-        {column.getCanSort() &&
-          (column.getIsSorted() === "desc" ? (
-            <ChevronDown />
-          ) : column.getIsSorted() === "asc" ? (
-            <ChevronUp />
-          ) : (
-            <ChevronsUpDown />
-          ))}
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="start" className="w-28">
-        {column.getCanSort() && (
-          <>
-            <DropdownMenuCheckboxItem
-              className="relative pr-8 pl-2 [&>span:first-child]:right-2 [&>span:first-child]:left-auto [&_svg]:text-muted-foreground"
-              checked={column.getIsSorted() === "asc"}
-              onClick={() => column.toggleSorting(false)}
-            >
-              <ChevronUp />
-              Asc
-            </DropdownMenuCheckboxItem>
-            <DropdownMenuCheckboxItem
-              className="relative pr-8 pl-2 [&>span:first-child]:right-2 [&>span:first-child]:left-auto [&_svg]:text-muted-foreground"
-              checked={column.getIsSorted() === "desc"}
-              onClick={() => column.toggleSorting(true)}
-            >
-              <ChevronDown />
-              Desc
-            </DropdownMenuCheckboxItem>
-            {column.getIsSorted() && (
-              <DropdownMenuItem
-                className="pl-2 [&_svg]:text-muted-foreground"
-                onClick={() => column.clearSorting()}
-              >
-                <X />
-                Reset
-              </DropdownMenuItem>
-            )}
-          </>
-        )}
-        {column.getCanHide() && (
-          <DropdownMenuCheckboxItem
-            className="relative pr-8 pl-2 [&>span:first-child]:right-2 [&>span:first-child]:left-auto [&_svg]:text-muted-foreground"
-            checked={!column.getIsVisible()}
-            onClick={() => column.toggleVisibility(false)}
-          >
-            <EyeOff />
-            Hide
-          </DropdownMenuCheckboxItem>
-        )}
-      </DropdownMenuContent>
-    </DropdownMenu>
-  );
+    <div className={headerLabelClassName}>
+      {icon && icon}
+      {resolvedTitle}
+    </div>
+  )
 }
+
+const DataTableColumnHeader = memo(
+  DataTableColumnHeaderInner,
+) as typeof DataTableColumnHeaderInner
+
+export { DataTableColumnHeader, type DataTableColumnHeaderProps }
