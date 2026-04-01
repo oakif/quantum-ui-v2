@@ -15,6 +15,9 @@ import {
   ButtonWithIconsPreview,
 } from "@/components/docs/button-demos"
 import {
+  DataTableDemoPreview,
+} from "@/components/docs/data-table-demos"
+import {
   CheckboxCardPreview,
   CheckboxDemoPreview,
   CheckboxDescriptionPreview,
@@ -395,6 +398,7 @@ export const mdxComponents = {
   CheckboxInvalidPreview,
   CheckboxDisabledPreview,
   CheckboxStandalonePreview,
+  DataTableDemoPreview,
   Callout,
   LineChartDefaultDemo,
   LineChartFillDemo,

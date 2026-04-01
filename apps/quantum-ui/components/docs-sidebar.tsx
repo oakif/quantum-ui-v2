@@ -25,6 +25,7 @@ const PRIMARY_SECTIONS = [
 const COMPONENT_ITEMS = [
   { name: "Button", href: "/docs/components/radix/button" },
   { name: "Checkbox", href: "/docs/components/radix/checkbox" },
+  { name: "DataTable", href: "/docs/components/radix/data-table" },
 ] as const
 
 const CHART_ITEMS = [
