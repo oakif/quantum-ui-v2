@@ -5,7 +5,8 @@ import dts from 'vite-plugin-dts'
 import { defineConfig } from 'vite'
 
 const v4Root = resolve(__dirname, '../../apps/v4')
-const registry = resolve(v4Root, 'registry/new-york-v4/ui')
+const style = process.env.QUANTUM_UI_STYLE ?? 'coss-ui'
+const registry = resolve(v4Root, `registry/${style}`)
 
 export default defineConfig({
   plugins: [
@@ -16,6 +17,7 @@ export default defineConfig({
   resolve: {
     alias: {
       '@/': `${v4Root}/`,
+      '~ui/': `${registry}/`,
     },
   },
   build: {

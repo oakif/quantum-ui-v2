@@ -2,6 +2,7 @@ import { Accordion as Accordion_2 } from 'radix-ui';
 import { AlertDialog as AlertDialog_2 } from 'radix-ui';
 import { AspectRatio as AspectRatio_2 } from 'radix-ui';
 import { Avatar as Avatar_2 } from 'radix-ui';
+import { Button as Button_2 } from '../new-york-v4/ui/button';
 import { Checkbox as Checkbox_2 } from 'radix-ui';
 import { ClassProp } from 'class-variance-authority/types';
 import { cn } from '../../../apps/v4/lib/utils';
@@ -10,19 +11,22 @@ import { Dialog as Dialog_2 } from 'radix-ui';
 import { DropdownMenu as DropdownMenu_2 } from 'radix-ui';
 import { HoverCard as HoverCard_2 } from 'radix-ui';
 import { JSX } from 'react/jsx-runtime';
-import { Label as Label_2 } from 'radix-ui';
+import { Label as Label_2 } from '../new-york-v4/ui/label';
+import { Label as Label_3 } from 'radix-ui';
 import { Popover as Popover_2 } from 'radix-ui';
 import { Progress as Progress_2 } from 'radix-ui';
 import { RadioGroup as RadioGroup_2 } from 'radix-ui';
 import * as React_2 from 'react';
 import { ScrollArea as ScrollArea_2 } from 'radix-ui';
 import { Select as Select_2 } from 'radix-ui';
-import { Separator as Separator_2 } from 'radix-ui';
+import { Separator as Separator_2 } from '../new-york-v4/ui/separator';
+import { Separator as Separator_3 } from 'radix-ui';
 import { Slider as Slider_2 } from 'radix-ui';
 import { Switch as Switch_2 } from 'radix-ui';
 import { Tabs as Tabs_2 } from 'radix-ui';
 import { Toggle as Toggle_2 } from 'radix-ui';
 import { ToggleGroup as ToggleGroup_2 } from 'radix-ui';
+import { toggleVariants as toggleVariants_2 } from '../new-york-v4/ui/toggle';
 import { Tooltip as Tooltip_2 } from 'radix-ui';
 import { VariantProps } from 'class-variance-authority';
 
@@ -40,9 +44,9 @@ export declare function AlertDescription({ className, ...props }: React_2.Compon
 
 export declare function AlertDialog({ ...props }: React_2.ComponentProps<typeof AlertDialog_2.Root>): JSX.Element;
 
-export declare function AlertDialogAction({ className, variant, size, ...props }: React_2.ComponentProps<typeof AlertDialog_2.Action> & Pick<React_2.ComponentProps<typeof Button>, "variant" | "size">): JSX.Element;
+export declare function AlertDialogAction({ className, variant, size, ...props }: React_2.ComponentProps<typeof AlertDialog_2.Action> & Pick<React_2.ComponentProps<typeof Button_2>, "variant" | "size">): JSX.Element;
 
-export declare function AlertDialogCancel({ className, variant, size, ...props }: React_2.ComponentProps<typeof AlertDialog_2.Cancel> & Pick<React_2.ComponentProps<typeof Button>, "variant" | "size">): JSX.Element;
+export declare function AlertDialogCancel({ className, variant, size, ...props }: React_2.ComponentProps<typeof AlertDialog_2.Cancel> & Pick<React_2.ComponentProps<typeof Button_2>, "variant" | "size">): JSX.Element;
 
 export declare function AlertDialogContent({ className, size, ...props }: React_2.ComponentProps<typeof AlertDialog_2.Content> & {
     size?: "default" | "sm";
@@ -104,8 +108,9 @@ export declare function BreadcrumbPage({ className, ...props }: React_2.Componen
 
 export declare function BreadcrumbSeparator({ children, className, ...props }: React_2.ComponentProps<"li">): JSX.Element;
 
-export declare function Button({ className, variant, size, asChild, ...props }: React_2.ComponentProps<"button"> & VariantProps<typeof buttonVariants> & {
+export declare function Button({ className, variant, size, asChild, loading, disabled, children, ...props }: React_2.ComponentProps<"button"> & VariantProps<typeof buttonVariants> & {
     asChild?: boolean;
+    loading?: boolean;
 }): JSX.Element;
 
 export declare function ButtonGroup({ className, orientation, ...props }: React.ComponentProps<"div"> & VariantProps<typeof buttonGroupVariants>): JSX.Element;
@@ -234,7 +239,7 @@ export declare function FieldError({ className, children, errors, ...props }: Re
 
 export declare function FieldGroup({ className, ...props }: React.ComponentProps<"div">): JSX.Element;
 
-export declare function FieldLabel({ className, ...props }: React.ComponentProps<typeof Label>): JSX.Element;
+export declare function FieldLabel({ className, ...props }: React.ComponentProps<typeof Label_2>): JSX.Element;
 
 export declare function FieldLegend({ className, variant, ...props }: React.ComponentProps<"legend"> & {
     variant?: "legend" | "label";
@@ -258,7 +263,7 @@ export declare function HoverCardContent({ className, align, sideOffset, ...prop
 
 export declare function HoverCardTrigger({ ...props }: React_2.ComponentProps<typeof HoverCard_2.Trigger>): JSX.Element;
 
-export declare function Input({ className, type, ...props }: React_2.ComponentProps<"input">): JSX.Element;
+export declare function Input({ className, type, size, ...props }: Omit<React_2.ComponentProps<"input">, "size"> & VariantProps<typeof inputWrapperVariants>): JSX.Element;
 
 export declare function InputGroup({ className, ...props }: React_2.ComponentProps<"div">): JSX.Element;
 
@@ -268,7 +273,7 @@ declare const inputGroupAddonVariants: (props?: ({
     align?: "inline-start" | "inline-end" | "block-start" | "block-end" | null | undefined;
 } & ClassProp) | undefined) => string;
 
-export declare function InputGroupButton({ className, type, variant, size, ...props }: Omit<React_2.ComponentProps<typeof Button>, "size"> & VariantProps<typeof inputGroupButtonVariants>): JSX.Element;
+export declare function InputGroupButton({ className, type, variant, size, ...props }: Omit<React_2.ComponentProps<typeof Button_2>, "size"> & VariantProps<typeof inputGroupButtonVariants>): JSX.Element;
 
 declare const inputGroupButtonVariants: (props?: ({
     size?: "xs" | "sm" | "icon-xs" | "icon-sm" | null | undefined;
@@ -279,6 +284,10 @@ export declare function InputGroupInput({ className, ...props }: React_2.Compone
 export declare function InputGroupText({ className, ...props }: React_2.ComponentProps<"span">): JSX.Element;
 
 export declare function InputGroupTextarea({ className, ...props }: React_2.ComponentProps<"textarea">): JSX.Element;
+
+declare const inputWrapperVariants: (props?: ({
+    size?: "default" | "sm" | "lg" | null | undefined;
+} & ClassProp) | undefined) => string;
 
 export declare function Item({ className, variant, size, asChild, ...props }: React_2.ComponentProps<"div"> & VariantProps<typeof itemVariants> & {
     asChild?: boolean;
@@ -302,7 +311,7 @@ declare const itemMediaVariants: (props?: ({
     variant?: "image" | "default" | "icon" | null | undefined;
 } & ClassProp) | undefined) => string;
 
-export declare function ItemSeparator({ className, ...props }: React_2.ComponentProps<typeof Separator>): JSX.Element;
+export declare function ItemSeparator({ className, ...props }: React_2.ComponentProps<typeof Separator_2>): JSX.Element;
 
 export declare function ItemTitle({ className, ...props }: React_2.ComponentProps<"div">): JSX.Element;
 
@@ -313,7 +322,7 @@ declare const itemVariants: (props?: ({
 
 export declare function Kbd({ className, ...props }: React.ComponentProps<"kbd">): JSX.Element;
 
-export declare function Label({ className, ...props }: React_2.ComponentProps<typeof Label_2.Root>): JSX.Element;
+export declare function Label({ className, ...props }: React_2.ComponentProps<typeof Label_3.Root>): JSX.Element;
 
 export declare function NativeSelect({ className, size, ...props }: Omit<React_2.ComponentProps<"select">, "size"> & {
     size?: "sm" | "default";
@@ -335,7 +344,7 @@ export declare function PaginationLink({ className, isActive, size, ...props }: 
 
 declare type PaginationLinkProps = {
     isActive?: boolean;
-} & Pick<React_2.ComponentProps<typeof Button>, "size"> & React_2.ComponentProps<"a">;
+} & Pick<React_2.ComponentProps<typeof Button_2>, "size"> & React_2.ComponentProps<"a">;
 
 export declare function PaginationNext({ className, ...props }: React_2.ComponentProps<typeof PaginationLink>): JSX.Element;
 
@@ -373,13 +382,11 @@ export declare function SelectScrollUpButton({ className, ...props }: React_2.Co
 
 export declare function SelectSeparator({ className, ...props }: React_2.ComponentProps<typeof Select_2.Separator>): JSX.Element;
 
-export declare function SelectTrigger({ className, size, children, ...props }: React_2.ComponentProps<typeof Select_2.Trigger> & {
-    size?: "sm" | "default";
-}): JSX.Element;
+export declare function SelectTrigger({ className, children, ...props }: React_2.ComponentProps<typeof Select_2.Trigger>): JSX.Element;
 
 export declare function SelectValue({ ...props }: React_2.ComponentProps<typeof Select_2.Value>): JSX.Element;
 
-export declare function Separator({ className, orientation, decorative, ...props }: React_2.ComponentProps<typeof Separator_2.Root>): JSX.Element;
+export declare function Separator({ className, orientation, decorative, ...props }: React_2.ComponentProps<typeof Separator_3.Root>): JSX.Element;
 
 export declare function Sheet({ ...props }: React_2.ComponentProps<typeof Dialog_2.Root>): JSX.Element;
 
@@ -406,9 +413,7 @@ export declare function Slider({ className, defaultValue, value, min, max, ...pr
 
 export declare function Spinner({ className, ...props }: React.ComponentProps<"svg">): JSX.Element;
 
-export declare function Switch({ className, size, ...props }: React_2.ComponentProps<typeof Switch_2.Root> & {
-    size?: "sm" | "default";
-}): JSX.Element;
+export declare function Switch({ className, ...props }: React_2.ComponentProps<typeof Switch_2.Root>): JSX.Element;
 
 export declare function Table({ className, ...props }: React_2.ComponentProps<"table">): JSX.Element;
 
@@ -442,11 +447,11 @@ export declare function Textarea({ className, ...props }: React_2.ComponentProps
 
 export declare function Toggle({ className, variant, size, ...props }: React_2.ComponentProps<typeof Toggle_2.Root> & VariantProps<typeof toggleVariants>): JSX.Element;
 
-export declare function ToggleGroup({ className, variant, size, spacing, children, ...props }: React_2.ComponentProps<typeof ToggleGroup_2.Root> & VariantProps<typeof toggleVariants> & {
+export declare function ToggleGroup({ className, variant, size, spacing, children, ...props }: React_2.ComponentProps<typeof ToggleGroup_2.Root> & VariantProps<typeof toggleVariants_2> & {
     spacing?: number;
 }): JSX.Element;
 
-export declare function ToggleGroupItem({ className, children, variant, size, ...props }: React_2.ComponentProps<typeof ToggleGroup_2.Item> & VariantProps<typeof toggleVariants>): JSX.Element;
+export declare function ToggleGroupItem({ className, children, variant, size, ...props }: React_2.ComponentProps<typeof ToggleGroup_2.Item> & VariantProps<typeof toggleVariants_2>): JSX.Element;
 
 export declare const toggleVariants: (props?: ({
     variant?: "default" | "outline" | null | undefined;

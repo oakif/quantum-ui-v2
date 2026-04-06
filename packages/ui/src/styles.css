@@ -1,6 +1,8 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+/* Source path is resolved by vite alias ~ui/ — scan both style dirs for classes */
+@source "../../../apps/v4/registry/coss-ui";
 @source "../../../apps/v4/registry/new-york-v4/ui";
 
 /* shadcn keyframes */
