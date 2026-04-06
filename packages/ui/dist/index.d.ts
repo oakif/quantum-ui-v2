@@ -7,22 +7,28 @@ import { Checkbox as Checkbox_2 } from 'radix-ui';
 import { ClassProp } from 'class-variance-authority/types';
 import { cn } from '../../../apps/v4/lib/utils';
 import { Collapsible as Collapsible_2 } from 'radix-ui';
+import { Column } from '@tanstack/react-table';
+import { ComponentProps } from 'react';
 import { Dialog as Dialog_2 } from 'radix-ui';
 import { DropdownMenu as DropdownMenu_2 } from 'radix-ui';
 import { HoverCard as HoverCard_2 } from 'radix-ui';
+import { HTMLAttributes } from 'react';
 import { JSX } from 'react/jsx-runtime';
 import { Label as Label_2 } from '../new-york-v4/ui/label';
 import { Label as Label_3 } from 'radix-ui';
+import { Option as Option_2 } from '../../../lib/data-table/types';
 import { Popover as Popover_2 } from 'radix-ui';
 import { Progress as Progress_2 } from 'radix-ui';
 import { RadioGroup as RadioGroup_2 } from 'radix-ui';
 import * as React_2 from 'react';
+import { ReactNode } from 'react';
 import { ScrollArea as ScrollArea_2 } from 'radix-ui';
 import { Select as Select_2 } from 'radix-ui';
 import { Separator as Separator_2 } from '../new-york-v4/ui/separator';
 import { Separator as Separator_3 } from 'radix-ui';
 import { Slider as Slider_2 } from 'radix-ui';
 import { Switch as Switch_2 } from 'radix-ui';
+import { Table as Table_2 } from '@tanstack/react-table';
 import { Tabs as Tabs_2 } from 'radix-ui';
 import { Toggle as Toggle_2 } from 'radix-ui';
 import { ToggleGroup as ToggleGroup_2 } from 'radix-ui';
@@ -147,6 +153,155 @@ export declare function Collapsible({ ...props }: React.ComponentProps<typeof Co
 export declare function CollapsibleContent({ ...props }: React.ComponentProps<typeof Collapsible_2.CollapsibleContent>): JSX.Element;
 
 export declare function CollapsibleTrigger({ ...props }: React.ComponentProps<typeof Collapsible_2.CollapsibleTrigger>): JSX.Element;
+
+export declare function DataGrid<TData extends object>({ children, table, ...props }: DataGridProps<TData>): JSX.Element;
+
+export declare function DataGridContainer({ children, className, border, }: {
+    children: ReactNode;
+    className?: string;
+    border?: boolean;
+}): JSX.Element;
+
+declare interface DataGridContextProps<TData extends object> {
+    props: DataGridProps<TData>;
+    table: Table_2<TData>;
+    recordCount: number;
+    isLoading: boolean;
+}
+
+declare interface DataGridProps<TData extends object> {
+    className?: string;
+    table?: Table_2<TData>;
+    recordCount: number;
+    children?: ReactNode;
+    onRowClick?: (row: TData) => void;
+    isLoading?: boolean;
+    loadingMode?: "skeleton" | "spinner";
+    loadingMessage?: ReactNode | string;
+    fetchingMoreMessage?: ReactNode | string;
+    allRowsLoadedMessage?: ReactNode | string;
+    emptyMessage?: ReactNode | string;
+    tableLayout?: {
+        dense?: boolean;
+        cellBorder?: boolean;
+        rowBorder?: boolean;
+        rowRounded?: boolean;
+        stripped?: boolean;
+        headerBackground?: boolean;
+        headerBorder?: boolean;
+        headerSticky?: boolean;
+        footerSticky?: boolean;
+        width?: "auto" | "fixed";
+        columnsVisibility?: boolean;
+        columnsResizable?: boolean;
+        columnsResizeMode?: "onChange" | "onEnd";
+        columnsPinnable?: boolean;
+        columnsMovable?: boolean;
+        columnsDraggable?: boolean;
+        rowsDraggable?: boolean;
+        rowsPinnable?: boolean;
+    };
+    tableClassNames?: {
+        base?: string;
+        header?: string;
+        headerRow?: string;
+        headerSticky?: string;
+        footerSticky?: string;
+        body?: string;
+        bodyRow?: string;
+        footer?: string;
+        edgeCell?: string;
+    };
+}
+
+export declare function DataGridProvider<TData extends object>({ children, table, ...props }: DataGridProps<TData> & {
+    table: Table_2<TData>;
+}): JSX.Element;
+
+export declare function DataGridScrollArea({ children, className, orientation, ...props }: DataGridScrollAreaProps): JSX.Element;
+
+declare type DataGridScrollAreaOrientation = "horizontal" | "vertical" | "both";
+
+declare type DataGridScrollAreaProps = Omit<ComponentProps<typeof ScrollArea_2.Root>, "children"> & {
+    children: ReactNode;
+    orientation?: DataGridScrollAreaOrientation;
+};
+
+export declare function DataGridTable<TData>({ footerContent, renderHeader, }: {
+    footerContent?: ReactNode;
+    renderHeader?: boolean;
+}): JSX.Element;
+
+export declare function DataTable<TData extends object>({ table, recordCount, actionBar, children, className, resizable, stickyHeader, stickyFooter, height, footerContent, tableLayoutOverrides, }: DataTableProps<TData>): JSX.Element;
+
+export declare const DataTableColumnHeader: typeof DataTableColumnHeaderInner;
+
+declare function DataTableColumnHeaderInner<TData, TValue>({ column, label, icon, className, filter, visibility, }: DataTableColumnHeaderProps<TData, TValue>): JSX.Element;
+
+declare interface DataTableColumnHeaderProps<TData, TValue> extends HTMLAttributes<HTMLDivElement> {
+    column: Column<TData, TValue>;
+    /** Displayed label. Falls back to meta.headerTitle, then string header, then column.id. */
+    label?: string;
+    icon?: ReactNode;
+    pinnable?: boolean;
+    filter?: ReactNode;
+    visibility?: boolean;
+}
+
+export declare function DataTableFacetedFilter<TData, TValue>({ column, title, options, multiple, }: DataTableFacetedFilterProps<TData, TValue>): JSX.Element;
+
+declare interface DataTableFacetedFilterProps<TData, TValue> {
+    column?: Column<TData, TValue>;
+    title?: string;
+    options: Option_2[];
+    multiple?: boolean;
+}
+
+export declare function DataTablePagination<TData>({ table, pageSizeOptions, className, ...props }: DataTablePaginationProps<TData>): JSX.Element;
+
+declare interface DataTablePaginationProps<TData> extends React.ComponentProps<"div"> {
+    table: Table_2<TData>;
+    pageSizeOptions?: number[];
+}
+
+declare interface DataTableProps<TData extends object> {
+    table: Table_2<TData>;
+    recordCount?: number;
+    actionBar?: React_2.ReactNode;
+    children?: React_2.ReactNode;
+    className?: string;
+    resizable?: boolean;
+    stickyHeader?: boolean;
+    stickyFooter?: boolean;
+    height?: string;
+    footerContent?: React_2.ReactNode;
+    tableLayoutOverrides?: DataGridProps<TData>["tableLayout"];
+}
+
+export declare function DataTableSkeleton({ columnCount, rowCount, filterCount, cellWidths, withViewOptions, withPagination, shrinkZero, className, ...props }: DataTableSkeletonProps): JSX.Element;
+
+declare interface DataTableSkeletonProps extends React.ComponentProps<"div"> {
+    columnCount: number;
+    rowCount?: number;
+    filterCount?: number;
+    cellWidths?: string[];
+    withViewOptions?: boolean;
+    withPagination?: boolean;
+    shrinkZero?: boolean;
+}
+
+export declare function DataTableToolbar<TData>({ table, children, className, ...props }: DataTableToolbarProps<TData>): JSX.Element;
+
+declare interface DataTableToolbarProps<TData> extends React_2.ComponentProps<"div"> {
+    table: Table_2<TData>;
+}
+
+export declare function DataTableViewOptions<TData>({ table, disabled, ...props }: DataTableViewOptionsProps<TData>): JSX.Element;
+
+declare interface DataTableViewOptionsProps<TData> extends React_2.ComponentProps<typeof PopoverContent> {
+    table: Table_2<TData>;
+    disabled?: boolean;
+}
 
 export declare function Dialog({ ...props }: React_2.ComponentProps<typeof Dialog_2.Root>): JSX.Element;
 
@@ -466,4 +621,17 @@ export declare function TooltipProvider({ delayDuration, ...props }: React_2.Com
 
 export declare function TooltipTrigger({ ...props }: React_2.ComponentProps<typeof Tooltip_2.Trigger>): JSX.Element;
 
+export declare function useDataGrid(): DataGridContextProps<any>;
+
 export { }
+
+
+declare module "@tanstack/react-table" {
+    interface ColumnMeta<TData extends RowData, TValue> {
+        headerTitle?: string;
+        headerClassName?: string;
+        cellClassName?: string;
+        skeleton?: ReactNode;
+        expandedContent?: (row: TData) => ReactNode;
+    }
+}

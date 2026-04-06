@@ -12,7 +12,15 @@ export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
-    dts({ rollupTypes: true, include: ['src', registry] }),
+    dts({
+      rollupTypes: true,
+      include: ['src', registry],
+      exclude: [
+        '**/data-table-filter-list.tsx',
+        '**/data-table-filter-menu.tsx',
+        '**/data-table-sort-list.tsx',
+      ],
+    }),
   ],
   resolve: {
     alias: {
