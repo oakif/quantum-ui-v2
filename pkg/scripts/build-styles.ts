@@ -64,13 +64,36 @@ function resolve_imports(css_content: string, css_file_path: string): string {
 
 function apply_style_map(tsx_content: string, style_map: StyleMap): string {
   // Replace cn-* tokens in string literals with their Tailwind equivalents
-  // Handles both "cn-foo other-class" and standalone "cn-foo"
-  return tsx_content.replace(/\bcn-[\w-]+\b/g, (token) => {
+  let result = tsx_content.replace(/\bcn-[\w-]+\b/g, (token) => {
     const replacement = style_map[token]
     if (replacement) return replacement
     console.warn(`  warning: no style mapping for ${token}`)
     return token
   })
+
+  // Rewrite @ui/ imports to relative paths within generated output
+  result = result.replace(
+    /from ["']@ui\/lib\/([\w/-]+)["']/g,
+    'from "../lib/$1"',
+  )
+  result = result.replace(
+    /from ["']@ui\/components\/([\w/-]+)["']/g,
+    'from "../$1"',
+  )
+
+  return result
+}
+
+function copy_lib(style_name: string) {
+  const lib_src = path.join(UI_DIR, 'lib')
+  const lib_dest = path.join(DIST_DIR, style_name, 'lib')
+
+  if (!fs.existsSync(lib_src)) return
+
+  fs.mkdirSync(lib_dest, { recursive: true })
+  for (const file of fs.readdirSync(lib_src)) {
+    fs.copyFileSync(path.join(lib_src, file), path.join(lib_dest, file))
+  }
 }
 
 function discover_styles(): string[] {
@@ -177,6 +200,8 @@ function build_all() {
 
   for (const style of styles) {
     console.log(`\nbuilding style: ${style}`)
+    copy_lib(style)
+    console.log('  lib/ copied')
     for (const component of component_dirs) {
       process.stdout.write(`  ${component}...`)
       build_component(component, style)
