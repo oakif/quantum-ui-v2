@@ -73,27 +73,51 @@ function apply_style_map(tsx_content: string, style_map: StyleMap): string {
 
   // Rewrite @ui/ imports to relative paths within generated output
   result = result.replace(
-    /from ["']@ui\/lib\/([\w/-]+)["']/g,
+    /from ["']@ui\/lib\/([\w./-]+)["']/g,
     'from "../lib/$1"',
   )
   result = result.replace(
-    /from ["']@ui\/components\/([\w/-]+)["']/g,
+    /from ["']@ui\/components\/([\w./-]+)["']/g,
     'from "../$1"',
+  )
+  result = result.replace(
+    /from ["']@ui\/hooks\/([\w./-]+)["']/g,
+    'from "../hooks/$1"',
+  )
+  // Also handle @/ imports (legacy, from upstream data-table utils)
+  result = result.replace(
+    /from ["']@\/lib\/([\w./-]+)["']/g,
+    'from "../lib/$1"',
+  )
+  result = result.replace(
+    /from ["']@\/hooks\/([\w./-]+)["']/g,
+    'from "../hooks/$1"',
   )
 
   return result
 }
 
-function copy_lib(style_name: string) {
-  const lib_src = path.join(UI_DIR, 'lib')
-  const lib_dest = path.join(DIST_DIR, style_name, 'lib')
-
-  if (!fs.existsSync(lib_src)) return
-
-  fs.mkdirSync(lib_dest, { recursive: true })
-  for (const file of fs.readdirSync(lib_src)) {
-    fs.copyFileSync(path.join(lib_src, file), path.join(lib_dest, file))
+function copy_tree(src: string, dest: string) {
+  if (!fs.existsSync(src)) return
+  fs.mkdirSync(dest, { recursive: true })
+  for (const entry of fs.readdirSync(src, { withFileTypes: true })) {
+    const src_path = path.join(src, entry.name)
+    const dest_path = path.join(dest, entry.name)
+    if (entry.isDirectory()) {
+      copy_tree(src_path, dest_path)
+    } else if (entry.name.endsWith('.ts') || entry.name.endsWith('.tsx')) {
+      // Rewrite imports in TS files
+      const content = fs.readFileSync(src_path, 'utf-8')
+      fs.writeFileSync(dest_path, apply_style_map(content, {}))
+    } else {
+      fs.copyFileSync(src_path, dest_path)
+    }
   }
+}
+
+function copy_supporting_files(style_name: string) {
+  copy_tree(path.join(UI_DIR, 'lib'), path.join(DIST_DIR, style_name, 'lib'))
+  copy_tree(path.join(UI_DIR, 'hooks'), path.join(DIST_DIR, style_name, 'hooks'))
 }
 
 function discover_styles(): string[] {
@@ -118,15 +142,14 @@ function build_component(component_name: string, style_name: string): boolean {
   const css_file = path.join(component_dir, `${style_name}.css`)
 
   if (!fs.existsSync(css_file)) {
-    // No style file for this component+style combo; copy TSX as-is
-    // (component has no style-specific tokens, e.g. simple-select)
-    const tsx_files = fs.readdirSync(component_dir).filter(f => f.endsWith('.tsx'))
+    // No style file for this component+style combo; copy files with import rewriting only
+    const tsx_files = fs.readdirSync(component_dir).filter(f => f.endsWith('.tsx') || f.endsWith('.ts'))
     const out_dir = path.join(DIST_DIR, style_name, component_name)
     fs.mkdirSync(out_dir, { recursive: true })
 
     for (const tsx_file of tsx_files) {
       const content = fs.readFileSync(path.join(component_dir, tsx_file), 'utf-8')
-      fs.writeFileSync(path.join(out_dir, tsx_file), content)
+      fs.writeFileSync(path.join(out_dir, tsx_file), apply_style_map(content, {}))
     }
     return true
   }
@@ -137,7 +160,7 @@ function build_component(component_name: string, style_name: string): boolean {
   const style_map = create_style_map(resolved_css)
 
   // Process all TSX files in the component directory
-  const tsx_files = fs.readdirSync(component_dir).filter(f => f.endsWith('.tsx'))
+  const tsx_files = fs.readdirSync(component_dir).filter(f => f.endsWith('.tsx') || f.endsWith('.ts'))
   const out_dir = path.join(DIST_DIR, style_name, component_name)
   fs.mkdirSync(out_dir, { recursive: true })
 
@@ -162,16 +185,27 @@ function generate_index(style_name: string) {
 
   for (const dir of component_dirs) {
     const tsx_files = fs.readdirSync(path.join(style_dir, dir.name))
-      .filter(f => f.endsWith('.tsx'))
+      .filter(f => f.endsWith('.tsx') || f.endsWith('.ts'))
 
     for (const tsx_file of tsx_files) {
       const file_path = path.join(style_dir, dir.name, tsx_file)
       const content = fs.readFileSync(file_path, 'utf-8')
 
-      // Extract named exports
-      const export_matches = content.matchAll(/export\s+\{([^}]+)\}/g)
-      for (const match of export_matches) {
-        const names = match[1].split(',').map(n => n.trim()).filter(Boolean)
+      // Extract named exports: "export { X, Y }", "export function X", "export const X", "export type X"
+      const names: string[] = []
+
+      // export { X, Y, Z }
+      for (const match of content.matchAll(/export\s+\{([^}]+)\}/g)) {
+        names.push(...match[1].split(',').map(n => n.trim()).filter(Boolean))
+      }
+
+      // export function X, export const X, export type X
+      for (const match of content.matchAll(/export\s+(?:function|const|type)\s+(\w+)/g)) {
+        const name = match[1]
+        if (!names.includes(name)) names.push(name)
+      }
+
+      if (names.length > 0) {
         const rel_path = `./${dir.name}/${tsx_file.replace('.tsx', '')}`
         exports.push(`export { ${names.join(', ')} } from '${rel_path}'`)
       }
@@ -200,8 +234,8 @@ function build_all() {
 
   for (const style of styles) {
     console.log(`\nbuilding style: ${style}`)
-    copy_lib(style)
-    console.log('  lib/ copied')
+    copy_supporting_files(style)
+    console.log('  lib/ + hooks/ copied')
     for (const component of component_dirs) {
       process.stdout.write(`  ${component}...`)
       build_component(component, style)

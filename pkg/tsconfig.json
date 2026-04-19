@@ -13,8 +13,10 @@
     "baseUrl": ".",
     "paths": {
       "~ui/*": ["generated/coss/*"],
-      "@ui/*": ["../ui/*"]
+      "@ui/*": ["../ui/*"],
+      "~legacy/*": ["../upstream/registry/coss-ui/*"],
+      "@/*": ["../upstream/*"]
     }
   },
-  "include": ["src", "generated/coss"]
+  "include": ["src", "generated/coss", "../upstream/registry/coss-ui"]
 }

@@ -3,6 +3,7 @@
 
 /* Scan generated components for Tailwind class usage */
 @source "../generated/coss";
+@source "../../upstream/registry/coss-ui";
 
 /* shadcn keyframes */
 @theme inline {
