@@ -45,3 +45,6 @@ tsconfig.tsbuildinfo
 .playwright-mcp
 shadcn-workspace
 .codex-artifacts
+
+# generated style output
+pkg/generated
