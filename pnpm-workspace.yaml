@@ -1,7 +1,8 @@
 packages:
-  - "apps/*"
-  - "packages/*"
+  - "pkg"
+  - "demo"
+  - "upstream"
+  - "upstream/packages/*"
   - "!**/test/**"
   - "!**/fixtures/**"
   - "!**/temp/**"
-  - "!packages/tests/temp/**"
