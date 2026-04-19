@@ -77,9 +77,9 @@ function getPinningStyles<TData>(column: Column<TData>): CSSProperties {
   return {
     left: isPinned === "left" ? `${column.getStart("left")}px` : undefined,
     right: isPinned === "right" ? `${column.getAfter("right")}px` : undefined,
-    position: isPinned ? "sticky" : undefined,
+    position: isPinned ? "sticky" : "relative",
     width: column.getSize(),
-    zIndex: isPinned ? 1 : undefined,
+    zIndex: isPinned ? 1 : 0,
   }
 }
 
@@ -631,9 +631,12 @@ function DataGridTableHeadRowCell<TData>({
         isLastLeftPinned ? "left" : isFirstRightPinned ? "right" : undefined
       }
       className={cn(
-        "text-secondary-foreground/80 h-10 relative overflow-visible text-left align-middle font-normal rtl:text-right [&:has([role=checkbox])]:pe-0",
+        "text-secondary-foreground/80 h-10 relative text-left align-middle font-normal rtl:text-right [&:has([role=checkbox])]:pe-0",
         headerCellSpacing,
         props.tableLayout?.cellBorder && "border-e",
+        props.tableLayout?.columnsResizable &&
+          column.getCanResize() &&
+          "overflow-visible",
         props.tableLayout?.columnsResizable &&
           column.getCanResize() &&
           isLastVisibleColumn &&
@@ -702,6 +705,9 @@ function DataGridTableHeadRowCellResize<TData>({
           isLastVisibleColumn
             ? "end-0 w-5 justify-end before:hidden"
             : "-end-2 w-5 justify-center before:absolute before:inset-y-0 before:w-px before:-translate-x-px before:bg-border",
+          props.tableLayout?.cellBorder &&
+            !column.getIsResizing() &&
+            "before:hidden",
           column.getIsResizing() &&
             (isResizeModeOnEnd
               ? "opacity-100"
@@ -800,7 +806,13 @@ function DataGridTableBody({ children }: { children: ReactNode }) {
 function DataGridTableFoot({ children }: { children: ReactNode }) {
   const { props } = useDataGrid()
   return (
-    <tfoot className={cn("border-t", props.tableClassNames?.footer)}>
+    <tfoot
+      className={cn(
+        "border-t",
+        props.tableLayout?.footerSticky && props.tableClassNames?.footerSticky,
+        props.tableClassNames?.footer
+      )}
+    >
       {children}
     </tfoot>
   )
@@ -838,7 +850,7 @@ function DataGridTableFootRowCell({
     <td
       colSpan={colSpan}
       className={cn(
-        "text-secondary-foreground/80 border-t align-middle font-medium",
+        "text-secondary-foreground/80 whitespace-nowrap truncate border-t align-middle font-medium",
         spacing,
         props.tableLayout?.cellBorder && "border-e",
         className
@@ -855,7 +867,7 @@ function DataGridTableBodyRowSkeleton({ children }: { children: ReactNode }) {
   return (
     <tr
       className={cn(
-        "hover:bg-muted/40 data-[state=selected]:bg-muted/50",
+        "transition-colors duration-100 hover:bg-muted/40 data-[state=selected]:bg-muted/50",
         props.onRowClick && "cursor-pointer",
         !props.tableLayout?.stripped &&
           props.tableLayout?.rowBorder &&
@@ -893,9 +905,12 @@ function DataGridTableBodyRowSkeletonCell<TData>({
           : undefined
       }
       className={cn(
-        "truncate align-middle",
+        "align-middle",
         bodyCellSpacing,
         props.tableLayout?.cellBorder && "border-e",
+        props.tableLayout?.columnsResizable &&
+          column.getCanResize() &&
+          "truncate",
         column.columnDef.meta?.cellClassName,
         props.tableLayout?.columnsPinnable &&
           column.getCanPin() &&
@@ -945,7 +960,7 @@ function DataGridTableBodyRow<TData>({
       data-row-pinned-boundary={pinnedBoundary}
       onClick={() => props.onRowClick && props.onRowClick(row.original)}
       className={cn(
-        "hover:bg-muted/40 data-[state=selected]:bg-muted/50",
+        "transition-colors duration-100 hover:bg-muted/40 data-[state=selected]:bg-muted/50",
         props.onRowClick && "cursor-pointer",
         !props.tableLayout?.stripped &&
           props.tableLayout?.rowBorder &&
@@ -1034,9 +1049,12 @@ function DataGridTableBodyRowCell<TData>({
         isLastLeftPinned ? "left" : isFirstRightPinned ? "right" : undefined
       }
       className={cn(
-        "truncate align-middle",
+        "align-middle",
         bodyCellSpacing,
         props.tableLayout?.cellBorder && "border-e",
+        props.tableLayout?.columnsResizable &&
+          column.getCanResize() &&
+          "truncate",
         cell.column.columnDef.meta?.cellClassName,
         props.tableLayout?.columnsPinnable &&
           column.getCanPin() &&

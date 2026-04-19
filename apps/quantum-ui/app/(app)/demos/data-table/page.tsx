@@ -21,8 +21,14 @@ import {
 import { DataTable } from "@/registry/new-york-v4/ui/data-table/data-table"
 import { DataTableColumnHeader } from "@/registry/new-york-v4/ui/data-table/data-table-column-header"
 import { DataTableToolbar } from "@/registry/new-york-v4/ui/data-table/data-table-toolbar"
+import {
+  DataGridTableFootRow,
+  DataGridTableFootRowCell,
+} from "@/registry/new-york-v4/ui/data-table/data-grid-table"
 import { Badge } from "@/registry/new-york-v4/ui/badge"
 import { Checkbox } from "@/registry/new-york-v4/ui/checkbox"
+import { Switch } from "@/registry/new-york-v4/ui/switch"
+import { Label } from "@/registry/new-york-v4/ui/label"
 
 // Sample data
 type Task = {
@@ -47,20 +53,32 @@ const priorities = [
   { value: "high", label: "High" },
 ]
 
-const data: Task[] = Array.from({ length: 50 }, (_, i) => ({
+const TITLES = [
+  "Fix login page redirect loop",
+  "Add dark mode toggle to settings",
+  "Migrate database to PostgreSQL",
+  "Implement file upload with drag and drop",
+  "Refactor authentication middleware",
+  "Write integration tests for API endpoints",
+  "Update dependencies to latest versions",
+  "Design new dashboard layout",
+  "Optimize image loading performance",
+  "Add email notification system",
+  "Set up CI/CD pipeline for staging",
+  "Create user onboarding flow",
+  "Implement rate limiting on API",
+  "Add search functionality to dashboard",
+  "Fix memory leak in WebSocket handler",
+  "Redesign settings page layout",
+  "Add export to CSV feature",
+  "Implement two-factor authentication",
+  "Fix timezone handling in scheduler",
+  "Add real-time collaboration support",
+]
+
+const data: Task[] = Array.from({ length: 100 }, (_, i) => ({
   id: `TASK-${1000 + i}`,
-  title: [
-    "Fix login page redirect loop",
-    "Add dark mode toggle to settings",
-    "Migrate database to PostgreSQL",
-    "Implement file upload with drag and drop",
-    "Refactor authentication middleware",
-    "Write integration tests for API endpoints",
-    "Update dependencies to latest versions",
-    "Design new dashboard layout",
-    "Optimize image loading performance",
-    "Add email notification system",
-  ][i % 10]!,
+  title: TITLES[i % TITLES.length]!,
   status: (["backlog", "todo", "in-progress", "done", "canceled"] as const)[i % 5]!,
   priority: (["low", "medium", "high"] as const)[i % 3]!,
   label: (["bug", "feature", "docs"] as const)[i % 3]!,
@@ -89,6 +107,7 @@ const columns: ColumnDef<Task>[] = [
     enableSorting: false,
     enableHiding: false,
     enableResizing: false,
+    enablePinning: false,
     size: 40,
   },
   {
@@ -167,26 +186,86 @@ const columns: ColumnDef<Task>[] = [
   },
 ]
 
+function TotalsFooter({ table }: { table: ReturnType<typeof useReactTable<Task>> }) {
+  const filtered = table.getFilteredRowModel().rows
+  const doneCount = filtered.filter((r) => r.original.status === "done").length
+  const highCount = filtered.filter((r) => r.original.priority === "high").length
+
+  return (
+    <DataGridTableFootRow>
+      <DataGridTableFootRowCell />
+      <DataGridTableFootRowCell>
+        <span className="font-semibold">{filtered.length} tasks</span>
+      </DataGridTableFootRowCell>
+      <DataGridTableFootRowCell />
+      <DataGridTableFootRowCell>
+        <span>{doneCount} done</span>
+      </DataGridTableFootRowCell>
+      <DataGridTableFootRowCell>
+        <span>{highCount} high</span>
+      </DataGridTableFootRowCell>
+    </DataGridTableFootRow>
+  )
+}
+
+function ToggleSwitch({
+  id,
+  label,
+  checked,
+  onCheckedChange,
+}: {
+  id: string
+  label: string
+  checked: boolean
+  onCheckedChange: (checked: boolean) => void
+}) {
+  return (
+    <div className="flex items-center gap-2">
+      <Switch id={id} checked={checked} onCheckedChange={onCheckedChange} />
+      <Label htmlFor={id}>{label}</Label>
+    </div>
+  )
+}
+
 export default function DataTableDemoPage() {
-  const [sorting, setSorting] = React.useState([])
-  const [columnFilters, setColumnFilters] = React.useState([])
+  const [sorting, setSorting] = React.useState<{ id: string; desc: boolean }[]>([])
+  const [columnFilters, setColumnFilters] = React.useState<{ id: string; value: unknown }[]>([])
   const [columnVisibility, setColumnVisibility] = React.useState({})
   const [rowSelection, setRowSelection] = React.useState({})
+  const [columnPinning, setColumnPinning] = React.useState({})
+  const [columnOrder, setColumnOrder] = React.useState<string[]>([])
+
+  // Layout toggles (ReUI tableLayout props)
+  const [dense, setDense] = React.useState(false)
+  const [stripedRows, setStripedRows] = React.useState(false)
+  const [cellBorders, setCellBorders] = React.useState(false)
+  const [rowBorders, setRowBorders] = React.useState(true)
+  const [rowRounded, setRowRounded] = React.useState(false)
+  const [headerBackground, setHeaderBackground] = React.useState(true)
+  const [stickyFooter, setStickyFooter] = React.useState(true)
+  const [columnsPinnable, setColumnsPinnable] = React.useState(false)
+  const [columnsMovable, setColumnsMovable] = React.useState(false)
+  const [resizable, setResizable] = React.useState(true)
 
   const table = useReactTable({
     data,
     columns,
-    enableColumnResizing: true,
+    enableColumnResizing: resizable,
+    enableColumnPinning: columnsPinnable,
     state: {
       sorting,
       columnFilters,
       columnVisibility,
       rowSelection,
+      columnPinning,
+      columnOrder,
     },
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
+    onColumnPinningChange: setColumnPinning,
+    onColumnOrderChange: setColumnOrder,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -194,7 +273,7 @@ export default function DataTableDemoPage() {
     getFacetedRowModel: getFacetedRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
     initialState: {
-      pagination: { pageSize: 10 },
+      pagination: { pageSize: 20 },
     },
   })
 
@@ -208,7 +287,37 @@ export default function DataTableDemoPage() {
       </PageHeader>
       <div className="container-wrapper flex-1 pb-12">
         <div className="container space-y-4">
-          <DataTable table={table} resizable stickyHeader height="h-[600px]">
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
+            <ToggleSwitch id="dense" label="Dense" checked={dense} onCheckedChange={setDense} />
+            <ToggleSwitch id="striped" label="Striped rows" checked={stripedRows} onCheckedChange={setStripedRows} />
+            <ToggleSwitch id="cell-borders" label="Cell borders" checked={cellBorders} onCheckedChange={setCellBorders} />
+            <ToggleSwitch id="row-borders" label="Row borders" checked={rowBorders} onCheckedChange={setRowBorders} />
+            <ToggleSwitch id="row-rounded" label="Rounded rows" checked={rowRounded} onCheckedChange={setRowRounded} />
+            <ToggleSwitch id="header-bg" label="Header background" checked={headerBackground} onCheckedChange={setHeaderBackground} />
+            <ToggleSwitch id="sticky-footer" label="Sticky footer" checked={stickyFooter} onCheckedChange={setStickyFooter} />
+            <ToggleSwitch id="pinnable" label="Column pinning" checked={columnsPinnable} onCheckedChange={setColumnsPinnable} />
+            <ToggleSwitch id="resizable" label="Resizable" checked={resizable} onCheckedChange={setResizable} />
+            <ToggleSwitch id="movable" label="Column reorder" checked={columnsMovable} onCheckedChange={setColumnsMovable} />
+          </div>
+
+          <DataTable
+            table={table}
+            resizable={resizable}
+            stickyHeader
+            stickyFooter={stickyFooter}
+            height="h-[600px]"
+            tableLayoutOverrides={{
+              dense,
+              stripped: stripedRows,
+              cellBorder: cellBorders,
+              rowBorder: rowBorders,
+              rowRounded,
+              headerBackground,
+              columnsPinnable,
+              columnsMovable,
+            }}
+            footerContent={<TotalsFooter table={table} />}
+          >
             <DataTableToolbar table={table} />
           </DataTable>
         </div>

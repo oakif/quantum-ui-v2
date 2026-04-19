@@ -46,7 +46,7 @@ export function DataTable<TData extends object>({
         headerSticky: stickyHeader,
         footerSticky: stickyFooter,
         headerBorder: true,
-        rowBorder: true,
+        rowBorder: false,
         ...tableLayoutOverrides,
       }}
     >

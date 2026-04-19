@@ -3,7 +3,7 @@
 import * as React from "react"
 import { type Table as TanstackTable } from "@tanstack/react-table"
 
-import { DataGrid, DataGridContainer } from "@/registry/new-york-v4/ui/data-table/data-grid"
+import { DataGrid, DataGridContainer, type DataGridProps } from "@/registry/new-york-v4/ui/data-table/data-grid"
 import { DataGridScrollArea } from "@/registry/new-york-v4/ui/data-table/data-grid-scroll-area"
 import { DataGridTable } from "@/registry/new-york-v4/ui/data-table/data-grid-table"
 import { DataTablePagination } from "@/registry/new-york-v4/ui/data-table/data-table-pagination"
@@ -17,8 +17,10 @@ interface DataTableProps<TData extends object> {
   className?: string
   resizable?: boolean
   stickyHeader?: boolean
+  stickyFooter?: boolean
   height?: string
   footerContent?: React.ReactNode
+  tableLayoutOverrides?: DataGridProps<TData>["tableLayout"]
 }
 
 export function DataTable<TData extends object>({
@@ -29,8 +31,10 @@ export function DataTable<TData extends object>({
   className,
   resizable = false,
   stickyHeader = false,
+  stickyFooter = false,
   height,
   footerContent,
+  tableLayoutOverrides,
 }: DataTableProps<TData>) {
   return (
     <DataGrid
@@ -40,8 +44,10 @@ export function DataTable<TData extends object>({
         columnsResizable: resizable,
         columnsResizeMode: "onEnd",
         headerSticky: stickyHeader,
+        footerSticky: stickyFooter,
         headerBorder: true,
         rowBorder: true,
+        ...tableLayoutOverrides,
       }}
     >
       <div className={cn("flex w-full flex-col gap-2.5", className)}>
