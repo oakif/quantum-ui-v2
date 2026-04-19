@@ -8,11 +8,17 @@ import { cn } from "@/lib/utils"
 function Switch({
   className,
   size = "default",
+  label,
+  description,
+  card,
   ...props
 }: React.ComponentProps<typeof SwitchPrimitive.Root> & {
   size?: "sm" | "default"
+  label?: string
+  description?: string
+  card?: boolean
 }) {
-  return (
+  const switchElement = (
     <SwitchPrimitive.Root
       data-slot="switch"
       data-size={size}
@@ -29,6 +35,32 @@ function Switch({
         )}
       />
     </SwitchPrimitive.Root>
+  )
+
+  if (!label) return switchElement
+
+  const hasDescription = !!description
+
+  return (
+    <label
+      data-slot="switch-field"
+      className={cn(
+        "group/switch-field flex gap-3 select-none",
+        hasDescription ? "items-start" : "items-center",
+        card && "rounded-lg border-[1.5px] p-3 transition-[background-color,border-color] duration-500 ease hover:bg-accent/30 has-[[data-state=checked]]:border-primary/30 has-[[data-state=checked]]:bg-primary/3 dark:has-[[data-state=checked]]:bg-primary/5",
+        props.disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer",
+      )}
+    >
+      <div className={cn(hasDescription && "pt-0.5")}>
+        {switchElement}
+      </div>
+      <div className="grid gap-1">
+        <span className="text-sm font-medium leading-none">{label}</span>
+        {description && (
+          <span className="text-sm text-muted-foreground">{description}</span>
+        )}
+      </div>
+    </label>
   )
 }
 
