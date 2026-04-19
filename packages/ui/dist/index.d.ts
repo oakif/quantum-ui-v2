@@ -16,7 +16,6 @@ import { HTMLAttributes } from 'react';
 import { JSX } from 'react/jsx-runtime';
 import { Label as Label_2 } from '../new-york-v4/ui/label';
 import { Label as Label_3 } from 'radix-ui';
-import { Option as Option_2 } from '../../../lib/data-table/types';
 import { Popover as Popover_2 } from 'radix-ui';
 import { Progress as Progress_2 } from 'radix-ui';
 import { RadioGroup as RadioGroup_2 } from 'radix-ui';
@@ -248,6 +247,14 @@ declare interface DataTableColumnHeaderProps<TData, TValue> extends HTMLAttribut
     visibility?: boolean;
 }
 
+export declare type DataTableConfig = typeof dataTableConfig;
+
+export declare const dataTableConfig: {
+    filterVariants: readonly ["text", "number", "range", "date", "dateRange", "boolean", "select", "multiSelect"];
+    operators: readonly ["iLike", "notILike", "eq", "ne", "inArray", "notInArray", "isEmpty", "isNotEmpty", "lt", "lte", "gt", "gte", "isBetween", "isRelativeToToday"];
+    joinOperators: readonly ["and", "or"];
+};
+
 export declare function DataTableFacetedFilter<TData, TValue>({ column, title, options, multiple, }: DataTableFacetedFilterProps<TData, TValue>): JSX.Element;
 
 declare interface DataTableFacetedFilterProps<TData, TValue> {
@@ -412,6 +419,8 @@ declare const fieldVariants: (props?: ({
     orientation?: "horizontal" | "vertical" | "responsive" | null | undefined;
 } & ClassProp) | undefined) => string;
 
+export declare type FilterVariant = DataTableConfig["filterVariants"][number];
+
 export declare function HoverCard({ ...props }: React_2.ComponentProps<typeof HoverCard_2.Root>): JSX.Element;
 
 export declare function HoverCardContent({ className, align, sideOffset, ...props }: React_2.ComponentProps<typeof HoverCard_2.Content>): JSX.Element;
@@ -486,6 +495,14 @@ export declare function NativeSelect({ className, size, ...props }: Omit<React_2
 export declare function NativeSelectOptGroup({ className, ...props }: React_2.ComponentProps<"optgroup">): JSX.Element;
 
 export declare function NativeSelectOption({ ...props }: React_2.ComponentProps<"option">): JSX.Element;
+
+declare interface Option_2 {
+    label: string;
+    value: string;
+    count?: number;
+    icon?: React.FC<React.SVGProps<SVGSVGElement>>;
+}
+export { Option_2 as Option }
 
 export declare function Pagination({ className, ...props }: React_2.ComponentProps<"nav">): JSX.Element;
 
@@ -568,7 +585,11 @@ export declare function Slider({ className, defaultValue, value, min, max, ...pr
 
 export declare function Spinner({ className, ...props }: React.ComponentProps<"svg">): JSX.Element;
 
-export declare function Switch({ className, ...props }: React_2.ComponentProps<typeof Switch_2.Root>): JSX.Element;
+export declare function Switch({ className, label, description, card, ...props }: React_2.ComponentProps<typeof Switch_2.Root> & {
+    label?: string;
+    description?: string;
+    card?: boolean;
+}): JSX.Element;
 
 export declare function Table({ className, ...props }: React_2.ComponentProps<"table">): JSX.Element;
 
@@ -633,5 +654,18 @@ declare module "@tanstack/react-table" {
         cellClassName?: string;
         skeleton?: ReactNode;
         expandedContent?: (row: TData) => ReactNode;
+    }
+}
+
+
+declare module "@tanstack/react-table" {
+    interface ColumnMeta<TData extends RowData, TValue> {
+        label?: string;
+        placeholder?: string;
+        variant?: FilterVariant;
+        options?: Option[];
+        range?: [number, number];
+        unit?: string;
+        icon?: React.FC<React.SVGProps<SVGSVGElement>>;
     }
 }
