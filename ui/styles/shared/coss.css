@@ -1,0 +1,34 @@
+/* Shared coss style patterns */
+/* Imported by individual component coss.css files */
+
+/* Common focus ring */
+.cn-focus-ring {
+  @apply focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-3;
+}
+
+/* Common invalid state */
+.cn-invalid {
+  @apply aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 aria-invalid:ring-3;
+}
+
+/* Common disabled state */
+.cn-disabled {
+  @apply disabled:pointer-events-none disabled:opacity-50;
+}
+
+/* Common field layout (for label + control patterns) */
+.cn-field {
+  @apply flex gap-3 select-none;
+}
+
+.cn-field-label {
+  @apply text-sm font-medium leading-none;
+}
+
+.cn-field-description {
+  @apply text-sm text-muted-foreground;
+}
+
+.cn-field-card {
+  @apply rounded-lg border-[1.5px] p-3 transition-[background-color,border-color] duration-500 ease hover:bg-accent/30 has-[[data-state=checked]]:border-primary/30 has-[[data-state=checked]]:bg-primary/3 dark:has-[[data-state=checked]]:bg-primary/5;
+}
