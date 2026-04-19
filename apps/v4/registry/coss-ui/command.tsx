@@ -11,7 +11,7 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@/registry/new-york-v4/ui/dialog"
+} from "@/registry/coss-ui/dialog"
 
 function Command({
   className,

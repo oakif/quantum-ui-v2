@@ -9,8 +9,8 @@ import {
 } from "lucide-react";
 import * as React from "react";
 
-import { Badge } from "@/registry/new-york-v4/ui/badge";
-import { Button } from "@/registry/new-york-v4/ui/button";
+import { Badge } from "@/registry/coss-ui/badge";
+import { Button } from "@/registry/coss-ui/button";
 import {
   Command,
   CommandEmpty,
@@ -18,26 +18,26 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "@/registry/new-york-v4/ui/command";
+} from "@/registry/coss-ui/command";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/registry/new-york-v4/ui/popover";
+} from "@/registry/coss-ui/popover";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/registry/new-york-v4/ui/select";
+} from "@/registry/coss-ui/select";
 import {
   Sortable,
   SortableContent,
   SortableItem,
   SortableItemHandle,
   SortableOverlay,
-} from "@/registry/new-york-v4/ui/sortable";
+} from "@/registry/coss-ui/sortable";
 import { dataTableConfig } from "@/lib/data-table/config";
 import { cn } from "@/lib/utils";
 

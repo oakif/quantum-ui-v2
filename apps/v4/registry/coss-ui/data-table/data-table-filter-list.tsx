@@ -12,10 +12,10 @@ import {
 import { parseAsStringEnum, useQueryState } from "nuqs";
 import * as React from "react";
 
-import { DataTableRangeFilter } from "@/registry/new-york-v4/ui/data-table/data-table-range-filter";
-import { Badge } from "@/registry/new-york-v4/ui/badge";
-import { Button } from "@/registry/new-york-v4/ui/button";
-import { Calendar } from "@/registry/new-york-v4/ui/calendar";
+import { DataTableRangeFilter } from "@/registry/coss-ui/data-table/data-table-range-filter";
+import { Badge } from "@/registry/coss-ui/badge";
+import { Button } from "@/registry/coss-ui/button";
+import { Calendar } from "@/registry/coss-ui/calendar";
 import {
   Command,
   CommandEmpty,
@@ -23,7 +23,7 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "@/registry/new-york-v4/ui/command";
+} from "@/registry/coss-ui/command";
 import {
   Faceted,
   FacetedBadgeList,
@@ -34,27 +34,27 @@ import {
   FacetedItem,
   FacetedList,
   FacetedTrigger,
-} from "@/registry/new-york-v4/ui/faceted";
-import { Input } from "@/registry/new-york-v4/ui/input";
+} from "@/registry/coss-ui/faceted";
+import { Input } from "@/registry/coss-ui/input";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/registry/new-york-v4/ui/popover";
+} from "@/registry/coss-ui/popover";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/registry/new-york-v4/ui/select";
+} from "@/registry/coss-ui/select";
 import {
   Sortable,
   SortableContent,
   SortableItem,
   SortableItemHandle,
   SortableOverlay,
-} from "@/registry/new-york-v4/ui/sortable";
+} from "@/registry/coss-ui/sortable";
 import { dataTableConfig } from "@/lib/data-table/config";
 import { useDebouncedCallback } from "@/hooks/use-debounced-callback";
 import { getDefaultFilterOperator, getFilterOperators } from "@/lib/data-table/utils";
