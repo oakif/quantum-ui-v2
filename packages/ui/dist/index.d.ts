@@ -579,6 +579,18 @@ export declare function SheetTitle({ className, ...props }: React_2.ComponentPro
 
 export declare function SheetTrigger({ ...props }: React_2.ComponentProps<typeof Dialog_2.Trigger>): JSX.Element;
 
+export declare function SimpleSelect({ options, value, onChange, placeholder, disabled, className, }: {
+    options: {
+        value: string;
+        label: string;
+    }[];
+    value?: string;
+    onChange?: (value: string) => void;
+    placeholder?: string;
+    disabled?: boolean;
+    className?: string;
+}): JSX.Element;
+
 export declare function Skeleton({ className, ...props }: React.ComponentProps<"div">): JSX.Element;
 
 export declare function Slider({ className, defaultValue, value, min, max, ...props }: React_2.ComponentProps<typeof Slider_2.Root>): JSX.Element;

@@ -63,6 +63,7 @@ export {
   SelectTrigger, SelectValue,
 } from '~ui/select'
 export { Separator } from '~ui/separator'
+export { SimpleSelect } from '~ui/simple-select'
 export {
   Sheet, SheetClose, SheetContent, SheetDescription,
   SheetFooter, SheetHeader, SheetTitle, SheetTrigger,
