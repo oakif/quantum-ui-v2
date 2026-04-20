@@ -23,9 +23,15 @@ const PRIMARY_SECTIONS = [
 ] as const
 
 const COMPONENT_ITEMS = [
-  { name: "Button", href: "/docs/components/radix/button" },
-  { name: "Checkbox", href: "/docs/components/radix/checkbox" },
-  { name: "DataTable", href: "/docs/components/radix/data-table" },
+  { name: "Badge", href: "/docs/components/badge" },
+  { name: "Button", href: "/docs/components/button" },
+  { name: "Card", href: "/docs/components/card" },
+  { name: "Checkbox", href: "/docs/components/checkbox" },
+  { name: "Input", href: "/docs/components/input" },
+  { name: "Select", href: "/docs/components/select" },
+  { name: "Spinner", href: "/docs/components/spinner" },
+  { name: "Switch", href: "/docs/components/switch" },
+  { name: "Table", href: "/docs/components/table" },
 ] as const
 
 const CHART_ITEMS = [

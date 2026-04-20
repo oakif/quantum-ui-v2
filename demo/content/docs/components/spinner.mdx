@@ -1,0 +1,38 @@
+---
+title: Spinner
+description: An animated loading indicator built on the Loader2 icon.
+featured: true
+component: true
+---
+
+<SpinnerDemoPreview />
+
+## Usage
+
+```tsx
+import { Spinner } from "@/components/ui/spinner"
+```
+
+```tsx
+<Spinner />
+```
+
+## Examples
+
+### Default
+
+<SpinnerDemoPreview />
+
+### Sizes
+
+Use `className` to control the size via Tailwind's `size-*` utilities.
+
+<SpinnerSizesPreview />
+
+## API Reference
+
+| Prop | Type | Default |
+| --- | --- | --- |
+| `className` | `string` | - |
+
+Accepts all standard SVG props. Default size is `size-4` with `animate-spin` applied.

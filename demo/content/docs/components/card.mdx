@@ -1,0 +1,81 @@
+---
+title: Card
+description: A container for grouping related content with optional header and footer sections.
+featured: true
+component: true
+---
+
+<CardDemoPreview />
+
+## Usage
+
+```tsx
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+```
+
+```tsx
+<Card>
+  <CardHeader>
+    <CardTitle>Title</CardTitle>
+    <CardDescription>Description</CardDescription>
+  </CardHeader>
+  <CardContent>Content goes here.</CardContent>
+</Card>
+```
+
+## Examples
+
+### Basic Card
+
+<CardDemoPreview />
+
+### Card with Footer
+
+Use `CardFooter` for action buttons or summary content at the bottom of a card.
+
+<CardWithFooterPreview />
+
+## API Reference
+
+### Card
+
+| Prop | Type | Default |
+| --- | --- | --- |
+| `className` | `string` | - |
+
+### CardHeader
+
+| Prop | Type | Default |
+| --- | --- | --- |
+| `className` | `string` | - |
+
+### CardTitle
+
+| Prop | Type | Default |
+| --- | --- | --- |
+| `className` | `string` | - |
+
+### CardDescription
+
+| Prop | Type | Default |
+| --- | --- | --- |
+| `className` | `string` | - |
+
+### CardContent
+
+| Prop | Type | Default |
+| --- | --- | --- |
+| `className` | `string` | - |
+
+### CardFooter
+
+| Prop | Type | Default |
+| --- | --- | --- |
+| `className` | `string` | - |

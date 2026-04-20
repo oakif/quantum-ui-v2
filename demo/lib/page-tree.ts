@@ -19,44 +19,18 @@ export function getAllPagesFromFolder(folder: PageTreeFolder): PageTreePage[] {
   return pages
 }
 
-// Get the pages from a folder, handling nested base folders (radix/base).
+// Get the pages from a folder.
 export function getPagesFromFolder(
   folder: PageTreeFolder,
-  currentBase: string
+  _currentBase?: string
 ): PageTreePage[] {
-  // For the components folder, find the base subfolder.
-  if (folder.$id === "components" || folder.name === "Components") {
-    for (const child of folder.children) {
-      if (child.type === "folder") {
-        // Match by $id or by name.
-        const isRadix = child.$id === "radix" || child.name === "Radix UI"
-        const isBase = child.$id === "base" || child.name === "Base UI"
-
-        if (
-          (currentBase === "radix" && isRadix) ||
-          (currentBase === "base" && isBase)
-        ) {
-          return child.children.filter(
-            (c): c is PageTreePage => c.type === "page"
-          )
-        }
-      }
-    }
-
-    // Fallback: return all pages from nested folders.
-    return getAllPagesFromFolder(folder).filter(
-      (page) => !page.url.endsWith("/components")
-    )
-  }
-
-  // For other folders, return direct page children.
   return folder.children.filter(
-    (child): child is PageTreePage => child.type === "page"
+    (child): child is PageTreePage =>
+      child.type === "page" && !child.url.endsWith(`/${folder.name.toLowerCase()}`)
   )
 }
 
-// Get current base (radix or base) from pathname.
-export function getCurrentBase(pathname: string): string {
-  const baseMatch = pathname.match(/\/docs\/components\/(radix|base)\//)
-  return baseMatch ? baseMatch[1] : "radix" // Default to radix.
+// Get current base from pathname (kept for compatibility, always returns "radix").
+export function getCurrentBase(_pathname: string): string {
+  return "radix"
 }

@@ -1,0 +1,39 @@
+---
+title: Input
+description: A styled text input field with focus, disabled, and validation states.
+featured: true
+component: true
+---
+
+<InputDemoPreview />
+
+## Usage
+
+```tsx
+import { Input } from "@/components/ui/input"
+```
+
+```tsx
+<Input placeholder="Email address" />
+```
+
+## Examples
+
+### Default
+
+<InputDemoPreview />
+
+### Disabled
+
+<InputDisabledPreview />
+
+## API Reference
+
+| Prop | Type | Default |
+| --- | --- | --- |
+| `type` | `string` | `"text"` |
+| `placeholder` | `string` | - |
+| `disabled` | `boolean` | `false` |
+| `className` | `string` | - |
+
+Accepts all standard HTML `<input>` props.

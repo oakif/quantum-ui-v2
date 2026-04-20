@@ -1,0 +1,77 @@
+---
+title: Badge
+description: Inline status indicators with semantic tone variants.
+featured: true
+component: true
+---
+
+<BadgeDemoPreview />
+
+## Usage
+
+```tsx
+import { Badge } from "@/components/ui/badge"
+```
+
+```tsx
+<Badge variant="success-light">Success</Badge>
+```
+
+## Examples
+
+### Standard Variants
+
+<BadgeDemoPreview />
+
+| Variant | Description |
+| --- | --- |
+| `default` | Primary color, solid background |
+| `secondary` | Muted background |
+| `destructive` | Danger/error, solid red |
+| `outline` | Border only |
+| `ghost` | No background, hover reveals fill |
+
+### Tone Variants (Solid)
+
+Full-color backgrounds for strong emphasis.
+
+<BadgeToneSolidPreview />
+
+| Variant | Description |
+| --- | --- |
+| `success` | Green, for positive/completed states |
+| `warning` | Amber, for caution/pending states |
+| `info` | Blue, for informational states |
+
+### Tone Variants (Light)
+
+Tinted backgrounds with colored text. Best for inline status indicators.
+
+<BadgeToneLightPreview />
+
+| Variant | Description |
+| --- | --- |
+| `success-light` | Light green tint |
+| `warning-light` | Light amber tint |
+| `info-light` | Light blue tint |
+| `destructive-light` | Light red tint |
+
+### Tone Variants (Outline)
+
+Border-only with colored text. Subtle, low-emphasis indicators.
+
+<BadgeToneOutlinePreview />
+
+### With Icons
+
+Icons are automatically sized to `size-3`. Use tone variants to create summary strips.
+
+<BadgeWithIconsPreview />
+
+## API Reference
+
+| Prop | Type | Default |
+| --- | --- | --- |
+| `variant` | `"default" \| "secondary" \| "destructive" \| "outline" \| "ghost" \| "link" \| "success" \| "warning" \| "info" \| "success-light" \| "warning-light" \| "info-light" \| "destructive-light" \| "success-outline" \| "warning-outline" \| "info-outline" \| "destructive-outline"` | `"default"` |
+| `asChild` | `boolean` | `false` |
+| `className` | `string` | - |

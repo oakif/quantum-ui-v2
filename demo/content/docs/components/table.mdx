@@ -1,0 +1,81 @@
+---
+title: Table
+description: A styled HTML table for displaying rows of structured data.
+featured: true
+component: true
+---
+
+<TableDemoPreview />
+
+## Usage
+
+```tsx
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
+```
+
+```tsx
+<Table>
+  <TableHeader>
+    <TableRow>
+      <TableHead>Name</TableHead>
+      <TableHead>Size</TableHead>
+    </TableRow>
+  </TableHeader>
+  <TableBody>
+    <TableRow>
+      <TableCell>DSC_0042.CR3</TableCell>
+      <TableCell>24.1 MB</TableCell>
+    </TableRow>
+  </TableBody>
+</Table>
+```
+
+## Examples
+
+### Basic Table
+
+<TableDemoPreview />
+
+## API Reference
+
+### Table
+
+Renders a `<table>` inside a scrollable container. Accepts all standard `<table>` props.
+
+### TableHeader
+
+Wraps `<thead>`. Adds a bottom border to contained rows.
+
+### TableBody
+
+Wraps `<tbody>`. Removes the bottom border from the last row.
+
+### TableRow
+
+| Prop | Type | Default |
+| --- | --- | --- |
+| `data-state` | `"selected"` | - |
+| `className` | `string` | - |
+
+### TableHead
+
+Wraps `<th>`. Left-aligned, `h-10`, medium font weight.
+
+| Prop | Type | Default |
+| --- | --- | --- |
+| `className` | `string` | - |
+
+### TableCell
+
+Wraps `<td>`. Left-aligned, `p-2`, whitespace nowrap.
+
+| Prop | Type | Default |
+| --- | --- | --- |
+| `className` | `string` | - |

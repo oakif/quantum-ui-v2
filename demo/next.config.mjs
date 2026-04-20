@@ -50,15 +50,15 @@ const nextConfig = {
         destination: "/docs/forms",
         permanent: true,
       },
-      // Component redirects (default to radix).
+      // Legacy: redirect old radix/base URLs to top-level component pages.
       {
-        source: "/docs/components/:name((?!radix|base|form)[^/]+)",
-        destination: "/docs/components/radix/:name",
+        source: "/docs/components/radix/:name",
+        destination: "/docs/components/:name",
         permanent: false,
       },
       {
-        source: "/docs/components/:name((?!radix|base|form)[^/]+).md",
-        destination: "/docs/components/radix/:name.md",
+        source: "/docs/components/base/:name",
+        destination: "/docs/components/:name",
         permanent: false,
       },
       // Other redirects.

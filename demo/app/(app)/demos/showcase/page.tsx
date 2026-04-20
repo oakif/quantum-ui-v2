@@ -80,11 +80,29 @@ export default function ShowcasePage() {
               <Badge variant="destructive">Destructive</Badge>
               <Badge variant="outline">Outline</Badge>
             </SubSection>
+            <SubSection label="Tone variants (solid)">
+              <Badge variant="success">Success</Badge>
+              <Badge variant="warning">Warning</Badge>
+              <Badge variant="info">Info</Badge>
+            </SubSection>
+            <SubSection label="Tone variants (light)">
+              <Badge variant="success-light">Success</Badge>
+              <Badge variant="warning-light">Warning</Badge>
+              <Badge variant="info-light">Info</Badge>
+              <Badge variant="destructive-light">Destructive</Badge>
+            </SubSection>
+            <SubSection label="Tone variants (outline)">
+              <Badge variant="success-outline">Success</Badge>
+              <Badge variant="warning-outline">Warning</Badge>
+              <Badge variant="info-outline">Info</Badge>
+              <Badge variant="destructive-outline">Destructive</Badge>
+            </SubSection>
             <SubSection label="With icons (SummaryStrip replacement pattern)">
               <div className="flex gap-2 flex-wrap py-2">
-                <Badge><Upload className="size-3" /> 42 uploads</Badge>
+                <Badge variant="default"><Upload className="size-3" /> 42 uploads</Badge>
+                <Badge variant="success-light"><Check className="size-3" /> 3 events</Badge>
+                <Badge variant="destructive-light"><X className="size-3" /> 14 skipped</Badge>
                 <Badge variant="secondary"><Pencil className="size-3" /> 8 renamed</Badge>
-                <Badge variant="destructive"><X className="size-3" /> 14 skipped</Badge>
               </div>
             </SubSection>
           </Section>

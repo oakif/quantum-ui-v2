@@ -6,6 +6,19 @@ import { type PageTreeFolder } from "@/lib/page-tree"
 import { source } from "@/lib/source"
 import { cn } from "@/lib/utils"
 import {
+  BadgeDemoPreview,
+  BadgeToneSolidPreview,
+  BadgeToneLightPreview,
+  BadgeToneOutlinePreview,
+  BadgeWithIconsPreview,
+} from "@/components/docs/badge-demos"
+import {
+  CardDemoPreview,
+  CardWithFooterPreview,
+} from "@/components/docs/card-demos"
+import { SelectDemoPreview } from "@/components/docs/select-demos"
+import { TableDemoPreview } from "@/components/docs/table-demos"
+import {
   ButtonAsChildPreview,
   ButtonDemoPreview,
   ButtonIconsPreview,
@@ -29,6 +42,23 @@ import {
   CheckboxStandalonePreview,
   CheckboxWithLabelPreview,
 } from "@/components/docs/checkbox-demos"
+import {
+  InputDemoPreview,
+  InputDisabledPreview,
+} from "@/components/docs/input-demos"
+import {
+  SpinnerDemoPreview,
+  SpinnerSizesPreview,
+} from "@/components/docs/spinner-demos"
+import {
+  SwitchCardPreview,
+  SwitchDemoPreview,
+  SwitchDisabledPreview,
+  SwitchReversePreview,
+  SwitchSizesPreview,
+  SwitchWithDescriptionPreview,
+  SwitchWithLabelPreview,
+} from "@/components/docs/switch-demos"
 import {
   LineChartDefaultDemo,
   LineChartFillDemo,
@@ -386,6 +416,15 @@ export const mdxComponents = {
   Tab: ({ className, ...props }: React.ComponentProps<"div">) => (
     <div className={cn(className)} {...props} />
   ),
+  BadgeDemoPreview,
+  BadgeToneSolidPreview,
+  BadgeToneLightPreview,
+  BadgeToneOutlinePreview,
+  BadgeWithIconsPreview,
+  CardDemoPreview,
+  CardWithFooterPreview,
+  SelectDemoPreview,
+  TableDemoPreview,
   Button,
   ButtonDemoPreview,
   ButtonVariantsPreview,
@@ -401,6 +440,17 @@ export const mdxComponents = {
   CheckboxInvalidPreview,
   CheckboxDisabledPreview,
   CheckboxStandalonePreview,
+  InputDemoPreview,
+  InputDisabledPreview,
+  SpinnerDemoPreview,
+  SpinnerSizesPreview,
+  SwitchDemoPreview,
+  SwitchWithLabelPreview,
+  SwitchWithDescriptionPreview,
+  SwitchReversePreview,
+  SwitchCardPreview,
+  SwitchDisabledPreview,
+  SwitchSizesPreview,
   DataTableDemoPreview,
   DataTableResizablePreview,
   DataTableStickyHeaderPreview,

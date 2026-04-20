@@ -1,0 +1,95 @@
+---
+title: Select
+description: A dropdown for picking one value from a list of options.
+featured: true
+component: true
+---
+
+<SelectDemoPreview />
+
+## Usage
+
+```tsx
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+```
+
+```tsx
+<Select>
+  <SelectTrigger>
+    <SelectValue placeholder="Pick an option" />
+  </SelectTrigger>
+  <SelectContent>
+    <SelectItem value="a">Option A</SelectItem>
+    <SelectItem value="b">Option B</SelectItem>
+  </SelectContent>
+</Select>
+```
+
+## Examples
+
+### Basic Select
+
+<SelectDemoPreview />
+
+## SimpleSelect
+
+For straightforward use cases, `SimpleSelect` is a convenience wrapper that accepts an `options` array instead of individual `SelectItem` elements.
+
+```tsx
+import { SimpleSelect } from "@/components/ui/simple-select"
+
+<SimpleSelect
+  placeholder="Select format"
+  options={[
+    { value: "jpeg", label: "JPEG" },
+    { value: "raw", label: "RAW" },
+    { value: "tiff", label: "TIFF" },
+  ]}
+  value={format}
+  onChange={setFormat}
+/>
+```
+
+## API Reference
+
+### Select
+
+Wraps Radix UI `Select.Root`. Accepts all root props including `value`, `defaultValue`, `onValueChange`, and `disabled`.
+
+### SelectTrigger
+
+| Prop | Type | Default |
+| --- | --- | --- |
+| `size` | `"default" \| "sm"` | `"default"` |
+| `className` | `string` | - |
+
+### SelectValue
+
+| Prop | Type | Default |
+| --- | --- | --- |
+| `placeholder` | `string` | - |
+
+### SelectItem
+
+| Prop | Type | Default |
+| --- | --- | --- |
+| `value` | `string` | - |
+| `disabled` | `boolean` | `false` |
+| `className` | `string` | - |
+
+### SimpleSelect
+
+| Prop | Type | Default |
+| --- | --- | --- |
+| `options` | `{ value: string; label: string }[]` | - |
+| `value` | `string` | - |
+| `onChange` | `(value: string) => void` | - |
+| `placeholder` | `string` | - |
+| `disabled` | `boolean` | `false` |
+| `className` | `string` | - |
