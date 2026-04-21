@@ -48,3 +48,4 @@ shadcn-workspace
 
 # generated style output
 pkg/generated
+pkg/dist
