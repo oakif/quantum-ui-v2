@@ -40,11 +40,14 @@
   &:where([data-state="active"]), &:where([data-active]:not([data-active="false"])) { @slot; }
 }
 
-/* Reset border-color so Tailwind's `border` utility uses the theme token */
-*,
-*::before,
-*::after {
-  border-color: var(--border, currentColor);
+/* Reset border-color so Tailwind's `border` utility uses the theme token.
+   Must be in @layer base so utilities like border-transparent can override. */
+@layer base {
+  *,
+  *::before,
+  *::after {
+    border-color: var(--border, currentColor);
+  }
 }
 
 /* Theme token mapping — consumers define --background, --primary, etc. as CSS variables */
