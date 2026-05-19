@@ -32,6 +32,13 @@ setup:
 build-styles:
     npx tsx pkg/scripts/build-styles.ts
 
+# ── Finalize ────────────────────────────────────────────
+# Sync ui/components -> pkg/generated, rebuild pkg/dist, verify exports.
+# Run before shipping a ticket that touched ui/components/, so downstream
+# consumers (which symlink to pkg/) see the new API.
+finalize:
+    npx tsx pkg/scripts/finalize.ts
+
 # ── puma-dev integration ────────────────────────────────
 _puma-check:
     #!/usr/bin/env bash

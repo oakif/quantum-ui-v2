@@ -191,24 +191,18 @@ function generate_index(style_name: string) {
       const file_path = path.join(style_dir, dir.name, tsx_file)
       const content = fs.readFileSync(file_path, 'utf-8')
 
-      // Extract named exports: "export { X, Y }", "export function X", "export const X", "export type X"
-      const names: string[] = []
+      // Skip files with no named exports to avoid empty `export *` clutter
+      const has_named_export =
+        /export\s+\{[^}]+\}/.test(content) ||
+        /export\s+(?:declare\s+)?(?:function|const|let|var|class|interface|type|enum)\s+\w+/.test(content)
+      if (!has_named_export) continue
 
-      // export { X, Y, Z }
-      for (const match of content.matchAll(/export\s+\{([^}]+)\}/g)) {
-        names.push(...match[1].split(',').map(n => n.trim()).filter(Boolean))
-      }
-
-      // export function X, export const X, export type X
-      for (const match of content.matchAll(/export\s+(?:function|const|type)\s+(\w+)/g)) {
-        const name = match[1]
-        if (!names.includes(name)) names.push(name)
-      }
-
-      if (names.length > 0) {
-        const rel_path = `./${dir.name}/${tsx_file.replace('.tsx', '')}`
-        exports.push(`export { ${names.join(', ')} } from '${rel_path}'`)
-      }
+      // `export *` re-exports values and types in one shot, so we don't need
+      // to distinguish `interface ScrollFadeProps` (a type) from `function
+      // ScrollFade` (a value), naming both via `export {...}` would force
+      // rollup to treat the type as a value and fail.
+      const rel_path = `./${dir.name}/${tsx_file.replace(/\.tsx?$/, '')}`
+      exports.push(`export * from '${rel_path}'`)
     }
   }
 
