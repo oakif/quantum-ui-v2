@@ -1,0 +1,129 @@
+---
+title: Drawer
+description: A bottom sheet powered by vaul, with first-class Dialog stacking.
+featured: true
+component: true
+---
+
+<DrawerDemoPreview />
+
+## Usage
+
+```tsx
+import {
+  Drawer,
+  DrawerAction,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer"
+```
+
+```tsx
+<Drawer>
+  <DrawerTrigger>Open</DrawerTrigger>
+  <DrawerContent>
+    <DrawerHeader>
+      <DrawerTitle>Title</DrawerTitle>
+      <DrawerDescription>Description</DrawerDescription>
+    </DrawerHeader>
+    <DrawerFooter>
+      <DrawerClose>Close</DrawerClose>
+    </DrawerFooter>
+  </DrawerContent>
+</Drawer>
+```
+
+## Examples
+
+### Basic
+
+<DrawerDemoPreview />
+
+### Stacking with Dialog
+
+Pass `nested` on Drawer, and use `DrawerAction` (or `useDrawerAction()`) on any
+button inside the Drawer that opens a Dialog. The Drawer keeps its backdrop and
+outside-click dismissal; the Dialog gets full focus and `aria-hidden`
+coordination on top.
+
+<DrawerNestedPreview />
+
+### Always-mounted (controlled)
+
+Conditionally rendering a Drawer skips Radix' exit animation because the close
+state never gets a chance to run. Keep the Drawer rendered and drive it from
+state with `open={!!state}`.
+
+<DrawerAlwaysMountedPreview />
+
+## Stacking modal primitives
+
+vaul (Drawer) and Radix (Dialog) don't coordinate by default. Four friction
+points show up when you stack them:
+
+1. **Overlay**, vaul's `modal=false` removes the focus trap *and* the backdrop
+   and outside-click. `nested` adds back a QUI-owned backdrop and dismiss-on-
+   outside-click while keeping the focus trap off.
+2. **Focus trap**, only one element can trap focus at a time. With `nested`,
+   vaul releases focus so the Dialog can claim it.
+3. **`aria-hidden`**, Radix Dialog applies `aria-hidden` to its siblings. If a
+   focused element lives inside that subtree, the browser blocks the attribute
+   and the Dialog half-initializes (focus stuck, inputs unselectable). Use
+   `DrawerAction` or `useDrawerAction()` so the focused Drawer-internal button
+   blurs before the Dialog opens.
+4. **`pointer-events`**, Radix briefly disables pointer events on the body
+   while a Dialog opens. If you conditionally unmount the Drawer in the same
+   tick the Dialog opens, you can strand `pointer-events: none` on `<body>`.
+   Always render the Drawer (`open={!!state}`) and let it animate out.
+
+## API Reference
+
+### Drawer
+
+| Prop | Type | Default |
+| --- | --- | --- |
+| `nested` | `boolean` | `false` |
+| `open` | `boolean` | - |
+| `onOpenChange` | `(open: boolean) => void` | - |
+| `direction` | `"top" \| "bottom" \| "left" \| "right"` | `"bottom"` |
+| `dismissible` | `boolean` | `true` |
+| `modal` | `boolean` | `true` (forced to `false` when `nested`) |
+
+`nested` fixes `modal` at mount: vaul crashes if `modal` is toggled at
+runtime. Switching `nested` causes a remount.
+
+### DrawerAction
+
+A button that blurs the active element before firing `onClick`. Use this for
+any Drawer-internal control that opens another modal (typically a Dialog).
+Supports `asChild` for composing with a custom Button.
+
+| Prop | Type | Default |
+| --- | --- | --- |
+| `asChild` | `boolean` | `false` |
+| `onClick` | `(event) => void` | - |
+
+### useDrawerAction
+
+Hook version of `DrawerAction`. Wraps an `onClick` so the current target blurs
+before the handler runs.
+
+```tsx
+const handleConfirm = useDrawerAction(() => setConfirmOpen(true))
+<button onClick={handleConfirm}>Delete…</button>
+```
+
+### DrawerContent
+
+| Prop | Type | Default |
+| --- | --- | --- |
+| `excludeFromDrag` | `string` | - |
+
+`excludeFromDrag` is a CSS selector. Matching descendants get
+`data-vaul-no-drag` applied so vaul won't start a drag from them (useful for
+scrollable regions and interactive controls).
