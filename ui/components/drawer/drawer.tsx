@@ -179,14 +179,18 @@ function DrawerDescription({
 function useDrawerAction<E extends Element = HTMLButtonElement>(
   onClick?: React.MouseEventHandler<E>,
 ): React.MouseEventHandler<E> {
-  // Blurs the clicked element before firing onClick. Used when a Drawer-
-  // internal control opens a Dialog: if focus stays in the Drawer subtree,
-  // Radix Dialog's aria-hidden on the Drawer ancestor is blocked by the
-  // browser, leaving the Dialog half-initialized.
+  // Blurs whatever currently has focus (most often the Drawer's trigger,
+  // since browsers don't move focus to a clicked button on click) before
+  // firing onClick. If focus remains anywhere in the soon-to-be-
+  // aria-hidden subtree, the browser blocks Radix Dialog's aria-hidden
+  // and the Dialog opens half-initialized (focus stuck, inputs unselectable).
   return React.useCallback(
     (event) => {
-      const target = event.currentTarget as unknown as HTMLElement
-      if (typeof target.blur === "function") target.blur()
+      const active =
+        typeof document !== "undefined"
+          ? (document.activeElement as HTMLElement | null)
+          : null
+      if (active && typeof active.blur === "function") active.blur()
       onClick?.(event)
     },
     [onClick],
