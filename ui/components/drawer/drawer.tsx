@@ -6,7 +6,11 @@ import { Drawer as DrawerPrimitive } from "vaul"
 
 import { cn } from "@ui/lib/utils"
 
-const DrawerNestedContext = React.createContext<boolean>(false)
+type DrawerNestedContextValue = { open: boolean }
+
+const DrawerNestedContext = React.createContext<DrawerNestedContextValue | null>(
+  null,
+)
 
 function Drawer({
   nested,
@@ -17,19 +21,73 @@ function Drawer({
   // `nested` fixes `modal=false` at mount: vaul crashes if `modal` toggles
   // at runtime. Switching `nested` causes a remount via the conditional return.
   if (nested) {
-    return (
-      <DrawerNestedContext.Provider value={true}>
-        <DrawerPrimitive.Root data-slot="drawer" modal={false} {...props} />
-      </DrawerNestedContext.Provider>
-    )
+    return <NestedDrawerRoot {...props} />
   }
   return <DrawerPrimitive.Root data-slot="drawer" {...props} />
 }
 
+function NestedDrawerRoot({
+  open: openProp,
+  onOpenChange,
+  defaultOpen = false,
+  ...props
+}: React.ComponentProps<typeof DrawerPrimitive.Root>) {
+  const [internalOpen, setInternalOpen] = React.useState(defaultOpen)
+  const isControlled = openProp !== undefined
+  const open = isControlled ? !!openProp : internalOpen
+
+  const setOpen = React.useCallback(
+    (next: boolean) => {
+      if (!isControlled) setInternalOpen(next)
+      onOpenChange?.(next)
+    },
+    [isControlled, onOpenChange],
+  )
+
+  const ctx = React.useMemo<DrawerNestedContextValue>(
+    () => ({ open }),
+    [open],
+  )
+
+  return (
+    <DrawerNestedContext.Provider value={ctx}>
+      <DrawerPrimitive.Root
+        data-slot="drawer"
+        modal={false}
+        open={open}
+        onOpenChange={setOpen}
+        {...props}
+      />
+    </DrawerNestedContext.Provider>
+  )
+}
+
 function DrawerTrigger({
+  onClick,
   ...props
 }: React.ComponentProps<typeof DrawerPrimitive.Trigger>) {
-  return <DrawerPrimitive.Trigger data-slot="drawer-trigger" {...props} />
+  const nestedCtx = React.useContext(DrawerNestedContext)
+  const handleClick = React.useCallback(
+    (event: React.MouseEvent<HTMLButtonElement>) => {
+      onClick?.(event)
+      if (!nestedCtx) return
+      // In nested mode vaul leaves focus on the trigger (modal=false → no
+      // focus trap). Blur after the open click so the trigger doesn't sit
+      // inside the soon-to-be aria-hidden subtree when a Dialog opens.
+      const target = event.currentTarget as HTMLElement
+      requestAnimationFrame(() => {
+        if (typeof target.blur === "function") target.blur()
+      })
+    },
+    [onClick, nestedCtx],
+  )
+  return (
+    <DrawerPrimitive.Trigger
+      data-slot="drawer-trigger"
+      onClick={handleClick}
+      {...props}
+    />
+  )
 }
 
 function DrawerPortal({
@@ -63,10 +121,14 @@ function DrawerNestedOverlay({
 }: React.ComponentProps<"div">) {
   // vaul's Overlay returns null when modal=false. Render our own and route
   // clicks through DrawerPrimitive.Close so outside-click still dismisses.
+  // data-state mirrors vaul's drawer state so the fade animation runs in
+  // sync with the drawer content.
+  const ctx = React.useContext(DrawerNestedContext)
   return (
     <DrawerPrimitive.Close asChild>
       <div
         data-slot="drawer-overlay"
+        data-state={ctx?.open ? "open" : "closed"}
         aria-hidden="true"
         className={cn("cn-drawer-overlay", className)}
         {...props}
