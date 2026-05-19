@@ -13,6 +13,7 @@
     "packages/*"
   ],
   "scripts": {
+    "finalize": "tsx pkg/scripts/finalize.ts",
     "build": "turbo run build",
     "registry:build": "pnpm --filter=v4 registry:build && pnpm lint:fix && pnpm format:write -- --loglevel silent",
     "registry:capture": "pnpm --filter=v4 registry:capture",

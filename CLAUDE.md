@@ -8,11 +8,20 @@
 
 ## Just Commands
 
-- `just setup` — install deps + build shadcn package (run once after clone)
-- `just run-dev` — fast dev server (skips registry build)
-- `just run` — production build + serve (all routes pre-compiled, instant navigation)
-- `just build-registry` — rebuild the component registry (needed after modifying registry source files)
-- `just warm` — pre-compile all dev routes after `just run-dev` starts (run in a separate terminal)
+- `just setup`, install deps + build shadcn package (run once after clone)
+- `just run-dev`, fast dev server (skips registry build)
+- `just run`, production build + serve (all routes pre-compiled, instant navigation)
+- `just build-registry`, rebuild the component registry (needed after modifying registry source files)
+- `just warm`, pre-compile all dev routes after `just run-dev` starts (run in a separate terminal)
+- `just finalize`, sync `ui/components/*` to `pkg/generated`, rebuild `pkg/dist`, verify every named export in `ui/components/*` is present in `pkg/dist/index.d.ts`. Run before shipping changes that touch `ui/components/`.
+
+## Keeping pkg in sync with ui/components
+
+Downstream consumers (e.g. an `anki` workspace) symlink to `pkg/` and read `dist/` directly. If you edit `ui/components/` without rebuilding, downstream sees the old API even after a green merge. To prevent that:
+
+- `just finalize` (or `pnpm finalize`) does the three-step sync: `build-styles.ts` -> `vite build` -> exports verification.
+- A PreToolUse hook at `.claude/scripts/finalize-gate.py` auto-runs `just finalize` before `mcp__devtools-mcp__ship_it`, `mcp__devtools-mcp__ship_via_pr`, and any Bash `git merge` / `gh pr merge`. If finalize fails, the ship is blocked and the finalize output is surfaced. You don't need to run it manually; just don't be surprised when shipping triggers a build.
+- Both `pkg/generated/` and `pkg/dist/` are gitignored. The hook keeps the local filesystem fresh so the symlinked consumer sees the latest API.
 
 ## Dev Server Notes
 
