@@ -27,6 +27,7 @@ const COMPONENT_ITEMS = [
   { name: "Button", href: "/docs/components/button" },
   { name: "Card", href: "/docs/components/card" },
   { name: "Checkbox", href: "/docs/components/checkbox" },
+  { name: "Drawer", href: "/docs/components/drawer" },
   { name: "Input", href: "/docs/components/input" },
   { name: "Select", href: "/docs/components/select" },
   { name: "Spinner", href: "/docs/components/spinner" },

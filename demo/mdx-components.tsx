@@ -43,6 +43,11 @@ import {
   CheckboxWithLabelPreview,
 } from "@/components/docs/checkbox-demos"
 import {
+  DrawerAlwaysMountedPreview,
+  DrawerDemoPreview,
+  DrawerNestedPreview,
+} from "@/components/docs/drawer-demos"
+import {
   InputDemoPreview,
   InputDisabledPreview,
 } from "@/components/docs/input-demos"
@@ -440,6 +445,9 @@ export const mdxComponents = {
   CheckboxInvalidPreview,
   CheckboxDisabledPreview,
   CheckboxStandalonePreview,
+  DrawerDemoPreview,
+  DrawerNestedPreview,
+  DrawerAlwaysMountedPreview,
   InputDemoPreview,
   InputDisabledPreview,
   SpinnerDemoPreview,

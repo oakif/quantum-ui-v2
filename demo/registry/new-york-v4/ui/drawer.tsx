@@ -1,13 +1,28 @@
 "use client"
 
 import * as React from "react"
+import { Slot } from "radix-ui"
 import { Drawer as DrawerPrimitive } from "vaul"
 
 import { cn } from "@/lib/utils"
 
+const DrawerNestedContext = React.createContext<boolean>(false)
+
 function Drawer({
+  nested,
   ...props
-}: React.ComponentProps<typeof DrawerPrimitive.Root>) {
+}: React.ComponentProps<typeof DrawerPrimitive.Root> & {
+  nested?: boolean
+}) {
+  // `nested` fixes `modal=false` at mount: vaul crashes if `modal` toggles
+  // at runtime. Switching `nested` causes a remount via the conditional return.
+  if (nested) {
+    return (
+      <DrawerNestedContext.Provider value={true}>
+        <DrawerPrimitive.Root data-slot="drawer" modal={false} {...props} />
+      </DrawerNestedContext.Provider>
+    )
+  }
   return <DrawerPrimitive.Root data-slot="drawer" {...props} />
 }
 
@@ -29,6 +44,9 @@ function DrawerClose({
   return <DrawerPrimitive.Close data-slot="drawer-close" {...props} />
 }
 
+const OVERLAY_CLASSES =
+  "fixed inset-0 z-50 bg-black/50 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:animate-in data-[state=open]:fade-in-0"
+
 function DrawerOverlay({
   className,
   ...props
@@ -36,12 +54,27 @@ function DrawerOverlay({
   return (
     <DrawerPrimitive.Overlay
       data-slot="drawer-overlay"
-      className={cn(
-        "fixed inset-0 z-50 bg-black/50 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:animate-in data-[state=open]:fade-in-0",
-        className
-      )}
+      className={cn(OVERLAY_CLASSES, className)}
       {...props}
     />
+  )
+}
+
+function DrawerNestedOverlay({
+  className,
+  ...props
+}: React.ComponentProps<"div">) {
+  // vaul's Overlay returns null when modal=false. Render our own and route
+  // clicks through DrawerPrimitive.Close so outside-click still dismisses.
+  return (
+    <DrawerPrimitive.Close asChild>
+      <div
+        data-slot="drawer-overlay"
+        aria-hidden="true"
+        className={cn(OVERLAY_CLASSES, className)}
+        {...props}
+      />
+    </DrawerPrimitive.Close>
   )
 }
 
@@ -50,9 +83,11 @@ function DrawerContent({
   children,
   ...props
 }: React.ComponentProps<typeof DrawerPrimitive.Content>) {
+  const nested = React.useContext(DrawerNestedContext)
+
   return (
     <DrawerPortal data-slot="drawer-portal">
-      <DrawerOverlay />
+      {nested ? <DrawerNestedOverlay /> : <DrawerOverlay />}
       <DrawerPrimitive.Content
         data-slot="drawer-content"
         className={cn(
@@ -121,6 +156,40 @@ function DrawerDescription({
   )
 }
 
+function useDrawerAction<E extends Element = HTMLButtonElement>(
+  onClick?: React.MouseEventHandler<E>,
+): React.MouseEventHandler<E> {
+  // Blurs the clicked element before firing onClick. Used when a Drawer-
+  // internal control opens a Dialog: if focus stays in the Drawer subtree,
+  // Radix Dialog's aria-hidden on the Drawer ancestor is blocked by the
+  // browser, leaving the Dialog half-initialized.
+  return React.useCallback(
+    (event) => {
+      const target = event.currentTarget as unknown as HTMLElement
+      if (typeof target.blur === "function") target.blur()
+      onClick?.(event)
+    },
+    [onClick],
+  )
+}
+
+function DrawerAction({
+  asChild,
+  onClick,
+  ...props
+}: React.ComponentProps<"button"> & { asChild?: boolean }) {
+  const handleClick = useDrawerAction(onClick)
+  const Comp = asChild ? Slot.Root : "button"
+  return (
+    <Comp
+      data-slot="drawer-action"
+      type={asChild ? undefined : "button"}
+      {...props}
+      onClick={handleClick}
+    />
+  )
+}
+
 export {
   Drawer,
   DrawerPortal,
@@ -132,4 +201,6 @@ export {
   DrawerFooter,
   DrawerTitle,
   DrawerDescription,
+  DrawerAction,
+  useDrawerAction,
 }
