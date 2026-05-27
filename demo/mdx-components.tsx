@@ -67,6 +67,9 @@ import {
   SwitchWithLabelPreview,
 } from "@/components/docs/switch-demos"
 import {
+  HeatmapExamplesGrid,
+} from "@/components/docs/heatmap-demos"
+import {
   LineChartDefaultDemo,
   LineChartFillDemo,
   LineChartInterpolationDemo,
@@ -463,6 +466,7 @@ export const mdxComponents = {
   SwitchCardPreview,
   SwitchDisabledPreview,
   SwitchSizesPreview,
+  HeatmapExamplesGrid,
   DataTableDemoPreview,
   DataTableResizablePreview,
   DataTableStickyHeaderPreview,

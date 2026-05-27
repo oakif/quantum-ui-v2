@@ -36,6 +36,7 @@ const COMPONENT_ITEMS = [
 ] as const
 
 const CHART_ITEMS = [
+  { name: "Heatmap", href: "/docs/charts/heatmap" },
   { name: "Line Charts", href: "/docs/charts/line" },
   { name: "Bar Charts", href: "/docs/charts/bar" },
   { name: "Pie Charts", href: "/docs/charts/pie" },

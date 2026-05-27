@@ -1,0 +1,27 @@
+---
+title: Heatmap
+description: A calendar heatmap for visualizing activity over time, with discrete and interpolated color modes.
+---
+
+## Examples
+
+<HeatmapExamplesGrid />
+
+## API Reference
+
+| Prop | Type | Default |
+| --- | --- | --- |
+| `data` | `{ date: string, value: number }[]` | - |
+| `startDate` | `Date` | - |
+| `endDate` | `Date` | - |
+| `colorMode` | `"discrete" \| "interpolate"` | - |
+| `colorScale` | `string[]` | Green scale |
+| `minColor` | `string` | `"#aceebb"` |
+| `maxColor` | `string` | `"#116329"` |
+| `interpolation` | `"linear" \| "sqrt" \| "log"` | `"linear"` |
+| `cellSize` | `number` | `20` |
+| `gap` | `number` | `4` |
+| `displayStyle` | `"squares" \| "bubbles"` | `"squares"` |
+| `daysOfTheWeek` | `"all" \| "MWF" \| "none" \| "single letter"` | `"MWF"` |
+| `dateDisplayFunction` | `(date: Date) => ReactNode` | - |
+| `valueDisplayFunction` | `(value: number) => ReactNode` | - |
