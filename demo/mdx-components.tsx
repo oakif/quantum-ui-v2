@@ -57,8 +57,10 @@ import {
 } from "@/components/docs/spinner-demos"
 import {
   SwitchCardPreview,
+  SwitchColorPreview,
   SwitchDemoPreview,
   SwitchDisabledPreview,
+  SwitchExamplesGrid,
   SwitchReversePreview,
   SwitchSizesPreview,
   SwitchWithDescriptionPreview,
@@ -453,8 +455,10 @@ export const mdxComponents = {
   SpinnerDemoPreview,
   SpinnerSizesPreview,
   SwitchDemoPreview,
+  SwitchExamplesGrid,
   SwitchWithLabelPreview,
   SwitchWithDescriptionPreview,
+  SwitchColorPreview,
   SwitchReversePreview,
   SwitchCardPreview,
   SwitchDisabledPreview,

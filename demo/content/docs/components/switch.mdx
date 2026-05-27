@@ -1,6 +1,6 @@
 ---
 title: Switch
-description: A toggle control for on/off states, with optional label, description, and card layout.
+description: A toggle control for on/off states, with optional label, description, color, and card layout.
 featured: true
 component: true
 ---
@@ -19,45 +19,7 @@ import { Switch } from "@/components/ui/switch"
 
 ## Examples
 
-### Basic
-
-A standalone switch toggle.
-
-<SwitchDemoPreview />
-
-### With Label
-
-Use the `label` prop to add a clickable label.
-
-<SwitchWithLabelPreview />
-
-### With Description
-
-Add `description` for additional context below the label.
-
-<SwitchWithDescriptionPreview />
-
-### Reverse Layout
-
-Use `reverse` to put the label on the left and switch on the right. Useful for settings-style layouts.
-
-<SwitchReversePreview />
-
-### Card
-
-Use `card` for a bordered card layout. Combine with `reverse` for a settings panel look.
-
-<SwitchCardPreview />
-
-### Sizes
-
-Available in `sm`, `default`, and `lg`.
-
-<SwitchSizesPreview />
-
-### Disabled
-
-<SwitchDisabledPreview />
+<SwitchExamplesGrid />
 
 ## API Reference
 
@@ -67,6 +29,7 @@ Available in `sm`, `default`, and `lg`.
 | `onCheckedChange` | `(checked: boolean) => void` | - |
 | `label` | `string` | - |
 | `description` | `string` | - |
+| `color` | `string` | - |
 | `card` | `boolean` | `false` |
 | `reverse` | `boolean` | `false` |
 | `size` | `"sm" \| "default" \| "lg"` | `"default"` |

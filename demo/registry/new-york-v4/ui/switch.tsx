@@ -7,7 +7,9 @@ import { cn } from "@/lib/utils"
 
 function Switch({
   className,
+  style,
   size = "default",
+  color,
   label,
   description,
   card,
@@ -15,6 +17,7 @@ function Switch({
   ...props
 }: React.ComponentProps<typeof SwitchPrimitive.Root> & {
   size?: "sm" | "default" | "lg"
+  color?: string
   label?: string
   description?: string
   card?: boolean
@@ -25,12 +28,13 @@ function Switch({
       data-slot="switch"
       data-size={size}
       className={cn(
-        "peer group/switch inline-flex shrink-0 items-center rounded-full border border-transparent shadow-xs transition-all outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-primary data-[state=unchecked]:bg-input dark:data-[state=unchecked]:bg-input/80",
+        "[--switch-bg:var(--color-primary)] peer group/switch inline-flex shrink-0 items-center rounded-full border border-transparent shadow-xs transition-all outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-[var(--switch-bg)] data-[state=unchecked]:bg-input dark:data-[state=unchecked]:bg-input/80",
         size === "sm" && "h-3.5 w-6",
         size === "default" && "h-[1.15rem] w-8",
         size === "lg" && "h-6 w-11",
         className
       )}
+      style={color ? { "--switch-bg": color, ...style } as React.CSSProperties : style}
       {...props}
     >
       <SwitchPrimitive.Thumb

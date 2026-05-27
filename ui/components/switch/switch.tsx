@@ -7,13 +7,16 @@ import { cn } from "@ui/lib/utils"
 
 function Switch({
   className,
+  style,
   size = "default",
+  color,
   label,
   description,
   card,
   ...props
 }: React.ComponentProps<typeof SwitchPrimitive.Root> & {
   size?: "sm" | "default"
+  color?: string
   label?: string
   description?: string
   card?: boolean
@@ -26,6 +29,7 @@ function Switch({
         "cn-switch peer group/switch relative inline-flex items-center transition-all outline-none after:absolute after:-inset-x-3 after:-inset-y-2 data-disabled:cursor-not-allowed data-disabled:opacity-50",
         className,
       )}
+      style={color ? { "--switch-bg": color, ...style } as React.CSSProperties : style}
       {...props}
     >
       <SwitchPrimitive.Thumb
