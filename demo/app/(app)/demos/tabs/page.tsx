@@ -1,19 +1,35 @@
 "use client"
 
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/registry/new-york-v4/ui/tabs"
+import { useState } from "react"
+import { Tabs, TabsList, TabsTrigger, TabsContent, type TabsTheme } from "@/registry/new-york-v4/ui/tabs"
 
 export default function TabsDemoPage() {
+  const [theme, setTheme] = useState<TabsTheme>("coss")
+
   return (
     <div className="container max-w-4xl py-12 space-y-12">
-      <div>
-        <h1 className="text-2xl font-bold">Tabs</h1>
-        <p className="text-muted-foreground mt-1">Switch between content panels. Also works as a segmented control.</p>
+      <div className="flex items-start justify-between">
+        <div>
+          <h1 className="text-2xl font-bold">Tabs</h1>
+          <p className="text-muted-foreground mt-1">Switch between content panels. Also works as a segmented control.</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <label className="text-sm text-muted-foreground">Theme</label>
+          <select
+            value={theme}
+            onChange={(e) => setTheme(e.target.value as TabsTheme)}
+            className="rounded-md border border-input bg-background px-2 py-1 text-sm"
+          >
+            <option value="coss">Coss</option>
+            <option value="shadcn">shadcn</option>
+          </select>
+        </div>
       </div>
 
       <section className="space-y-4">
-        <h2 className="text-lg font-semibold">Default (pill style)</h2>
+        <h2 className="text-lg font-semibold">Default (pill)</h2>
         <Tabs defaultValue="tab1">
-          <TabsList>
+          <TabsList theme={theme}>
             <TabsTrigger value="tab1">Overview</TabsTrigger>
             <TabsTrigger value="tab2">Analytics</TabsTrigger>
             <TabsTrigger value="tab3">Reports</TabsTrigger>
@@ -31,9 +47,9 @@ export default function TabsDemoPage() {
       </section>
 
       <section className="space-y-4">
-        <h2 className="text-lg font-semibold">Line variant</h2>
+        <h2 className="text-lg font-semibold">Underline variant</h2>
         <Tabs defaultValue="tab1">
-          <TabsList variant="line">
+          <TabsList variant="underline" theme={theme}>
             <TabsTrigger value="tab1">Overview</TabsTrigger>
             <TabsTrigger value="tab2">Analytics</TabsTrigger>
             <TabsTrigger value="tab3">Reports</TabsTrigger>
@@ -51,13 +67,13 @@ export default function TabsDemoPage() {
       </section>
 
       <section className="space-y-4">
-        <h2 className="text-lg font-semibold">As segmented control (no content panels)</h2>
-        <p className="text-sm text-muted-foreground">Replaces the custom SegmentedControl component. Use Tabs without TabsContent for a pure option picker.</p>
+        <h2 className="text-lg font-semibold">As segmented control</h2>
+        <p className="text-sm text-muted-foreground">Replaces the custom SegmentedControl component.</p>
         <div className="space-y-4">
           <div>
             <label className="text-sm font-medium mb-2 block">Filename Mode</label>
             <Tabs defaultValue="keep">
-              <TabsList>
+              <TabsList theme={theme}>
                 <TabsTrigger value="keep">Keep Original</TabsTrigger>
                 <TabsTrigger value="normalize">Normalize</TabsTrigger>
                 <TabsTrigger value="serialize">Serialize</TabsTrigger>
@@ -67,7 +83,7 @@ export default function TabsDemoPage() {
           <div>
             <label className="text-sm font-medium mb-2 block">Timestamp Source</label>
             <Tabs defaultValue="filename">
-              <TabsList>
+              <TabsList theme={theme}>
                 <TabsTrigger value="filename">Filename</TabsTrigger>
                 <TabsTrigger value="exif">EXIF</TabsTrigger>
               </TabsList>
@@ -79,7 +95,7 @@ export default function TabsDemoPage() {
       <section className="space-y-4">
         <h2 className="text-lg font-semibold">Disabled tab</h2>
         <Tabs defaultValue="tab1">
-          <TabsList>
+          <TabsList theme={theme}>
             <TabsTrigger value="tab1">Active</TabsTrigger>
             <TabsTrigger value="tab2" disabled>Disabled</TabsTrigger>
             <TabsTrigger value="tab3">Also Active</TabsTrigger>
