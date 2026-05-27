@@ -366,7 +366,7 @@ importers:
   pkg:
     dependencies:
       '@tanstack/react-table':
-        specifier: ^8.21.2
+        specifier: '>=8'
         version: 8.21.3(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       class-variance-authority:
         specifier: ^0.7.1
@@ -393,7 +393,7 @@ importers:
         specifier: ^1.4.0
         version: 1.4.0
       vaul:
-        specifier: ^1.1.0
+        specifier: ^1.1.2
         version: 1.1.2(@types/react-dom@19.2.2(@types/react@19.2.2))(@types/react@19.2.2)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
     devDependencies:
       '@tailwindcss/vite':
