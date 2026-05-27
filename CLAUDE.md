@@ -30,6 +30,15 @@ Downstream consumers (e.g. an `anki` workspace) symlink to `pkg/` and read `dist
 - `just run` avoids this entirely by pre-building everything
 - Clear `.next` cache (`rm -rf apps/quantum-ui/.next`) if you see stale errors
 
+## Change Policy
+
+Every component change (new prop, new variant, behavior change) **must** include updates to:
+1. The corresponding demo page (`demos/{component}/page.tsx`)
+2. The corresponding docs page (MDX + preview components)
+3. The API reference table in the docs
+
+This applies to all frontend-focused changes. For non-frontend changes, still update documentation with correct API information. No exceptions.
+
 ## Adding New Components
 
 ### Workflow
