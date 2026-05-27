@@ -11,7 +11,7 @@ export interface ScrollFadeProps extends React.ComponentPropsWithoutRef<"div"> {
   trigger?: unknown
 }
 
-export function ScrollFade({
+export const ScrollFade = React.forwardRef<HTMLDivElement, ScrollFadeProps>(function ScrollFade({
   className,
   wrapperClassName,
   orientation = "horizontal",
@@ -22,41 +22,48 @@ export function ScrollFade({
   style,
   children,
   ...props
-}: ScrollFadeProps) {
+}, externalRef) {
   const scrollRef = React.useRef<HTMLDivElement>(null)
   const startOverlayRef = React.useRef<HTMLDivElement>(null)
   const endOverlayRef = React.useRef<HTMLDivElement>(null)
   const hasAutoScrolledRef = React.useRef(false)
   const isHorizontal = orientation === "horizontal"
 
-  const updateFades = React.useCallback(() => {
+  // Merge external ref with internal scroll ref.
+  const setScrollRef = (el: HTMLDivElement | null) => {
+    scrollRef.current = el
+    if (typeof externalRef === "function") externalRef(el)
+    else if (externalRef) (externalRef as React.MutableRefObject<HTMLDivElement | null>).current = el
+  }
+
+  // Single effect that owns scrolling, fade updates, listeners, and re-renders on trigger.
+  // useLayoutEffect to ensure refs are set before paint (avoids first-frame flicker).
+  React.useLayoutEffect(() => {
     const el = scrollRef.current
     const startEl = startOverlayRef.current
     const endEl = endOverlayRef.current
     if (!el || !startEl || !endEl) return
 
-    let startOpacity: number
-    let endOpacity: number
-    const scrollPos = isHorizontal ? el.scrollLeft : el.scrollTop
-    const maxScroll = isHorizontal
-      ? el.scrollWidth - el.clientWidth
-      : el.scrollHeight - el.clientHeight
+    const updateFades = () => {
+      const scrollPos = isHorizontal ? el.scrollLeft : el.scrollTop
+      const maxScroll = isHorizontal
+        ? el.scrollWidth - el.clientWidth
+        : el.scrollHeight - el.clientHeight
 
-    if (fadeMode === "edge") {
-      startOpacity = scrollPos > 2 ? 1 : 0
-      endOpacity = maxScroll - scrollPos > 2 ? 1 : 0
-    } else {
-      startOpacity = Math.min(scrollPos / intensity, 1)
-      endOpacity = Math.min((maxScroll - scrollPos) / intensity, 1)
+      let startOpacity: number
+      let endOpacity: number
+      if (fadeMode === "edge") {
+        startOpacity = scrollPos > 2 ? 1 : 0
+        endOpacity = maxScroll - scrollPos > 2 ? 1 : 0
+      } else {
+        startOpacity = Math.min(scrollPos / intensity, 1)
+        endOpacity = Math.min((maxScroll - scrollPos) / intensity, 1)
+      }
+      startEl.style.opacity = String(startOpacity)
+      endEl.style.opacity = String(endOpacity)
+      startEl.dataset.opacity = startOpacity.toFixed(2)
+      endEl.dataset.opacity = endOpacity.toFixed(2)
     }
-
-    startEl.style.opacity = String(startOpacity)
-    endEl.style.opacity = String(endOpacity)
-  }, [isHorizontal, fadeMode, intensity])
-
-  React.useEffect(() => {
-    const el = scrollRef.current
-    if (!el) return
 
     const tryScrollToEnd = () => {
       if (!scrollToEnd || hasAutoScrolledRef.current) return
@@ -77,8 +84,8 @@ export function ScrollFade({
       hasAutoScrolledRef.current = true
       updateFades()
     }
-
     el.addEventListener("scroll", onScroll, { passive: true })
+
     const ro = new ResizeObserver(() => { tryScrollToEnd(); updateFades() })
     ro.observe(el)
 
@@ -86,14 +93,7 @@ export function ScrollFade({
       el.removeEventListener("scroll", onScroll)
       ro.disconnect()
     }
-  }, [updateFades, scrollToEnd, isHorizontal])
-
-  // Re-check fades when trigger changes (e.g. parent becomes visible after animation)
-  React.useEffect(() => {
-    if (trigger === undefined) return
-    const raf = requestAnimationFrame(() => requestAnimationFrame(updateFades))
-    return () => cancelAnimationFrame(raf)
-  }, [trigger, updateFades])
+  }, [scrollToEnd, isHorizontal, fadeMode, intensity, trigger])
 
   return (
     <div
@@ -110,7 +110,7 @@ export function ScrollFade({
         aria-hidden
       />
       <div
-        ref={scrollRef}
+        ref={setScrollRef}
         className={cn(isHorizontal ? "scroll-fade-x" : "scroll-fade-y", className)}
         {...props}
       >
@@ -123,4 +123,4 @@ export function ScrollFade({
       />
     </div>
   )
-}
+})
