@@ -10,7 +10,6 @@ export { Avatar, AvatarImage, AvatarFallback } from '~ui/avatar'
 export { Separator } from '~ui/separator'
 export { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '~ui/tooltip'
 export { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger, DialogClose } from '~ui/dialog'
-export { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '~ui/dropdown-menu'
 export { Skeleton } from '~ui/skeleton'
 export { Kbd } from '~ui/kbd'
 
