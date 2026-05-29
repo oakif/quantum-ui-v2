@@ -56,13 +56,18 @@ function DropdownMenuGroup({
   )
 }
 
-// `useTouchActive` provides the touch tap feedback that CSS `:active` alone
-// can't reliably deliver: on touch, `:active` is gone within a frame so brief
-// taps show no highlight. This sets a `data-active=""` attribute on
-// pointerdown for non-mouse pointers, and clears it 200ms after pointerup so
-// the highlight stays visible long enough to be perceived. Mouse pointers
-// rely on Radix's own `data-highlighted` (covered in CSS via the same rule).
-function useTouchActive() {
+// `useActiveState` provides JS-driven `data-active=""` press feedback for
+// both mouse and touch pointers. CSS `:active` alone can't reliably deliver
+// this: on touch, `:active` is gone within a frame so brief taps show no
+// highlight; on touch devices, `:hover` sticks after release. `:hover` on
+// mouse-capable devices works but doesn't fade symmetrically.
+//
+// - Mouse: pointerenter sets active, pointerleave clears. Natural hover.
+// - Touch: pointerdown sets active, pointerup schedules clear after 200ms
+//   so brief taps reach full color before the fade-out plays.
+// - pointercancel always clears immediately (e.g., the user drags off the
+//   menu without lifting).
+function useActiveState() {
   const [active, setActive] = React.useState(false)
   const clearRef = React.useRef<number | null>(null)
   React.useEffect(
@@ -71,6 +76,14 @@ function useTouchActive() {
     },
     []
   )
+  const onPointerEnter = React.useCallback((event: React.PointerEvent) => {
+    if (event.pointerType !== "mouse") return
+    setActive(true)
+  }, [])
+  const onPointerLeave = React.useCallback((event: React.PointerEvent) => {
+    if (event.pointerType !== "mouse") return
+    setActive(false)
+  }, [])
   const onPointerDown = React.useCallback((event: React.PointerEvent) => {
     if (event.pointerType === "mouse") return
     if (clearRef.current !== null) window.clearTimeout(clearRef.current)
@@ -87,13 +100,15 @@ function useTouchActive() {
     if (clearRef.current !== null) window.clearTimeout(clearRef.current)
     setActive(false)
   }, [])
-  return { active, onPointerDown, onPointerUp, onPointerCancel }
+  return { active, onPointerEnter, onPointerLeave, onPointerDown, onPointerUp, onPointerCancel }
 }
 
 function DropdownMenuItem({
   className,
   inset,
   variant = "default",
+  onPointerEnter,
+  onPointerLeave,
   onPointerDown,
   onPointerUp,
   onPointerCancel,
@@ -102,23 +117,31 @@ function DropdownMenuItem({
   inset?: boolean
   variant?: "default" | "destructive"
 }) {
-  const touch = useTouchActive()
+  const press = useActiveState()
   return (
     <DropdownMenuPrimitive.Item
       data-slot="dropdown-menu-item"
       data-inset={inset}
       data-variant={variant}
-      data-active={touch.active ? "" : undefined}
+      data-active={press.active ? "" : undefined}
+      onPointerEnter={(e) => {
+        press.onPointerEnter(e)
+        onPointerEnter?.(e)
+      }}
+      onPointerLeave={(e) => {
+        press.onPointerLeave(e)
+        onPointerLeave?.(e)
+      }}
       onPointerDown={(e) => {
-        touch.onPointerDown(e)
+        press.onPointerDown(e)
         onPointerDown?.(e)
       }}
       onPointerUp={(e) => {
-        touch.onPointerUp(e)
+        press.onPointerUp(e)
         onPointerUp?.(e)
       }}
       onPointerCancel={(e) => {
-        touch.onPointerCancel()
+        press.onPointerCancel()
         onPointerCancel?.(e)
       }}
       className={cn("cn-dropdown-menu-item", className)}
@@ -131,26 +154,36 @@ function DropdownMenuCheckboxItem({
   className,
   children,
   checked,
+  onPointerEnter,
+  onPointerLeave,
   onPointerDown,
   onPointerUp,
   onPointerCancel,
   ...props
 }: React.ComponentProps<typeof DropdownMenuPrimitive.CheckboxItem>) {
-  const touch = useTouchActive()
+  const press = useActiveState()
   return (
     <DropdownMenuPrimitive.CheckboxItem
       data-slot="dropdown-menu-checkbox-item"
-      data-active={touch.active ? "" : undefined}
+      data-active={press.active ? "" : undefined}
+      onPointerEnter={(e) => {
+        press.onPointerEnter(e)
+        onPointerEnter?.(e)
+      }}
+      onPointerLeave={(e) => {
+        press.onPointerLeave(e)
+        onPointerLeave?.(e)
+      }}
       onPointerDown={(e) => {
-        touch.onPointerDown(e)
+        press.onPointerDown(e)
         onPointerDown?.(e)
       }}
       onPointerUp={(e) => {
-        touch.onPointerUp(e)
+        press.onPointerUp(e)
         onPointerUp?.(e)
       }}
       onPointerCancel={(e) => {
-        touch.onPointerCancel()
+        press.onPointerCancel()
         onPointerCancel?.(e)
       }}
       className={cn("cn-dropdown-menu-checkbox-item", className)}
@@ -181,26 +214,36 @@ function DropdownMenuRadioGroup({
 function DropdownMenuRadioItem({
   className,
   children,
+  onPointerEnter,
+  onPointerLeave,
   onPointerDown,
   onPointerUp,
   onPointerCancel,
   ...props
 }: React.ComponentProps<typeof DropdownMenuPrimitive.RadioItem>) {
-  const touch = useTouchActive()
+  const press = useActiveState()
   return (
     <DropdownMenuPrimitive.RadioItem
       data-slot="dropdown-menu-radio-item"
-      data-active={touch.active ? "" : undefined}
+      data-active={press.active ? "" : undefined}
+      onPointerEnter={(e) => {
+        press.onPointerEnter(e)
+        onPointerEnter?.(e)
+      }}
+      onPointerLeave={(e) => {
+        press.onPointerLeave(e)
+        onPointerLeave?.(e)
+      }}
       onPointerDown={(e) => {
-        touch.onPointerDown(e)
+        press.onPointerDown(e)
         onPointerDown?.(e)
       }}
       onPointerUp={(e) => {
-        touch.onPointerUp(e)
+        press.onPointerUp(e)
         onPointerUp?.(e)
       }}
       onPointerCancel={(e) => {
-        touch.onPointerCancel()
+        press.onPointerCancel()
         onPointerCancel?.(e)
       }}
       className={cn("cn-dropdown-menu-radio-item", className)}
@@ -269,6 +312,8 @@ function DropdownMenuSubTrigger({
   className,
   inset,
   children,
+  onPointerEnter,
+  onPointerLeave,
   onPointerDown,
   onPointerUp,
   onPointerCancel,
@@ -276,22 +321,30 @@ function DropdownMenuSubTrigger({
 }: React.ComponentProps<typeof DropdownMenuPrimitive.SubTrigger> & {
   inset?: boolean
 }) {
-  const touch = useTouchActive()
+  const press = useActiveState()
   return (
     <DropdownMenuPrimitive.SubTrigger
       data-slot="dropdown-menu-sub-trigger"
       data-inset={inset}
-      data-active={touch.active ? "" : undefined}
+      data-active={press.active ? "" : undefined}
+      onPointerEnter={(e) => {
+        press.onPointerEnter(e)
+        onPointerEnter?.(e)
+      }}
+      onPointerLeave={(e) => {
+        press.onPointerLeave(e)
+        onPointerLeave?.(e)
+      }}
       onPointerDown={(e) => {
-        touch.onPointerDown(e)
+        press.onPointerDown(e)
         onPointerDown?.(e)
       }}
       onPointerUp={(e) => {
-        touch.onPointerUp(e)
+        press.onPointerUp(e)
         onPointerUp?.(e)
       }}
       onPointerCancel={(e) => {
-        touch.onPointerCancel()
+        press.onPointerCancel()
         onPointerCancel?.(e)
       }}
       className={cn("cn-dropdown-menu-sub-trigger", className)}
