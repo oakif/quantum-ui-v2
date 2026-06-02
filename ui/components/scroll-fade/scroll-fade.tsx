@@ -37,8 +37,10 @@ export const ScrollFade = React.forwardRef<HTMLDivElement, ScrollFadeProps>(func
   }
 
   // Single effect that owns scrolling, fade updates, listeners, and re-renders on trigger.
-  // useLayoutEffect to ensure refs are set before paint (avoids first-frame flicker).
-  React.useLayoutEffect(() => {
+  // useEffect (not useLayoutEffect) so the synchronous measurement + ResizeObserver
+  // setup doesn't block paint. The first frame may render with both overlays at 0
+  // opacity, but updateFades runs on the next tick before the user can perceive it.
+  React.useEffect(() => {
     const el = scrollRef.current
     const startEl = startOverlayRef.current
     const endEl = endOverlayRef.current
